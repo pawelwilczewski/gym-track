@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 
-const test = () => {
-  alert('hello');
-};
+const test = (): void => alert('hello');
 </script>
 
 <template>
