@@ -1,8 +1,8 @@
-import typescriptEslintParser from '@typescript-eslint/parser'
-import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin'
-import prettierConfig from 'eslint-config-prettier'
-import vuePlugin from 'eslint-plugin-vue'
-import vueEslintParser from 'vue-eslint-parser'
+import typescriptEslintParser from '@typescript-eslint/parser';
+import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
+import vuePlugin from 'eslint-plugin-vue';
+import prettierPlugin from 'eslint-plugin-prettier';
+import vueEslintParser from 'vue-eslint-parser';
 
 export default [
   {
@@ -17,6 +17,7 @@ export default [
     plugins: {
       '@typescript-eslint': typescriptEslintPlugin,
       vue: vuePlugin,
+      prettier: prettierPlugin,
     },
     rules: {
       curly: ['warn', 'all'],
@@ -28,6 +29,7 @@ export default [
       '@typescript-eslint/no-unused-vars': 'warn',
       'vue/script-setup-uses-vars': 'error',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      'prettier/prettier': 'warn',
     },
   },
-]
+];
