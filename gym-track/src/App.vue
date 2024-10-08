@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
+
+const test = () => {
+  alert('hello');
+};
 </script>
 
 <template>
   <header>Hello World!</header>
-  <Button>Click!</Button>
+  <Button @click="test">Click!</Button>
 </template>

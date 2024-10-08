@@ -1,15 +1,16 @@
-// eslint.config.mjs (ES module version)
 import typescriptEslintParser from '@typescript-eslint/parser'
 import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin'
 import prettierConfig from 'eslint-config-prettier'
 import vuePlugin from 'eslint-plugin-vue'
+import vueEslintParser from 'vue-eslint-parser'
 
 export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.vue'],
     languageOptions: {
-      parser: typescriptEslintParser,
+      parser: vueEslintParser,
       parserOptions: {
+        parser: typescriptEslintParser,
         extraFileExtensions: ['.vue'],
       },
     },
@@ -18,6 +19,7 @@ export default [
       vue: vuePlugin,
     },
     rules: {
+      curly: ['warn', 'all'],
       'prefer-promise-reject-errors': 'off',
       quotes: ['warn', 'single', { avoidEscape: true }],
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -28,5 +30,4 @@ export default [
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     },
   },
-  prettierConfig,
 ]
