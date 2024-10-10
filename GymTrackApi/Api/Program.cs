@@ -16,11 +16,10 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services
 	.AddAuthorization()
-	.AddAuthentication()
-	.AddCookie(IdentityConstants.ApplicationScheme);
+	.AddAuthentication();
 
 builder.Services
-	.AddInfrastructureDependencies();
+	.AddInfrastructureDependencies(builder.Configuration);
 
 builder.Services
 	.AddIdentityApiEndpoints<AppUser>()
