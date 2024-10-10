@@ -1,7 +1,6 @@
 using Domain.Models.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Persistence;
 
@@ -10,14 +9,8 @@ internal sealed class AppDbContext : IdentityDbContext<AppUser, Role, Guid>
 	public AppDbContext() // for creating migrations
 		: base(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }
 
-	public AppDbContext(IConfiguration configuration) // nullable for creating migrations
-		: base(GetOptions(configuration)) { }
-
-	private static DbContextOptions<AppDbContext> GetOptions(IConfiguration configuration) =>
-		new DbContextOptionsBuilder<AppDbContext>()
-			.UseNpgsql(configuration.GetConnectionString("AppDb"))
-			.EnableSensitiveDataLogging()
-			.Options;
+	public AppDbContext(DbContextOptions<AppDbContext> options)
+		: base(options) { }
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{

@@ -14,16 +14,14 @@ if (builder.Environment.IsDevelopment())
 	builder.Services.AddSwaggerGen();
 }
 
-builder.Services
-	.AddAuthorization()
-	.AddAuthentication();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 builder.Services
 	.AddInfrastructureDependencies(builder.Configuration);
 
 builder.Services
 	.AddIdentityApiEndpoints<AppUser>()
-	.AddSignInManager()
 	.AddDefaultTokenProviders();
 
 var app = builder.Build();
