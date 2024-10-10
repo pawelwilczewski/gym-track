@@ -12,9 +12,16 @@ public static class DependencyInjection
 	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
 		services
-			.AddDbContext<AppDbContext>(options => options
-				.UseNpgsql(configuration.GetConnectionString("AppDb"))
-				.EnableSensitiveDataLogging())
+			.AddDbContext<AppDbContext>(options =>
+			{
+				options
+					.UseNpgsql(configuration.GetConnectionString("AppDb"));
+
+				if (bool.TryParse(configuration["EnableSensitiveDataLogging"], out var enable) && enable)
+				{
+					options.EnableSensitiveDataLogging();
+				}
+			})
 			.AddScoped<IDataContext, DataContext>();
 
 		services
