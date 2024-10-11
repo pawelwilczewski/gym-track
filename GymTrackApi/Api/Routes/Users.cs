@@ -8,7 +8,8 @@ internal static class Users
 
 		group.MapGet("{id:int}", (HttpContext httpContext, int id) =>
 				Task.FromResult(Results.Ok(id)))
-			.WithOpenApi();
+			.WithOpenApi()
+			.RequireAuthorization();
 
 		return builder;
 	}
