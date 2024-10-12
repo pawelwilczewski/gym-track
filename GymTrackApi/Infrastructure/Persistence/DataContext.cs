@@ -6,7 +6,7 @@ namespace Infrastructure.Persistence;
 
 internal sealed class DataContext : IDataContext
 {
-	public DbSet<AppUser> Users => dbContext.Users;
+	public DbSet<User> Users => dbContext.Users;
 
 	private readonly AppDbContext dbContext;
 

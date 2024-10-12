@@ -25,7 +25,7 @@ internal static class Identity
 
 		var timeProvider = endpoints.ServiceProvider.GetRequiredService<TimeProvider>();
 		var bearerTokenOptions = endpoints.ServiceProvider.GetRequiredService<IOptionsMonitor<BearerTokenOptions>>();
-		var emailSender = endpoints.ServiceProvider.GetRequiredService<IEmailSender<AppUser>>();
+		var emailSender = endpoints.ServiceProvider.GetRequiredService<IEmailSender<User>>();
 		var linkGenerator = endpoints.ServiceProvider.GetRequiredService<LinkGenerator>();
 
 		// We'll figure out a unique endpoint name based on the final route pattern during endpoint generation.
@@ -36,15 +36,15 @@ internal static class Identity
 		routeGroup.MapPost("/register", async Task<Results<Ok, ValidationProblem>> (
 			[FromBody] RegisterRequest registration,
 			HttpContext context,
-			[FromServices] UserManager<AppUser> userManager,
-			[FromServices] IUserStore<AppUser> userStore) =>
+			[FromServices] UserManager<User> userManager,
+			[FromServices] IUserStore<User> userStore) =>
 		{
 			if (!userManager.SupportsUserEmail)
 			{
 				throw new NotSupportedException($"{nameof(MapIdentityApi)} requires a user store with email support.");
 			}
 
-			var emailStore = (IUserEmailStore<AppUser>)userStore;
+			var emailStore = (IUserEmailStore<User>)userStore;
 			var email = registration.Email;
 
 			if (string.IsNullOrEmpty(email) || !emailAddressAttribute.IsValid(email))
@@ -52,7 +52,7 @@ internal static class Identity
 				return CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
 			}
 
-			var user = new AppUser();
+			var user = new User();
 			await userStore.SetUserNameAsync(user, email, CancellationToken.None);
 			await emailStore.SetEmailAsync(user, email, CancellationToken.None);
 			var result = await userManager.CreateAsync(user, registration.Password);
@@ -70,7 +70,7 @@ internal static class Identity
 			[FromBody] LoginRequest login,
 			[FromQuery] bool? useCookies,
 			[FromQuery] bool? useSessionCookies,
-			[FromServices] SignInManager<AppUser> signInManager) =>
+			[FromServices] SignInManager<User> signInManager) =>
 		{
 			var useCookieScheme = useCookies == true || useSessionCookies == true;
 			var isPersistent = useCookies == true && useSessionCookies != true;
@@ -106,7 +106,7 @@ internal static class Identity
 		routeGroup.MapPost("/refresh",
 			async Task<Results<Ok<AccessTokenResponse>, UnauthorizedHttpResult, SignInHttpResult, ChallengeHttpResult>> (
 				[FromBody] RefreshRequest refreshRequest,
-				[FromServices] SignInManager<AppUser> signInManager) =>
+				[FromServices] SignInManager<User> signInManager) =>
 			{
 				var refreshTokenProtector = bearerTokenOptions.Get(
 						IdentityConstants.BearerScheme)
@@ -129,7 +129,7 @@ internal static class Identity
 				[FromQuery] string userId,
 				[FromQuery] string code,
 				[FromQuery] string? changedEmail,
-				[FromServices] UserManager<AppUser> userManager) =>
+				[FromServices] UserManager<User> userManager) =>
 			{
 				if (await userManager.FindByIdAsync(userId) is not { } user)
 				{
@@ -182,7 +182,7 @@ internal static class Identity
 		routeGroup.MapPost("/resendConfirmationEmail", async Task<Ok> (
 			[FromBody] ResendConfirmationEmailRequest resendRequest,
 			HttpContext context,
-			[FromServices] UserManager<AppUser> userManager) =>
+			[FromServices] UserManager<User> userManager) =>
 		{
 			if (await userManager.FindByEmailAsync(resendRequest.Email) is not { } user)
 			{
@@ -195,7 +195,7 @@ internal static class Identity
 
 		routeGroup.MapPost("/forgotPassword", async Task<Results<Ok, ValidationProblem>> (
 			[FromBody] ForgotPasswordRequest resetRequest,
-			[FromServices] UserManager<AppUser> userManager) =>
+			[FromServices] UserManager<User> userManager) =>
 		{
 			var user = await userManager.FindByEmailAsync(resetRequest.Email);
 
@@ -215,7 +215,7 @@ internal static class Identity
 
 		routeGroup.MapPost("/resetPassword", async Task<Results<Ok, ValidationProblem>> (
 			[FromBody] ResetPasswordRequest resetRequest,
-			[FromServices] UserManager<AppUser> userManager) =>
+			[FromServices] UserManager<User> userManager) =>
 		{
 			var user = await userManager.FindByEmailAsync(resetRequest.Email);
 
@@ -250,7 +250,7 @@ internal static class Identity
 		accountGroup.MapPost("/2fa", async Task<Results<Ok<TwoFactorResponse>, ValidationProblem, NotFound>> (
 			ClaimsPrincipal claimsPrincipal,
 			[FromBody] TwoFactorRequest tfaRequest,
-			[FromServices] SignInManager<AppUser> signInManager) =>
+			[FromServices] SignInManager<User> signInManager) =>
 		{
 			var userManager = signInManager.UserManager;
 			if (await userManager.GetUserAsync(claimsPrincipal) is not { } user)
@@ -331,7 +331,7 @@ internal static class Identity
 
 		accountGroup.MapGet("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>> (
 			ClaimsPrincipal claimsPrincipal,
-			[FromServices] UserManager<AppUser> userManager) =>
+			[FromServices] UserManager<User> userManager) =>
 		{
 			if (await userManager.GetUserAsync(claimsPrincipal) is not { } user)
 			{
@@ -345,7 +345,7 @@ internal static class Identity
 			ClaimsPrincipal claimsPrincipal,
 			[FromBody] InfoRequest infoRequest,
 			HttpContext context,
-			[FromServices] UserManager<AppUser> userManager) =>
+			[FromServices] UserManager<User> userManager) =>
 		{
 			if (await userManager.GetUserAsync(claimsPrincipal) is not { } user)
 			{
@@ -391,8 +391,8 @@ internal static class Identity
 		return new IdentityEndpointsConventionBuilder(routeGroup);
 
 		async Task SendConfirmationEmailAsync(
-			AppUser user,
-			UserManager<AppUser> userManager,
+			User user,
+			UserManager<User> userManager,
 			HttpContext context,
 			string email,
 			bool isChange = false)
@@ -461,7 +461,7 @@ internal static class Identity
 		return TypedResults.ValidationProblem(errorDictionary);
 	}
 
-	private static async Task<InfoResponse> CreateInfoResponseAsync(AppUser user, UserManager<AppUser> userManager) =>
+	private static async Task<InfoResponse> CreateInfoResponseAsync(User user, UserManager<User> userManager) =>
 		new()
 		{
 			Email = await userManager.GetEmailAsync(user) ?? throw new NotSupportedException("Users must have an email."),

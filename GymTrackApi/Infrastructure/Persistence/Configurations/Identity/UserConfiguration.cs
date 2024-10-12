@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Identity;
 
-internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
+internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
-	public void Configure(EntityTypeBuilder<AppUser> builder)
+	public void Configure(EntityTypeBuilder<User> builder)
 	{
 		builder
 			.Property(u => u.Id)

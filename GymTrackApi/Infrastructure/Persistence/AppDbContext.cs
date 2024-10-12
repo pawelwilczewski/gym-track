@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
 
-internal sealed class AppDbContext : IdentityDbContext<AppUser, Role, Guid>
+internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 {
 	public AppDbContext() // for creating migrations
 		: base(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }

@@ -25,7 +25,7 @@ public static class DependencyInjection
 			.AddScoped<IDataContext, DataContext>();
 
 		services
-			.AddIdentityCore<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+			.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
 			.AddRoles<Role>()
 			.AddEntityFrameworkStores<AppDbContext>();
 

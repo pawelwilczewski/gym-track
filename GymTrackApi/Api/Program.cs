@@ -21,7 +21,7 @@ builder.Services
 	.AddInfrastructureDependencies(builder.Configuration);
 
 builder.Services
-	.AddIdentityApiEndpoints<AppUser>()
+	.AddIdentityApiEndpoints<User>()
 	.AddDefaultTokenProviders();
 
 var app = builder.Build();
