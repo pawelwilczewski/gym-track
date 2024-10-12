@@ -1,4 +1,5 @@
-using Domain.Models.User;
+using System.Reflection;
+using Domain.Models.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +17,27 @@ internal sealed class AppDbContext : IdentityDbContext<AppUser, Role, Guid>
 	{
 		base.OnModelCreating(builder);
 
-		builder.HasDefaultSchema("Identity");
+		builder.HasDefaultSchema(Schemas.IDENTITY);
 
 		AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-		builder.Entity<AppUser>()
-			.Property(u => u.Id)
-			.HasDefaultValueSql("uuid_generate_v4()");
+		builder.RegisterConfigurationsInAssembly();
+	}
+}
 
-		builder.Entity<Role>()
-			.Property(u => u.Id)
-			.HasDefaultValueSql("uuid_generate_v4()");
+public static class ModelBuilderExtensions
+{
+	public static void RegisterConfigurationsInAssembly(this ModelBuilder builder)
+	{
+		var typesToRegister = Assembly.GetExecutingAssembly()
+			.GetTypes()
+			.Where(type => type.BaseType is { IsGenericType: true }
+				&& type.BaseType.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>));
+
+		foreach (var type in typesToRegister)
+		{
+			dynamic configurationInstance = Activator.CreateInstance(type)!;
+			builder.ApplyConfiguration(configurationInstance);
+		}
 	}
 }

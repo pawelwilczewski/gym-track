@@ -1,5 +1,5 @@
 using Api.Routes;
-using Domain.Models.User;
+using Domain.Models.Identity;
 using Infrastructure;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;

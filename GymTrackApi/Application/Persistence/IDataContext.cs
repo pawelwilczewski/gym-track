@@ -1,4 +1,4 @@
-using Domain.Models.User;
+using Domain.Models.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Persistence;

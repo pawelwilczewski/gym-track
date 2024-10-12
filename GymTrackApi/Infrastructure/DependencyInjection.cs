@@ -1,5 +1,5 @@
 using Application.Persistence;
-using Domain.Models.User;
+using Domain.Models.Identity;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
