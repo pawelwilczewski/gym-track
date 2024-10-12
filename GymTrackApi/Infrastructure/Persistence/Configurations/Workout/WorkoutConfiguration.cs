@@ -17,6 +17,6 @@ internal sealed class WorkoutConfiguration : IEntityTypeConfiguration<Domain.Mod
 
 		builder
 			.Property(workout => workout.Id)
-			.HasConversion(id => id.Value, value => new Id<Domain.Models.Workout.Workout>(value));
+			.HasConversion(Id<Domain.Models.Workout.Workout>.Converter);
 	}
 }

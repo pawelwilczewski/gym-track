@@ -11,10 +11,10 @@ internal sealed class ExerciseInfoConfiguration : IEntityTypeConfiguration<Exerc
 	public void Configure(EntityTypeBuilder<ExerciseInfo> builder)
 	{
 		builder.ToTable("ExerciseInfos", Schemas.WORKOUT)
-			.HasKey(exercise => exercise.Id);
+			.HasKey(exerciseInfo => exerciseInfo.Id);
 
-		builder.Property(exercise => exercise.Id)
-			.HasConversion(id => id.Value, value => new Id<ExerciseInfo>(value));
+		builder.Property(exerciseInfo => exerciseInfo.Id)
+			.HasConversion(Id<ExerciseInfo>.Converter);
 
 		builder.Property(info => info.Name)
 			.HasMaxLength(50);
