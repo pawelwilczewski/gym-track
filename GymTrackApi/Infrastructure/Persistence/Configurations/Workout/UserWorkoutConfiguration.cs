@@ -21,6 +21,7 @@ internal sealed class UserWorkoutConfiguration : IEntityTypeConfiguration<UserWo
 
 		builder.HasOne(userWorkout => userWorkout.Workout)
 			.WithMany(workout => workout.UserWorkouts)
-			.HasForeignKey(userWorkout => userWorkout.WorkoutId);
+			.HasForeignKey(userWorkout => userWorkout.WorkoutId)
+			.OnDelete(DeleteBehavior.Restrict);
 	}
 }

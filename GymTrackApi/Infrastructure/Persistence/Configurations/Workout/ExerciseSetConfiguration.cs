@@ -26,7 +26,8 @@ internal sealed class ExerciseSetConfiguration : IEntityTypeConfiguration<Exerci
 			{
 				set.WorkoutId,
 				set.ExerciseIndex
-			});
+			})
+			.OnDelete(DeleteBehavior.Cascade);
 
 		builder.Property(exerciseSet => exerciseSet.Metric)
 			.HasConversion(
