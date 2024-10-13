@@ -25,9 +25,10 @@ internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 	{
 		base.OnModelCreating(builder);
 
-		builder.HasDefaultSchema(Schemas.IDENTITY);
-
+		ChangeTracker.LazyLoadingEnabled = false;
 		AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+		builder.HasDefaultSchema(Schemas.IDENTITY);
 
 		builder.RegisterConfigurationsInAssembly();
 	}
