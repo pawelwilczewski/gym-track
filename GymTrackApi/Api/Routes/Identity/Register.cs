@@ -26,9 +26,9 @@ internal sealed class Register : IEndpoint
 			var emailStore = (IUserEmailStore<User>)userStore;
 			var email = registration.Email;
 
-			if (string.IsNullOrEmpty(email) || !Identity.IsEmailValid(email))
+			if (string.IsNullOrEmpty(email) || !IdentityRoutes.IsEmailValid(email))
 			{
-				return Identity.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
+				return IdentityRoutes.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
 			}
 
 			var user = new User();
@@ -38,10 +38,10 @@ internal sealed class Register : IEndpoint
 
 			if (!result.Succeeded)
 			{
-				return Identity.CreateValidationProblem(result);
+				return IdentityRoutes.CreateValidationProblem(result);
 			}
 
-			await Identity.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
+			await IdentityRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
 			return TypedResults.Ok();
 		});
 

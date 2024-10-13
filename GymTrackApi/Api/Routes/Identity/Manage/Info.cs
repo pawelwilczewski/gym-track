@@ -20,7 +20,7 @@ internal sealed class Info : IEndpoint
 				return TypedResults.NotFound();
 			}
 
-			return TypedResults.Ok(await Identity.CreateInfoResponseAsync(user, userManager));
+			return TypedResults.Ok(await IdentityRoutes.CreateInfoResponseAsync(user, userManager));
 		});
 
 		builder.MapPost("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>> (
@@ -36,9 +36,9 @@ internal sealed class Info : IEndpoint
 				return TypedResults.NotFound();
 			}
 
-			if (!string.IsNullOrEmpty(infoRequest.NewEmail) && !Identity.IsEmailValid(infoRequest.NewEmail))
+			if (!string.IsNullOrEmpty(infoRequest.NewEmail) && !IdentityRoutes.IsEmailValid(infoRequest.NewEmail))
 			{
-				return Identity.CreateValidationProblem(IdentityResult.Failed(
+				return IdentityRoutes.CreateValidationProblem(IdentityResult.Failed(
 					userManager.ErrorDescriber.InvalidEmail(infoRequest.NewEmail)));
 			}
 
@@ -46,7 +46,7 @@ internal sealed class Info : IEndpoint
 			{
 				if (string.IsNullOrEmpty(infoRequest.OldPassword))
 				{
-					return Identity.CreateValidationProblem("OldPasswordRequired",
+					return IdentityRoutes.CreateValidationProblem("OldPasswordRequired",
 						"The old password is required to set a new password. "
 						+ "If the old password is forgotten, use /resetPassword.");
 				}
@@ -55,7 +55,7 @@ internal sealed class Info : IEndpoint
 					user, infoRequest.OldPassword, infoRequest.NewPassword);
 				if (!changePasswordResult.Succeeded)
 				{
-					return Identity.CreateValidationProblem(changePasswordResult);
+					return IdentityRoutes.CreateValidationProblem(changePasswordResult);
 				}
 			}
 
@@ -65,13 +65,13 @@ internal sealed class Info : IEndpoint
 
 				if (email != infoRequest.NewEmail)
 				{
-					await Identity.SendConfirmationEmailAsync(
+					await IdentityRoutes.SendConfirmationEmailAsync(
 						emailSender, user, userManager, context,
 						linkGenerator, infoRequest.NewEmail, true);
 				}
 			}
 
-			return TypedResults.Ok(await Identity.CreateInfoResponseAsync(user, userManager));
+			return TypedResults.Ok(await IdentityRoutes.CreateInfoResponseAsync(user, userManager));
 		});
 
 		return builder;

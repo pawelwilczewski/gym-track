@@ -4,7 +4,7 @@ namespace Domain.Models.Workout;
 
 public class ExerciseInfo
 {
-	public Id<ExerciseInfo> Id { get; set; }
+	public Id<ExerciseInfo> Id { get; set; } = Id<ExerciseInfo>.New();
 
 	public required string Name { get; set; }
 	public required FilePath ThumbnailImage { get; set; }

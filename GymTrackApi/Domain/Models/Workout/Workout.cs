@@ -2,7 +2,7 @@ namespace Domain.Models.Workout;
 
 public class Workout
 {
-	public Id<Workout> Id { get; set; }
+	public Id<Workout> Id { get; set; } = Id<Workout>.New();
 
 	public required string Name { get; set; }
 

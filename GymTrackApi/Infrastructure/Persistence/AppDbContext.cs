@@ -1,5 +1,6 @@
 using System.Reflection;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,13 @@ namespace Infrastructure.Persistence;
 
 internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 {
+	public DbSet<Workout> Workouts { get; private set; } = null!;
+	public DbSet<UserWorkout> UserWorkouts { get; private set; } = null!;
+	public DbSet<ExerciseInfo> ExerciseInfos { get; private set; } = null!;
+	public DbSet<ExerciseStepInfo> ExerciseStepInfos { get; private set; } = null!;
+	public DbSet<Exercise> Exercises { get; private set; } = null!;
+	public DbSet<ExerciseSet> ExerciseSets { get; private set; } = null!;
+
 	public AppDbContext() // for creating migrations
 		: base(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }
 

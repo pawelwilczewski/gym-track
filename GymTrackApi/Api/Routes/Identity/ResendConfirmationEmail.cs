@@ -22,7 +22,7 @@ internal sealed class ResendConfirmationEmail : IEndpoint
 				return TypedResults.Ok();
 			}
 
-			await Identity.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, resendRequest.Email);
+			await IdentityRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, resendRequest.Email);
 			return TypedResults.Ok();
 		});
 

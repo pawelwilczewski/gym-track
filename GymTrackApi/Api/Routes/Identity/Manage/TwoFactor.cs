@@ -26,14 +26,14 @@ internal sealed class TwoFactor : IEndpoint
 			{
 				if (tfaRequest.ResetSharedKey)
 				{
-					return Identity.CreateValidationProblem("CannotResetSharedKeyAndEnable",
+					return IdentityRoutes.CreateValidationProblem("CannotResetSharedKeyAndEnable",
 						"Resetting the 2fa shared key must disable 2fa until"
 						+ " a 2fa token based on the new shared key is validated.");
 				}
 
 				if (string.IsNullOrEmpty(tfaRequest.TwoFactorCode))
 				{
-					return Identity.CreateValidationProblem("RequiresTwoFactor",
+					return IdentityRoutes.CreateValidationProblem("RequiresTwoFactor",
 						"No 2fa token was provided by the request."
 						+ " A valid 2fa token is required to enable 2fa.");
 				}
@@ -41,7 +41,7 @@ internal sealed class TwoFactor : IEndpoint
 				if (!await userManager.VerifyTwoFactorTokenAsync(
 					user, userManager.Options.Tokens.AuthenticatorTokenProvider, tfaRequest.TwoFactorCode))
 				{
-					return Identity.CreateValidationProblem("InvalidTwoFactorCode",
+					return IdentityRoutes.CreateValidationProblem("InvalidTwoFactorCode",
 						"The 2fa token provided by the request was invalid."
 						+ " A valid 2fa token is required to enable 2fa.");
 				}

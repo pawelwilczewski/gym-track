@@ -22,7 +22,7 @@ internal sealed class ResetPassword : IEndpoint
 			{
 				// Don't reveal that the user does not exist or is not confirmed, so don't return a 200 if we
 				// returned a 400 for an invalid code given a valid user email.
-				return Identity.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidToken()));
+				return IdentityRoutes.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidToken()));
 			}
 
 			IdentityResult result;
@@ -38,7 +38,7 @@ internal sealed class ResetPassword : IEndpoint
 
 			if (!result.Succeeded)
 			{
-				return Identity.CreateValidationProblem(result);
+				return IdentityRoutes.CreateValidationProblem(result);
 			}
 
 			return TypedResults.Ok();

@@ -11,14 +11,14 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace Api.Routes.Identity;
 
-internal static class Identity
+internal static class IdentityRoutes
 {
 	internal static Func<object?, bool> IsEmailValid { get; } = new EmailAddressAttribute().IsValid;
 	internal static string ConfirmEmailEndpointName { get; set; } = null!;
 
-	public static IEndpointRouteBuilder MapIdentityApi(this IEndpointRouteBuilder endpoints)
+	public static IEndpointRouteBuilder MapIdentityRoutes(this IEndpointRouteBuilder builder)
 	{
-		var root = endpoints.MapGroup("");
+		var root = builder.MapGroup("");
 		root
 			.Map(new Login())
 			.Map(new Register())
@@ -33,7 +33,7 @@ internal static class Identity
 			.Map(new TwoFactor())
 			.Map(new Info());
 
-		return root;
+		return builder;
 	}
 
 	internal static ValidationProblem CreateValidationProblem(string errorCode, string errorDescription) =>
