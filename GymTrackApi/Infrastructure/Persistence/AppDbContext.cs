@@ -31,13 +31,22 @@ public static class ModelBuilderExtensions
 	{
 		var typesToRegister = Assembly.GetExecutingAssembly()
 			.GetTypes()
-			.Where(type => type.BaseType is { IsGenericType: true }
-				&& type.BaseType.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>));
+			.Where(type => type.GetInterfaces()
+				.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>)));
 
 		foreach (var type in typesToRegister)
 		{
-			dynamic configurationInstance = Activator.CreateInstance(type)!;
-			builder.ApplyConfiguration(configurationInstance);
+			var entityType = type.GetInterfaces()
+				.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>))
+				.GetGenericArguments()[0];
+
+			var applyConfigMethod = typeof(ModelBuilder)
+				.GetMethod(nameof(ModelBuilder.ApplyConfiguration))
+				?.MakeGenericMethod(entityType);
+
+			var configurationInstance = Activator.CreateInstance(type);
+
+			applyConfigMethod?.Invoke(builder, [configurationInstance]);
 		}
 	}
 }

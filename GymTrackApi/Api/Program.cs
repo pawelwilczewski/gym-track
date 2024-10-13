@@ -1,7 +1,9 @@
 using Api.Routes;
+using Application.Serialization;
 using Domain.Models.Identity;
 using Infrastructure;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,8 @@ builder.Services
 builder.Services
 	.AddIdentityApiEndpoints<User>()
 	.AddDefaultTokenProviders();
+
+builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Configure());
 
 var app = builder.Build();
 

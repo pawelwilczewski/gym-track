@@ -1,3 +1,4 @@
+using Domain.Models;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,8 +16,11 @@ internal sealed class UserWorkoutConfiguration : IEntityTypeConfiguration<UserWo
 				userWorkout.WorkoutId
 			});
 
+		builder.Property(userWorkout => userWorkout.WorkoutId)
+			.HasConversion(Id<Domain.Models.Workout.Workout>.Converter);
+
 		builder.HasOne(userWorkout => userWorkout.Workout)
 			.WithMany(workout => workout.UserWorkouts)
-			.HasForeignKey(userWorkout => userWorkout.UserId);
+			.HasForeignKey(userWorkout => userWorkout.WorkoutId);
 	}
 }

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Application.Serialization;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,5 +27,11 @@ internal sealed class ExerciseSetConfiguration : IEntityTypeConfiguration<Exerci
 				set.WorkoutId,
 				set.ExerciseIndex
 			});
+
+		builder.Property(exerciseSet => exerciseSet.Metric)
+			.HasConversion(
+				metric => JsonSerializer.Serialize(metric, JsonSettings.Options),
+				json => JsonSerializer.Deserialize<ExerciseMetric>(json, JsonSettings.Options)!)
+			.HasColumnType("jsonb");
 	}
 }
