@@ -5,5 +5,5 @@ namespace Domain.Models.Identity;
 
 public class User : IdentityUser<Guid>
 {
-	public virtual List<UserWorkout>? Workouts { get; set; }
+	public virtual List<UserWorkout> Workouts { get; set; } = [];
 }

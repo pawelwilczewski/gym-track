@@ -7,6 +7,6 @@ public class ExerciseStepInfo
 	public Id<ExerciseInfo> ExerciseInfoId { get; set; }
 	public int Index { get; set; }
 
-	public string? Description;
-	public OptionalFilePath ImageFile;
+	public string? Description { get; set; }
+	public OptionalFilePath ImageFile { get; set; }
 }

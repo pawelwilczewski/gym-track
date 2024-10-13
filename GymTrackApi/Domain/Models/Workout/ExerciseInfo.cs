@@ -10,11 +10,10 @@ public class ExerciseInfo
 	public required FilePath ThumbnailImage { get; set; }
 	public required string Description { get; set; }
 
-	public ExerciseMetricType AllowedMetricTypes { get; set; }
+	public required ExerciseMetricType AllowedMetricTypes { get; set; }
 
-	public virtual List<ExerciseStepInfo>? Steps { get; set; }
-
-	public virtual List<Exercise>? Exercises { get; set; }
+	public virtual List<ExerciseStepInfo> Steps { get; set; } = [];
+	public virtual List<Exercise> Exercises { get; set; } = [];
 }
 
 [Flags]
