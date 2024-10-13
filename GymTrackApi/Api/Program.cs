@@ -1,4 +1,5 @@
 using Api.Routes;
+using Api.Routes.Identity;
 using Application.Serialization;
 using Domain.Models.Identity;
 using Infrastructure;
@@ -40,7 +41,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapIdentityApi();
-app.MapUsers();
+app
+	.MapIdentityApi()
+	.MapUsers();
 
 app.Run();
