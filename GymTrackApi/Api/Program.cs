@@ -1,3 +1,4 @@
+using Api.Authorization;
 using Api.Routes.Identity;
 using Api.Routes.Workout;
 using Application.Serialization;
@@ -18,7 +19,8 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder()
+	.AddPolicies();
 
 builder.Services
 	.AddInfrastructureDependencies(builder.Configuration);
@@ -33,13 +35,15 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+	app.Services.ApplyMigrations();
+
 	app.UseSwagger();
 	app.UseSwaggerUI();
-
-	app.Services.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();
+
+await app.Services.AddRoles();
 
 app
 	.MapIdentityRoutes()
