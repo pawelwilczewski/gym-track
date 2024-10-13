@@ -34,7 +34,7 @@ internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 	}
 }
 
-public static class ModelBuilderExtensions
+internal static class ModelBuilderExtensions
 {
 	public static void RegisterConfigurationsInAssembly(this ModelBuilder builder)
 	{
