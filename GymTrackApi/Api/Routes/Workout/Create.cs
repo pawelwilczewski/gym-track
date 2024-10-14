@@ -29,7 +29,7 @@ internal sealed class Create : IEndpoint
 				}
 				else
 				{
-					var user = (await userManager.GetUserAsync(httpContext.User))!;
+					var user = (await userManager.GetUserAsync(httpContext.User).ConfigureAwait(false))!;
 
 					var workout = new Domain.Models.Workout.Workout
 					{
