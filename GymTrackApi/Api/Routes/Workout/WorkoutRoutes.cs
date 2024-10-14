@@ -6,8 +6,8 @@ internal static class WorkoutRoutes
 	{
 		var root = builder.MapGroup("workout");
 		root
-			.Map(new Create())
-			.Map(new Delete());
+			.Map(new CreateWorkout())
+			.Map(new DeleteWorkout());
 
 		return builder;
 	}

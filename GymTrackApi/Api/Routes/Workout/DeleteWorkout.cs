@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.Workout;
 
-internal sealed class Delete : IEndpoint
+internal sealed class DeleteWorkout : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{

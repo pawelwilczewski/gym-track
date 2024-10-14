@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Workout;
 
-internal sealed class Create : IEndpoint
+internal sealed class CreateWorkout : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapPost("/create", async (
 				HttpContext httpContext,
-				[FromBody] CreateWorkout createWorkout,
+				[FromBody] CreateWorkoutRequest createWorkout,
 				[FromServices] IDataContext dataContext,
 				[FromServices] UserManager<User> userManager,
 				[FromServices] RoleManager<Role> roleManager,
