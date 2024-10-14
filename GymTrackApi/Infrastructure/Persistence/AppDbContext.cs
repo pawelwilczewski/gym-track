@@ -15,17 +15,17 @@ internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 	public DbSet<Exercise> Exercises { get; private set; } = null!;
 	public DbSet<ExerciseSet> ExerciseSets { get; private set; } = null!;
 
-	public AppDbContext() // for creating migrations
-		: base(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }
-
 	public AppDbContext(DbContextOptions<AppDbContext> options)
-		: base(options) { }
+		: base(options) =>
+		ChangeTracker.LazyLoadingEnabled = false;
+
+	public AppDbContext() // for creating migrations
+		: this(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
 		base.OnModelCreating(builder);
 
-		ChangeTracker.LazyLoadingEnabled = false;
 		AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 		builder.HasDefaultSchema(Schemas.IDENTITY);
