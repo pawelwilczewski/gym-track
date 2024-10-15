@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +20,6 @@ internal sealed class DeleteWorkout : IEndpoint
 			HttpContext httpContext,
 			Guid id,
 			[FromServices] IDataContext dataContext,
-			[FromServices] UserManager<User> userManager,
-			[FromServices] RoleManager<Role> roleManager,
 			CancellationToken cancellationToken)
 		{
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);

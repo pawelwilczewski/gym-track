@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Workout;
@@ -14,7 +13,6 @@ internal sealed class CreateWorkout : IEndpoint
 				HttpContext httpContext,
 				[FromBody] CreateWorkoutRequest createWorkout,
 				[FromServices] IDataContext dataContext,
-				[FromServices] UserManager<User> userManager,
 				CancellationToken cancellationToken) =>
 			{
 				var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
