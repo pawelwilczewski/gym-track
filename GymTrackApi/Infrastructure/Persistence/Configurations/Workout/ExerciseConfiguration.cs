@@ -9,7 +9,7 @@ internal sealed class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
 	public void Configure(EntityTypeBuilder<Exercise> builder)
 	{
 		builder
-			.ToTable("WorkoutExercises", Schemas.WORKOUT)
+			.ToTable("Exercises", Schemas.WORKOUT)
 			.HasKey(exercise => new
 			{
 				exercise.WorkoutId,
