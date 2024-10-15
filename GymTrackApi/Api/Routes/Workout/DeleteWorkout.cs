@@ -29,6 +29,7 @@ internal sealed class DeleteWorkout : IEndpoint
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.UserWorkouts)
+				.ThenInclude(userWorkout => userWorkout.User)
 				.FirstOrDefaultAsync(
 					workout => workout.Id == workoutId,
 					cancellationToken)
@@ -36,22 +37,23 @@ internal sealed class DeleteWorkout : IEndpoint
 
 			if (workout is null) return TypedResults.NotFound();
 
-			// in case there are no user workouts associated,
-			// this is a template workout - can be only deleted by admins
-			if (workout.UserWorkouts.Count <= 0
-				&& !httpContext.User.IsInRole(Roles.ADMINISTRATOR))
-				return TypedResults.Unauthorized();
+			switch (workout.UserWorkouts)
+			{
+				// in case there are no user workouts associated,
+				// this is a template workout - can be only deleted by admins
+				case [] when !httpContext.User.IsInRole(Roles.ADMINISTRATOR): return TypedResults.Unauthorized();
+				case [var userWorkout]:
+				{
+					var user = await userManager.GetUserAsync(httpContext.User).ConfigureAwait(false);
+					if (userWorkout.User != user) return TypedResults.NotFound();
 
-			try
-			{
-				dataContext.Workouts.Remove(workout);
-				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+					break;
+				}
+				default: return TypedResults.BadRequest("Cannot delete shared workout");
 			}
-			catch (InvalidOperationException) // deletion could be restricted
-			{
-				return TypedResults.BadRequest(
-					"Delete all UserWorkout's referencing this workout, before deleting Workout! (rethink this?)");
-			}
+
+			dataContext.Workouts.Remove(workout);
+			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 			return TypedResults.Ok();
 		}
