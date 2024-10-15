@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -29,7 +29,6 @@ internal sealed class DeleteWorkout : IEndpoint
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.UserWorkouts)
-				.ThenInclude(userWorkout => userWorkout.User)
 				.FirstOrDefaultAsync(
 					workout => workout.Id == workoutId,
 					cancellationToken)
@@ -37,29 +36,19 @@ internal sealed class DeleteWorkout : IEndpoint
 
 			if (workout is null) return TypedResults.NotFound();
 
-			switch (workout.UserWorkouts)
+			switch (workout.CanDelete(httpContext.User))
 			{
-				// in case there are no user workouts associated,
-				// this is a template workout - can be only deleted by admins
-				case []:
+				case Domain.Models.Workout.Workout.CanDeleteResult.Yes:
 				{
-					if (!httpContext.User.IsInRole(Role.ADMINISTRATOR)) return TypedResults.Unauthorized();
-
-					break;
+					dataContext.Workouts.Remove(workout);
+					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+					return TypedResults.Ok();
 				}
-				case [var userWorkout]:
-				{
-					if (userWorkout.UserId != httpContext.User.GetUserId()) return TypedResults.NotFound();
-
-					break;
-				}
-				case [..]: return TypedResults.BadRequest("Cannot delete shared workout");
+				case Domain.Models.Workout.Workout.CanDeleteResult.Unauthorized:     return TypedResults.Unauthorized();
+				case Domain.Models.Workout.Workout.CanDeleteResult.NotFound:         return TypedResults.NotFound();
+				case Domain.Models.Workout.Workout.CanDeleteResult.CantDeleteShared: return TypedResults.BadRequest("Can't delete shared workout");
+				default:                                                             throw new UnreachableException();
 			}
-
-			dataContext.Workouts.Remove(workout);
-			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-			return TypedResults.Ok();
 		}
 	}
 }

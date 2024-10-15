@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Domain.Common;
+using Domain.Models.Identity;
 
 namespace Domain.Models.Workout;
 
@@ -14,14 +15,46 @@ public class Workout
 
 	private Workout(string name) => Name = name;
 
+	public CanDeleteResult CanDelete(ClaimsPrincipal user)
+	{
+		switch (UserWorkouts)
+		{
+			// in case there are no user workouts associated,
+			// this is a template workout - can be only deleted by admins
+			case []:
+			{
+				if (!user.IsInRole(Role.ADMINISTRATOR)) return CanDeleteResult.Unauthorized;
+
+				break;
+			}
+			case [var userWorkout]:
+			{
+				if (userWorkout.UserId != user.GetUserId()) return CanDeleteResult.NotFound;
+
+				break;
+			}
+			case [..]: return CanDeleteResult.CantDeleteShared;
+		}
+
+		return CanDeleteResult.Yes;
+	}
+
 	public static Workout CreateDefault(string name) => new(name);
 
-	public static Workout CreateForUser(string name, ClaimsPrincipal principal)
+	public static Workout CreateForUser(string name, ClaimsPrincipal user)
 	{
 		var workout = new Workout(name);
-		var userWorkout = new UserWorkout(principal.GetUserId(), workout.Id);
+		var userWorkout = new UserWorkout(user.GetUserId(), workout.Id);
 		workout.UserWorkouts.Add(userWorkout);
 
 		return workout;
+	}
+
+	public enum CanDeleteResult
+	{
+		Yes,
+		Unauthorized,
+		NotFound,
+		CantDeleteShared
 	}
 }
