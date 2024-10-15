@@ -14,6 +14,7 @@ public class ExerciseInfo
 
 	public virtual List<ExerciseStepInfo> Steps { get; set; } = [];
 	public virtual List<Exercise> Exercises { get; set; } = [];
+	public virtual List<UserExerciseInfo> UserExerciseInfos { get; set; } = [];
 }
 
 [Flags]
