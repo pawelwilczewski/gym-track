@@ -28,7 +28,7 @@ internal sealed class CreateWorkout : IEndpoint
 			}
 
 			var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-				? Domain.Models.Workout.Workout.CreateDefault(name)
+				? Domain.Models.Workout.Workout.CreateForEveryone(name)
 				: Domain.Models.Workout.Workout.CreateForUser(name, httpContext.User);
 
 			dataContext.Workouts.Add(workout);

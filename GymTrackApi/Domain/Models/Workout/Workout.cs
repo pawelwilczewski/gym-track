@@ -39,7 +39,7 @@ public class Workout
 		return CanDeleteResult.Yes;
 	}
 
-	public static Workout CreateDefault(Name name) => new(name);
+	public static Workout CreateForEveryone(Name name) => new(name);
 
 	public static Workout CreateForUser(Name name, ClaimsPrincipal user)
 	{
