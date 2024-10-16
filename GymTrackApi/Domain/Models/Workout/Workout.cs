@@ -8,12 +8,12 @@ public class Workout
 {
 	public Id<Workout> Id { get; set; } = Id<Workout>.New();
 
-	public string Name { get; private set; }
+	public Name Name { get; private set; }
 
 	public virtual List<UserWorkout> UserWorkouts { get; set; } = [];
 	public virtual List<Exercise> Exercises { get; set; } = [];
 
-	private Workout(string name) => Name = name;
+	private Workout(Name name) => Name = name;
 
 	public CanDeleteResult CanDelete(ClaimsPrincipal user)
 	{
@@ -39,9 +39,9 @@ public class Workout
 		return CanDeleteResult.Yes;
 	}
 
-	public static Workout CreateDefault(string name) => new(name);
+	public static Workout CreateDefault(Name name) => new(name);
 
-	public static Workout CreateForUser(string name, ClaimsPrincipal user)
+	public static Workout CreateForUser(Name name, ClaimsPrincipal user)
 	{
 		var workout = new Workout(name);
 		var userWorkout = new UserWorkout(user.GetUserId(), workout.Id);
