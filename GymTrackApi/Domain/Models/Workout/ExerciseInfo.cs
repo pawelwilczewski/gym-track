@@ -6,7 +6,8 @@ public class ExerciseInfo
 {
 	public Id<ExerciseInfo> Id { get; set; } = Id<ExerciseInfo>.New();
 
-	public required string Name { get; set; }
+	public Name Name { get; }
+
 	public required FilePath ThumbnailImage { get; set; }
 	public required string Description { get; set; }
 

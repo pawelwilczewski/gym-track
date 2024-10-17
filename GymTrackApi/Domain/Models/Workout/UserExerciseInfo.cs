@@ -4,9 +4,15 @@ namespace Domain.Models.Workout;
 
 public class UserExerciseInfo
 {
-	public Guid UserId { get; set; }
-	public Id<ExerciseInfo> ExerciseInfoId { get; set; }
+	public Guid UserId { get; private set; }
+	public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
 
-	public virtual required User User { get; set; }
-	public virtual required ExerciseInfo ExerciseInfo { get; set; }
+	public virtual User User { get; private set; } = default!;
+	public virtual ExerciseInfo ExerciseInfo { get; private set; } = default!;
+
+	public UserExerciseInfo(Guid userId, Id<ExerciseInfo> exerciseInfoId)
+	{
+		UserId = userId;
+		ExerciseInfoId = exerciseInfoId;
+	}
 }

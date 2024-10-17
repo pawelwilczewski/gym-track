@@ -2,20 +2,22 @@ using System.Security.Claims;
 using Domain.Common;
 using Domain.Models.Identity;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
+
 namespace Domain.Models.Workout;
 
 public class Workout
 {
-	public Id<Workout> Id { get; set; } = Id<Workout>.New();
+	public Id<Workout> Id { get; private set; } = Id<Workout>.New();
 
-	public Name Name { get; private set; }
+	public Name Name { get; set; }
 
-	public virtual List<UserWorkout> UserWorkouts { get; set; } = [];
-	public virtual List<Exercise> Exercises { get; set; } = [];
+	public virtual List<UserWorkout> UserWorkouts { get; private set; } = [];
+	public virtual List<Exercise> Exercises { get; private set; } = [];
 
 	private Workout(Name name) => Name = name;
 
-	public CanDeleteResult CanDelete(ClaimsPrincipal user)
+	public CanModifyResult CanDeleteOrModify(ClaimsPrincipal user)
 	{
 		switch (UserWorkouts)
 		{
@@ -23,20 +25,20 @@ public class Workout
 			// this is a template workout - can be only deleted by admins
 			case []:
 			{
-				if (!user.IsInRole(Role.ADMINISTRATOR)) return CanDeleteResult.Unauthorized;
+				if (!user.IsInRole(Role.ADMINISTRATOR)) return CanModifyResult.Unauthorized;
 
 				break;
 			}
 			case [var userWorkout]:
 			{
-				if (userWorkout.UserId != user.GetUserId()) return CanDeleteResult.NotFound;
+				if (userWorkout.UserId != user.GetUserId()) return CanModifyResult.NotFound;
 
 				break;
 			}
-			case [..]: return CanDeleteResult.CantDeleteShared;
+			case [..]: return CanModifyResult.ProhibitShared;
 		}
 
-		return CanDeleteResult.Yes;
+		return CanModifyResult.Yes;
 	}
 
 	public static Workout CreateForEveryone(Name name) => new(name);
@@ -50,11 +52,11 @@ public class Workout
 		return workout;
 	}
 
-	public enum CanDeleteResult
+	public enum CanModifyResult
 	{
 		Yes,
 		Unauthorized,
 		NotFound,
-		CantDeleteShared
+		ProhibitShared
 	}
 }

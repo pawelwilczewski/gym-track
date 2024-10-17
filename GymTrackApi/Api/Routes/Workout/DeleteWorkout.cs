@@ -11,7 +11,7 @@ internal sealed class DeleteWorkout : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("/delete/{id:guid}", Delete)
+		builder.MapDelete("/{id:guid}", Delete)
 			.RequireAuthorization();
 
 		return builder;
@@ -32,18 +32,18 @@ internal sealed class DeleteWorkout : IEndpoint
 
 			if (workout is null) return TypedResults.NotFound();
 
-			switch (workout.CanDelete(httpContext.User))
+			switch (workout.CanDeleteOrModify(httpContext.User))
 			{
-				case Domain.Models.Workout.Workout.CanDeleteResult.Yes:
+				case Domain.Models.Workout.Workout.CanModifyResult.Yes:
 				{
 					dataContext.Workouts.Remove(workout);
 					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 					return TypedResults.Ok();
 				}
-				case Domain.Models.Workout.Workout.CanDeleteResult.Unauthorized:     return TypedResults.Unauthorized();
-				case Domain.Models.Workout.Workout.CanDeleteResult.NotFound:         return TypedResults.NotFound();
-				case Domain.Models.Workout.Workout.CanDeleteResult.CantDeleteShared: return TypedResults.BadRequest("Can't delete shared workout");
-				default:                                                             throw new UnreachableException();
+				case Domain.Models.Workout.Workout.CanModifyResult.Unauthorized:   return TypedResults.Unauthorized();
+				case Domain.Models.Workout.Workout.CanModifyResult.NotFound:       return TypedResults.NotFound();
+				case Domain.Models.Workout.Workout.CanModifyResult.ProhibitShared: return TypedResults.BadRequest("Can't delete shared workout");
+				default:                                                           throw new UnreachableException();
 			}
 		}
 	}
