@@ -1,3 +1,4 @@
+using Domain.Validation;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Models;
@@ -10,15 +11,21 @@ public readonly record struct Name
 
 	private Name(string value) => Value = value;
 
-	public static bool TryCreate(string value, out Name name)
+	public static TextValidationResult TryCreate(string value, out Name name)
 	{
 		name = default;
-		if (string.IsNullOrWhiteSpace(value)) return false;
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			return new TextValidationResult.Invalid("Name cannot be empty.");
+		}
 
 		value = value.Trim();
-		if (value.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c))) return false;
+		if (value.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c)))
+		{
+			return new TextValidationResult.Invalid("Name can't be just punctuation.");
+		}
 
 		name = new Name(value);
-		return true;
+		return new TextValidationResult.Success();
 	}
 }
