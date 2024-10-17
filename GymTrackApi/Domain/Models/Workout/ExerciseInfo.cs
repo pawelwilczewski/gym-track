@@ -4,18 +4,28 @@ namespace Domain.Models.Workout;
 
 public class ExerciseInfo
 {
-	public Id<ExerciseInfo> Id { get; set; } = Id<ExerciseInfo>.New();
+	public Id<ExerciseInfo> Id { get; private set; } = Id<ExerciseInfo>.New();
 
-	public Name Name { get; }
+	public Name Name { get; private set; }
 
-	public required FilePath ThumbnailImage { get; set; }
-	public required string Description { get; set; }
+	public FilePath ThumbnailImage { get; private set; }
+	public Description Description { get; private set; }
 
-	public required ExerciseMetricType AllowedMetricTypes { get; set; }
+	public ExerciseMetricType AllowedMetricTypes { get; private set; }
 
-	public virtual List<ExerciseStepInfo> Steps { get; set; } = [];
-	public virtual List<Exercise> Exercises { get; set; } = [];
-	public virtual List<UserExerciseInfo> UserExerciseInfos { get; set; } = [];
+	public virtual List<ExerciseStepInfo> Steps { get; private set; } = [];
+	public virtual List<Exercise> Exercises { get; private set; } = [];
+	public virtual List<UserExerciseInfo> UserExerciseInfos { get; private set; } = [];
+
+	public ExerciseInfo() { }
+
+	public ExerciseInfo(Name name, FilePath thumbnailImage, Description description, ExerciseMetricType allowedMetricTypes)
+	{
+		Name = name;
+		ThumbnailImage = thumbnailImage;
+		Description = description;
+		AllowedMetricTypes = allowedMetricTypes;
+	}
 }
 
 [Flags]

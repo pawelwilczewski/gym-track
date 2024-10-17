@@ -17,6 +17,17 @@ public class Workout
 
 	private Workout(Name name) => Name = name;
 
+	public static Workout CreateForEveryone(Name name) => new(name);
+
+	public static Workout CreateForUser(Name name, ClaimsPrincipal user)
+	{
+		var workout = new Workout(name);
+		var userWorkout = new UserWorkout(user.GetUserId(), workout.Id);
+		workout.UserWorkouts.Add(userWorkout);
+
+		return workout;
+	}
+
 	public CanModifyResult CanDeleteOrModify(ClaimsPrincipal user)
 	{
 		switch (UserWorkouts)
@@ -39,17 +50,6 @@ public class Workout
 		}
 
 		return CanModifyResult.Yes;
-	}
-
-	public static Workout CreateForEveryone(Name name) => new(name);
-
-	public static Workout CreateForUser(Name name, ClaimsPrincipal user)
-	{
-		var workout = new Workout(name);
-		var userWorkout = new UserWorkout(user.GetUserId(), workout.Id);
-		workout.UserWorkouts.Add(userWorkout);
-
-		return workout;
 	}
 
 	public enum CanModifyResult

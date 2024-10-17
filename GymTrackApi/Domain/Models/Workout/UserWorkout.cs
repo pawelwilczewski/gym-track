@@ -10,6 +10,8 @@ public class UserWorkout
 	public virtual User User { get; private set; } = default!;
 	public virtual Workout Workout { get; private set; } = default!;
 
+	public UserWorkout() { }
+
 	public UserWorkout(Guid userId, Id<Workout> workoutId)
 	{
 		UserId = userId;

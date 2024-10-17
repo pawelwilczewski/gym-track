@@ -9,12 +9,13 @@ public class ExerciseStepInfo
 
 	public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
-	public string? Description { get; private set; }
+	public Description Description { get; private set; }
 	public OptionalFilePath ImageFile { get; private set; }
 
+	// ReSharper disable once UnusedMember.Local
 	private ExerciseStepInfo() { }
 
-	public ExerciseStepInfo(Id<ExerciseInfo> exerciseInfoId, int index, string? description, OptionalFilePath imageFile)
+	public ExerciseStepInfo(Id<ExerciseInfo> exerciseInfoId, int index, Description description, OptionalFilePath imageFile)
 	{
 		ExerciseInfoId = exerciseInfoId;
 		Index = index;

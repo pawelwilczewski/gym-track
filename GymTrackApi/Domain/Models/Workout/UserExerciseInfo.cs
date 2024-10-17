@@ -10,6 +10,9 @@ public class UserExerciseInfo
 	public virtual User User { get; private set; } = default!;
 	public virtual ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
+	// ReSharper disable once UnusedMember.Local
+	private UserExerciseInfo() { }
+
 	public UserExerciseInfo(Guid userId, Id<ExerciseInfo> exerciseInfoId)
 	{
 		UserId = userId;
