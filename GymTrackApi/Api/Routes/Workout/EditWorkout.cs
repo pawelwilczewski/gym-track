@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
+using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +25,9 @@ internal sealed class EditWorkout : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken)
 		{
-			if (!Name.TryCreate(editWorkout.Name, out var name))
+			if (Name.TryCreate(editWorkout.Name, out var name) is TextValidationResult.Invalid invalid)
 			{
-				return TypedResults.BadRequest("Invalid workout name");
+				return TypedResults.BadRequest(invalid.Error);
 			}
 
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);

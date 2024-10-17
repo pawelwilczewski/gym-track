@@ -2,6 +2,7 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,9 +23,9 @@ internal sealed class CreateWorkout : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken)
 		{
-			if (!Name.TryCreate(createWorkout.Name, out var name))
+			if (Name.TryCreate(createWorkout.Name, out var name) is TextValidationResult.Invalid invalid)
 			{
-				return TypedResults.BadRequest("Invalid workout name");
+				return TypedResults.BadRequest(invalid.Error);
 			}
 
 			var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)

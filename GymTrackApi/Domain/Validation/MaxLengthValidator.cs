@@ -2,7 +2,7 @@ namespace Domain.Validation;
 
 internal readonly record struct MaxLengthValidator : IValidator
 {
-	private int Length { get; }
+	public int Length { get; }
 
 	public MaxLengthValidator(int length) => Length = length > 0
 		? length

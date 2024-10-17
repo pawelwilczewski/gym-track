@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Domain.Validation;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -10,16 +11,22 @@ public record struct Description
 		value => Deserialize(value));
 
 	private string Value { get; set; }
-	private int MaxLength { get; set; }
+	private MaxLengthValidator MaxLengthValidator { get; set; }
 
 	public TextValidationResult Set(string value)
 	{
 		value = value.Trim();
 
-		if (value.Length > MaxLength) return new TextValidationResult.Invalid($"Description too long (max {MaxLength} characters)");
-
-		Value = value;
-		return new TextValidationResult.Success();
+		switch (MaxLengthValidator.Validate(value))
+		{
+			case TextValidationResult.Invalid invalid: return invalid;
+			case TextValidationResult.Success:
+			{
+				Value = value;
+				return new TextValidationResult.Success();
+			}
+			default: throw new UnreachableException();
+		}
 	}
 
 	public static TextValidationResult TryCreate(string value, int maxLength, out Description description)
@@ -27,20 +34,20 @@ public record struct Description
 		description = default;
 		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0.");
 
-		description.MaxLength = maxLength;
+		description.MaxLengthValidator = new MaxLengthValidator(maxLength);
 
 		return description.Set(value);
 	}
 
 	private static string Serialize(Description description) =>
-		$"{description.MaxLength}|{description.Value}";
+		$"{description.MaxLengthValidator.Length}|{description.Value}";
 
 	private static Description Deserialize(string value)
 	{
 		var split = value.Split('|', 2);
 		return new Description
 		{
-			MaxLength = int.Parse(split[0]),
+			MaxLengthValidator = new MaxLengthValidator(int.Parse(split[0])),
 			Value = split[1]
 		};
 	}
