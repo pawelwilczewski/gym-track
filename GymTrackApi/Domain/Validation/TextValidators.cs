@@ -4,13 +4,17 @@ public delegate TextValidationResult TextValidator(string text);
 
 public static class TextValidators
 {
-	private static TextValidationResult NotEmptyOrWhitespace(string text) => string.IsNullOrWhiteSpace(text)
-		? new TextValidationResult.Invalid("Text cannot be empty or whitespace.")
+	private static TextValidationResult NotNull(string? text) => text == null
+		? new TextValidationResult.Invalid("Text is required.")
+		: new TextValidationResult.Success();
+
+	private static TextValidationResult NotNullOrWhitespace(string text) => string.IsNullOrWhiteSpace(text)
+		? new TextValidationResult.Invalid("Text cannot be empty.")
 		: new TextValidationResult.Success();
 
 	private static TextValidationResult MaxLength(string text, int maxLength)
 	{
-		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0.");
+		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0 (internal error).");
 
 		return text.Length > maxLength
 			? new TextValidationResult.Invalid($"Text too long (max {maxLength} characters).")
@@ -24,12 +28,18 @@ public static class TextValidators
 
 	public static TextValidationResult Name(string text)
 	{
-		if (NotEmptyOrWhitespace(text) is TextValidationResult.Invalid invalid1) return invalid1;
+		if (NotNullOrWhitespace(text) is TextValidationResult.Invalid invalid1) return invalid1;
 		if (MaxLength(text, Models.Name.MAX_LENGTH) is TextValidationResult.Invalid invalid2) return invalid2;
 		if (NotJustPunctuation(text) is TextValidationResult.Invalid invalid3) return invalid3;
 
 		return new TextValidationResult.Success();
 	}
 
-	public static TextValidationResult Description(string text) => MaxLength(text, Models.Description.MAX_LENGTH);
+	public static TextValidationResult Description(string text)
+	{
+		if (NotNull(text) is TextValidationResult.Invalid invalid1) return invalid1;
+		if (MaxLength(text, Models.Description.MAX_LENGTH) is TextValidationResult.Invalid invalid2) return invalid2;
+
+		return new TextValidationResult.Success();
+	}
 }

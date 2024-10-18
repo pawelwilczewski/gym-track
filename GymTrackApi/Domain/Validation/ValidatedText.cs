@@ -28,14 +28,12 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>, new()
 
 	public TextValidationResult Set(string value)
 	{
-		value = value.Trim();
-
 		switch (Validator(value))
 		{
 			case TextValidationResult.Invalid invalid: return invalid;
 			case TextValidationResult.Success:
 			{
-				Value = value;
+				Value = value.Trim();
 				return new TextValidationResult.Success();
 			}
 			default: throw new UnreachableException();
