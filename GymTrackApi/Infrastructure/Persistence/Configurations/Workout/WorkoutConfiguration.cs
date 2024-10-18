@@ -1,4 +1,5 @@
 using Domain.Models;
+using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,7 +17,6 @@ internal sealed class WorkoutConfiguration : IEntityTypeConfiguration<Domain.Mod
 			.Property(workout => workout.Id)
 			.HasConversion(Id<Domain.Models.Workout.Workout>.Converter);
 
-		builder.Property(workout => workout.Name)
-			.HasConversion(Name.Converter);
+		builder.Property(workout => workout.Name).ConfigureName();
 	}
 }

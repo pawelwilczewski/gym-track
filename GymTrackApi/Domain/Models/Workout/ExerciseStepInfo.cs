@@ -12,7 +12,6 @@ public class ExerciseStepInfo
 	public Description Description { get; private set; }
 	public OptionalFilePath ImageFile { get; private set; }
 
-	// ReSharper disable once UnusedMember.Local
 	private ExerciseStepInfo() { }
 
 	public ExerciseStepInfo(Id<ExerciseInfo> exerciseInfoId, int index, Description description, OptionalFilePath imageFile)

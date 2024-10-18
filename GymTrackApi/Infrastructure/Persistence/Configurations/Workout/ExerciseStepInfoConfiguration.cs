@@ -1,4 +1,3 @@
-using Domain.Models;
 using Domain.Models.Workout;
 using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +17,7 @@ internal sealed class ExerciseStepInfoConfiguration : IEntityTypeConfiguration<E
 				step.Index
 			});
 
-		builder.Property(step => step.Description)
-			.HasConversion(Description.Converter);
+		builder.Property(step => step.Description).ConfigureDescription();
 
 		builder.ComplexProperty(step => step.ImageFile)
 			.Configure(new OptionalFilePathConfiguration());

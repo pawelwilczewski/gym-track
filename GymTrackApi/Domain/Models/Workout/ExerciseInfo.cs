@@ -17,7 +17,7 @@ public class ExerciseInfo
 	public virtual List<Exercise> Exercises { get; private set; } = [];
 	public virtual List<UserExerciseInfo> UserExerciseInfos { get; private set; } = [];
 
-	public ExerciseInfo() { }
+	private ExerciseInfo() { }
 
 	public ExerciseInfo(Name name, FilePath thumbnailImage, Description description, ExerciseMetricType allowedMetricTypes)
 	{
