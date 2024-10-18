@@ -1,31 +1,55 @@
+using System.Diagnostics;
 using Domain.Validation;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Models;
 
-public readonly record struct Name
+public record struct Name
 {
-	public static ValueConverter<Name, string> Converter { get; } = new(name => name.Value, value => new Name(value));
+	public static ValueConverter<Name, string> Converter { get; } = new(
+		description => Serialize(description),
+		value => Deserialize(value));
 
-	private string Value { get; }
+	private string Value { get; set; }
 
-	private Name(string value) => Value = value;
+	private NameValidator Validator { get; set; }
 
-	public static TextValidationResult TryCreate(string value, out Name name)
+	public TextValidationResult Set(string value)
+	{
+		value = value.Trim();
+
+		switch (Validator.Validate(value))
+		{
+			case TextValidationResult.Invalid invalid: return invalid;
+			case TextValidationResult.Success:
+			{
+				Value = value;
+				return new TextValidationResult.Success();
+			}
+			default: throw new UnreachableException();
+		}
+	}
+
+	public static TextValidationResult TryCreate(string value, int maxLength, out Name name)
 	{
 		name = default;
-		if (string.IsNullOrWhiteSpace(value))
-		{
-			return new TextValidationResult.Invalid("Name cannot be empty.");
-		}
+		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0.");
 
-		value = value.Trim();
-		if (value.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c)))
-		{
-			return new TextValidationResult.Invalid("Name can't be just punctuation.");
-		}
+		name.Validator = new NameValidator(maxLength);
 
-		name = new Name(value);
-		return new TextValidationResult.Success();
+		return name.Set(value);
+	}
+
+	private static string Serialize(Name name) =>
+		$"{name.Validator.MaxLength}|{name.Value}";
+
+	private static Name Deserialize(string value)
+	{
+		var split = value.Split('|', 2);
+		return new Name
+		{
+			Validator = new NameValidator(int.Parse(split[0])),
+			Value = split[1]
+		};
 	}
 }

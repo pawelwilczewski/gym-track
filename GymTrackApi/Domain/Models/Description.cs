@@ -11,13 +11,14 @@ public record struct Description
 		value => Deserialize(value));
 
 	private string Value { get; set; }
-	private MaxLengthValidator MaxLengthValidator { get; set; }
+
+	private DescriptionValidator Validator { get; set; }
 
 	public TextValidationResult Set(string value)
 	{
 		value = value.Trim();
 
-		switch (MaxLengthValidator.Validate(value))
+		switch (Validator.Validate(value))
 		{
 			case TextValidationResult.Invalid invalid: return invalid;
 			case TextValidationResult.Success:
@@ -34,20 +35,20 @@ public record struct Description
 		description = default;
 		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0.");
 
-		description.MaxLengthValidator = new MaxLengthValidator(maxLength);
+		description.Validator = new DescriptionValidator(maxLength);
 
 		return description.Set(value);
 	}
 
 	private static string Serialize(Description description) =>
-		$"{description.MaxLengthValidator.Length}|{description.Value}";
+		$"{description.Validator.MaxLength}|{description.Value}";
 
 	private static Description Deserialize(string value)
 	{
 		var split = value.Split('|', 2);
 		return new Description
 		{
-			MaxLengthValidator = new MaxLengthValidator(int.Parse(split[0])),
+			Validator = new DescriptionValidator(int.Parse(split[0])),
 			Value = split[1]
 		};
 	}

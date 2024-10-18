@@ -1,6 +1,6 @@
 namespace Domain.Validation;
 
-public interface IValidator
+public interface ITextValidator
 {
 	TextValidationResult Validate(string text);
 }

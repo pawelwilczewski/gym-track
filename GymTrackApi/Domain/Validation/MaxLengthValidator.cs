@@ -1,6 +1,6 @@
 namespace Domain.Validation;
 
-internal readonly record struct MaxLengthValidator : IValidator
+internal readonly record struct MaxLengthValidator : ITextValidator
 {
 	public int Length { get; }
 
