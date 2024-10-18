@@ -2,18 +2,16 @@ namespace Domain.Validation;
 
 public readonly record struct NameValidator : ITextValidator
 {
-	public int MaxLength => maxLengthValidator.Length;
+	private const int MAX_LENGTH = 50;
 
 	private readonly NotEmptyOrWhitespaceValidator notEmptyOrWhitespaceValidator;
 	private readonly MaxLengthValidator maxLengthValidator;
 	private readonly NotJustPunctuationValidator notJustPunctuationValidator;
 
-	public NameValidator(int maxLength)
+	public NameValidator()
 	{
-		ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maxLength, 0, nameof(maxLength));
-
 		notEmptyOrWhitespaceValidator = new NotEmptyOrWhitespaceValidator();
-		maxLengthValidator = new MaxLengthValidator(maxLength);
+		maxLengthValidator = new MaxLengthValidator(MAX_LENGTH);
 		notJustPunctuationValidator = new NotJustPunctuationValidator();
 	}
 

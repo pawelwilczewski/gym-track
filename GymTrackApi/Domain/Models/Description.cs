@@ -7,12 +7,18 @@ namespace Domain.Models;
 public record struct Description
 {
 	public static ValueConverter<Description, string> Converter { get; } = new(
-		description => Serialize(description),
-		value => Deserialize(value));
+		description => description.Value,
+		value => new Description(value));
 
 	private string Value { get; set; }
 
-	private DescriptionValidator Validator { get; set; }
+	private DescriptionValidator Validator { get; }
+
+	private Description(string value)
+	{
+		Value = value;
+		Validator = new DescriptionValidator();
+	}
 
 	public TextValidationResult Set(string value)
 	{
@@ -30,26 +36,9 @@ public record struct Description
 		}
 	}
 
-	public static TextValidationResult TryCreate(string value, int maxLength, out Description description)
+	public static TextValidationResult TryCreate(string value, out Description description)
 	{
-		description = default;
-		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0.");
-
-		description.Validator = new DescriptionValidator(maxLength);
-
+		description = new Description();
 		return description.Set(value);
-	}
-
-	private static string Serialize(Description description) =>
-		$"{description.Validator.MaxLength}|{description.Value}";
-
-	private static Description Deserialize(string value)
-	{
-		var split = value.Split('|', 2);
-		return new Description
-		{
-			Validator = new DescriptionValidator(int.Parse(split[0])),
-			Value = split[1]
-		};
 	}
 }

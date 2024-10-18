@@ -2,16 +2,11 @@ namespace Domain.Validation;
 
 public readonly record struct DescriptionValidator : ITextValidator
 {
-	public int MaxLength => maxLengthValidator.Length;
+	private const int MAX_LENGTH = 2000;
 
 	private readonly MaxLengthValidator maxLengthValidator;
 
-	public DescriptionValidator(int maxLength)
-	{
-		ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(maxLength, 0, nameof(maxLength));
-
-		maxLengthValidator = new MaxLengthValidator(maxLength);
-	}
+	public DescriptionValidator() => maxLengthValidator = new MaxLengthValidator(MAX_LENGTH);
 
 	public TextValidationResult Validate(string text) => maxLengthValidator.Validate(text);
 }

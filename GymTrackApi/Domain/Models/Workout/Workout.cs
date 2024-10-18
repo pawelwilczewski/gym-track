@@ -10,7 +10,7 @@ public class Workout
 {
 	public Id<Workout> Id { get; private set; } = Id<Workout>.New();
 
-	public Name Name { get; set; }
+	public Name Name { get; private set; }
 
 	public virtual List<UserWorkout> UserWorkouts { get; private set; } = [];
 	public virtual List<Exercise> Exercises { get; private set; } = [];

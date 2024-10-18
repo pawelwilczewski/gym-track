@@ -25,11 +25,6 @@ internal sealed class EditWorkout : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken)
 		{
-			if (Name.TryCreate(editWorkout.Name, out var name) is TextValidationResult.Invalid invalid)
-			{
-				return TypedResults.BadRequest(invalid.Error);
-			}
-
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.UserWorkouts)
@@ -44,7 +39,11 @@ internal sealed class EditWorkout : IEndpoint
 			{
 				case Domain.Models.Workout.Workout.CanModifyResult.Yes:
 				{
-					workout.Name = name;
+					if (workout.Name.Set(editWorkout.Name) is TextValidationResult.Invalid invalid)
+					{
+						return TypedResults.BadRequest(invalid.Error);
+					}
+
 					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 					return TypedResults.Ok();
 				}
