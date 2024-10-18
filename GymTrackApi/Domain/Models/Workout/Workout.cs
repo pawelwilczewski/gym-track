@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Domain.Common;
+using Domain.Models.Common;
 using Domain.Models.Identity;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -36,27 +37,19 @@ public class Workout
 			// this is a template workout - can be only deleted by admins
 			case []:
 			{
-				if (!user.IsInRole(Role.ADMINISTRATOR)) return CanModifyResult.Unauthorized;
+				if (!user.IsInRole(Role.ADMINISTRATOR)) return new CanModifyResult.Unauthorized();
 
 				break;
 			}
 			case [var userWorkout]:
 			{
-				if (userWorkout.UserId != user.GetUserId()) return CanModifyResult.NotFound;
+				if (userWorkout.UserId != user.GetUserId()) return new CanModifyResult.NotFound();
 
 				break;
 			}
-			case [..]: return CanModifyResult.ProhibitShared;
+			case [..]: return new CanModifyResult.ProhibitShared();
 		}
 
-		return CanModifyResult.Yes;
-	}
-
-	public enum CanModifyResult
-	{
-		Yes,
-		Unauthorized,
-		NotFound,
-		ProhibitShared
+		return new CanModifyResult.Ok();
 	}
 }

@@ -1,7 +1,6 @@
-using System.Diagnostics;
+using Api.Common;
 using Application.Persistence;
 using Domain.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +15,7 @@ internal sealed class DeleteWorkout : IEndpoint
 
 		return builder;
 
-		async Task<Results<Ok, NotFound, UnauthorizedHttpResult, BadRequest<string>>> Delete(
+		async Task<IResult> Delete(
 			HttpContext httpContext,
 			Guid id,
 			[FromServices] IDataContext dataContext,
@@ -32,19 +31,13 @@ internal sealed class DeleteWorkout : IEndpoint
 
 			if (workout is null) return TypedResults.NotFound();
 
-			switch (workout.CanDeleteOrModify(httpContext.User))
-			{
-				case Domain.Models.Workout.Workout.CanModifyResult.Yes:
+			return await workout.CanDeleteOrModify(httpContext.User)
+				.ToResult(async () =>
 				{
 					dataContext.Workouts.Remove(workout);
 					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 					return TypedResults.Ok();
-				}
-				case Domain.Models.Workout.Workout.CanModifyResult.Unauthorized:   return TypedResults.Unauthorized();
-				case Domain.Models.Workout.Workout.CanModifyResult.NotFound:       return TypedResults.NotFound();
-				case Domain.Models.Workout.Workout.CanModifyResult.ProhibitShared: return TypedResults.BadRequest("Can't delete shared workout");
-				default:                                                           throw new UnreachableException();
-			}
+				});
 		}
 	}
 }

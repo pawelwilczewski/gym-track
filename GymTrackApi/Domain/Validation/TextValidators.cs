@@ -25,11 +25,11 @@ public static class TextValidators
 	public static TextValidationResult Name(string text)
 	{
 		if (NotEmptyOrWhitespace(text) is TextValidationResult.Invalid invalid1) return invalid1;
-		if (MaxLength(text, 50) is TextValidationResult.Invalid invalid2) return invalid2;
+		if (MaxLength(text, Models.Name.MAX_LENGTH) is TextValidationResult.Invalid invalid2) return invalid2;
 		if (NotJustPunctuation(text) is TextValidationResult.Invalid invalid3) return invalid3;
 
 		return new TextValidationResult.Success();
 	}
 
-	public static TextValidationResult Description(string text) => MaxLength(text, 2000);
+	public static TextValidationResult Description(string text) => MaxLength(text, Models.Description.MAX_LENGTH);
 }
