@@ -13,4 +13,6 @@ public sealed record class Description() : ValidatedText<Description>(string.Emp
 		description = new Description();
 		return description.Set(value);
 	}
+
+	public override string ToString() => base.ToString();
 }

@@ -13,4 +13,6 @@ public sealed record class Name() : ValidatedText<Name>(string.Empty)
 		name = new Name();
 		return name.Set(value);
 	}
+
+	public override string ToString() => base.ToString();
 }
