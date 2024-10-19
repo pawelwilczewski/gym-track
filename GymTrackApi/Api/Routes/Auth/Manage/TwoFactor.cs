@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Identity.Manage;
+namespace Api.Routes.Auth.Manage;
 
 internal sealed class TwoFactor : IEndpoint
 {
@@ -26,14 +26,14 @@ internal sealed class TwoFactor : IEndpoint
 			{
 				if (tfaRequest.ResetSharedKey)
 				{
-					return IdentityRoutes.CreateValidationProblem("CannotResetSharedKeyAndEnable",
+					return AuthRoutes.CreateValidationProblem("CannotResetSharedKeyAndEnable",
 						"Resetting the 2fa shared key must disable 2fa until"
 						+ " a 2fa token based on the new shared key is validated.");
 				}
 
 				if (string.IsNullOrEmpty(tfaRequest.TwoFactorCode))
 				{
-					return IdentityRoutes.CreateValidationProblem("RequiresTwoFactor",
+					return AuthRoutes.CreateValidationProblem("RequiresTwoFactor",
 						"No 2fa token was provided by the request."
 						+ " A valid 2fa token is required to enable 2fa.");
 				}
@@ -41,7 +41,7 @@ internal sealed class TwoFactor : IEndpoint
 				if (!await userManager.VerifyTwoFactorTokenAsync(
 					user, userManager.Options.Tokens.AuthenticatorTokenProvider, tfaRequest.TwoFactorCode))
 				{
-					return IdentityRoutes.CreateValidationProblem("InvalidTwoFactorCode",
+					return AuthRoutes.CreateValidationProblem("InvalidTwoFactorCode",
 						"The 2fa token provided by the request was invalid."
 						+ " A valid 2fa token is required to enable 2fa.");
 				}

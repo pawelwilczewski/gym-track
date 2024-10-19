@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
 internal sealed class Register : IEndpoint
 {
@@ -26,9 +26,9 @@ internal sealed class Register : IEndpoint
 			var emailStore = (IUserEmailStore<User>)userStore;
 			var email = registration.Email;
 
-			if (string.IsNullOrEmpty(email) || !IdentityRoutes.IsEmailValid(email))
+			if (string.IsNullOrEmpty(email) || !AuthRoutes.IsEmailValid(email))
 			{
-				return IdentityRoutes.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
+				return AuthRoutes.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
 			}
 
 			var user = new User();
@@ -38,10 +38,10 @@ internal sealed class Register : IEndpoint
 
 			if (!result.Succeeded)
 			{
-				return IdentityRoutes.CreateValidationProblem(result);
+				return AuthRoutes.CreateValidationProblem(result);
 			}
 
-			await IdentityRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
+			await AuthRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
 			return TypedResults.Ok();
 		});
 

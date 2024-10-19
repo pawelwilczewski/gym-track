@@ -2,23 +2,23 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Encodings.Web;
-using Api.Routes.Identity.Manage;
+using Api.Routes.Auth.Manage;
 using Domain.Models.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
-internal static class IdentityRoutes
+internal static class AuthRoutes
 {
 	internal static Func<object?, bool> IsEmailValid { get; } = new EmailAddressAttribute().IsValid;
 	internal static string ConfirmEmailEndpointName { get; set; } = null!;
 
-	public static IEndpointRouteBuilder MapIdentityRoutes(this IEndpointRouteBuilder builder)
+	public static IEndpointRouteBuilder MapAuthRoutes(this IEndpointRouteBuilder builder)
 	{
-		var root = builder.MapGroup("");
+		var root = builder.MapGroup("auth");
 		root
 			.Map(new Login())
 			.Map(new Register())
@@ -26,12 +26,8 @@ internal static class IdentityRoutes
 			.Map(new ConfirmEmail())
 			.Map(new ResendConfirmationEmail())
 			.Map(new ForgotPassword())
-			.Map(new ResetPassword());
-
-		var manage = root.MapGroup("/manage").RequireAuthorization();
-		manage
-			.Map(new TwoFactor())
-			.Map(new Info());
+			.Map(new ResetPassword())
+			.MapManageRoutes();
 
 		return builder;
 	}

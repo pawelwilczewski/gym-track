@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
 internal sealed class ConfirmEmail : IEndpoint
 {
@@ -61,8 +61,8 @@ internal sealed class ConfirmEmail : IEndpoint
 			.Add(endpointBuilder =>
 			{
 				var finalPattern = ((RouteEndpointBuilder)endpointBuilder).RoutePattern.RawText;
-				IdentityRoutes.ConfirmEmailEndpointName = $"confirmEmail-{finalPattern}";
-				endpointBuilder.Metadata.Add(new EndpointNameMetadata(IdentityRoutes.ConfirmEmailEndpointName));
+				AuthRoutes.ConfirmEmailEndpointName = $"confirmEmail-{finalPattern}";
+				endpointBuilder.Metadata.Add(new EndpointNameMetadata(AuthRoutes.ConfirmEmailEndpointName));
 			});
 
 		return builder;

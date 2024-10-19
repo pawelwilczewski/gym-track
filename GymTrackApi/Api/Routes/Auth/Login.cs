@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
 internal sealed class Login : IEndpoint
 {

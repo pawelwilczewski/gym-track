@@ -6,7 +6,7 @@ using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Workout;
+namespace Api.Routes.Api.Workout;
 
 internal sealed class CreateWorkout : IEndpoint
 {

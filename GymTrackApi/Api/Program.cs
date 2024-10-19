@@ -1,6 +1,5 @@
 using Api.Authorization;
-using Api.Routes.Identity;
-using Api.Routes.Workout;
+using Api.Routes;
 using Application.Serialization;
 using Domain.Models.Identity;
 using Infrastructure;
@@ -45,8 +44,6 @@ app.UseHttpsRedirection();
 
 await app.Services.AddRoles();
 
-app
-	.MapIdentityRoutes()
-	.MapWorkoutRoutes();
+app.MapAllRoutes();
 
 app.Run();

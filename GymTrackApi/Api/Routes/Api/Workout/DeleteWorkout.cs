@@ -1,22 +1,19 @@
 using Api.Common;
-using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Workout;
+namespace Api.Routes.Api.Workout;
 
-internal sealed class EditWorkout : IEndpoint
+internal sealed class DeleteWorkout : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapDelete("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 				HttpContext httpContext,
 				Guid id,
-				[FromBody] EditWorkoutRequest editWorkout,
 				[FromServices] IDataContext dataContext,
 				CancellationToken cancellationToken) =>
 			{
@@ -33,11 +30,7 @@ internal sealed class EditWorkout : IEndpoint
 				return await workout.CanDeleteOrModify(httpContext.User)
 					.ToResult(async () =>
 					{
-						if (workout.Name.Set(editWorkout.Name) is TextValidationResult.Invalid invalid)
-						{
-							return TypedResults.BadRequest(invalid.Error);
-						}
-
+						dataContext.Workouts.Remove(workout);
 						await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 						return TypedResults.Ok();
 					});

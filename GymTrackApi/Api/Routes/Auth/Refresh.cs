@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
 internal sealed class Refresh : IEndpoint
 {

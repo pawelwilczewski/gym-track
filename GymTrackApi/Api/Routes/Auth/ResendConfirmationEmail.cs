@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Identity;
+namespace Api.Routes.Auth;
 
 internal sealed class ResendConfirmationEmail : IEndpoint
 {
@@ -22,7 +22,7 @@ internal sealed class ResendConfirmationEmail : IEndpoint
 				return TypedResults.Ok();
 			}
 
-			await IdentityRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, resendRequest.Email);
+			await AuthRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, resendRequest.Email);
 			return TypedResults.Ok();
 		});
 
