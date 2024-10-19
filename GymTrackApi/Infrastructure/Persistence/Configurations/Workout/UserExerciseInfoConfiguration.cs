@@ -20,7 +20,7 @@ internal sealed class UserExerciseInfoConfiguration : IEntityTypeConfiguration<U
 			.HasConversion(Id<ExerciseInfo>.Converter);
 
 		builder.HasOne(userExerciseInfo => userExerciseInfo.ExerciseInfo)
-			.WithMany(exerciseInfo => exerciseInfo.UserExerciseInfos)
+			.WithMany(exerciseInfo => exerciseInfo.Users)
 			.HasForeignKey(userExerciseInfo => userExerciseInfo.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}

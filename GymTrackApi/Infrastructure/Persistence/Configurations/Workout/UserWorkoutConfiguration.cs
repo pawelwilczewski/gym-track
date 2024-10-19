@@ -20,7 +20,7 @@ internal sealed class UserWorkoutConfiguration : IEntityTypeConfiguration<UserWo
 			.HasConversion(Id<Domain.Models.Workout.Workout>.Converter);
 
 		builder.HasOne(userWorkout => userWorkout.Workout)
-			.WithMany(workout => workout.UserWorkouts)
+			.WithMany(workout => workout.Users)
 			.HasForeignKey(userWorkout => userWorkout.WorkoutId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}

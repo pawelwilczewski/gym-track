@@ -2,6 +2,7 @@ using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
+using Domain.Models.Workout;
 using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ internal sealed class EditWorkout : IEndpoint
 			{
 				var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 				var workout = await dataContext.Workouts
-					.Include(workout => workout.UserWorkouts)
+					.Include(workout => workout.Users)
 					.FirstOrDefaultAsync(
 						workout => workout.Id == workoutId,
 						cancellationToken)
@@ -30,7 +31,7 @@ internal sealed class EditWorkout : IEndpoint
 
 				if (workout is null) return TypedResults.NotFound();
 
-				return await workout.CanDeleteOrModify(httpContext.User)
+				return await httpContext.User.CanModifyOrDeleteWorkout(workout.Users)
 					.ToResult(async () =>
 					{
 						if (workout.Name.Set(editWorkout.Name) is TextValidationResult.Invalid invalid)

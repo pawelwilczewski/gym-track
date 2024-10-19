@@ -1,6 +1,7 @@
 using Api.Common;
 using Application.Persistence;
 using Domain.Models;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ internal sealed class DeleteWorkout : IEndpoint
 			{
 				var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 				var workout = await dataContext.Workouts
-					.Include(workout => workout.UserWorkouts)
+					.Include(workout => workout.Users)
 					.FirstOrDefaultAsync(
 						workout => workout.Id == workoutId,
 						cancellationToken)
@@ -27,7 +28,7 @@ internal sealed class DeleteWorkout : IEndpoint
 
 				if (workout is null) return TypedResults.NotFound();
 
-				return await workout.CanDeleteOrModify(httpContext.User)
+				return await httpContext.User.CanModifyOrDeleteWorkout(workout.Users)
 					.ToResult(async () =>
 					{
 						dataContext.Workouts.Remove(workout);

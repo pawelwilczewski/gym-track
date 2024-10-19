@@ -39,4 +39,6 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>, new()
 			default: throw new UnreachableException();
 		}
 	}
+
+	public override string ToString() => Value;
 }
