@@ -1,20 +1,23 @@
 using System.Diagnostics;
 using Domain.Models.Common;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Common;
 
+using ModifyResult = Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>;
+
 internal static class CanModifyResultExtensions
 {
-	public static Task<IResult> ToResult(
+	public static Task<ModifyResult> ToResult(
 		this CanModifyResult canModifyResult,
-		Func<Task<IResult>> onOk,
+		Func<Task<ModifyResult>> onOk,
 		string messageOnProhibitShared = "Can't modify shared.") =>
 		canModifyResult switch
 		{
 			CanModifyResult.Ok             => onOk(),
-			CanModifyResult.NotFound       => Task.FromResult<IResult>(TypedResults.NotFound()),
-			CanModifyResult.ProhibitShared => Task.FromResult<IResult>(TypedResults.BadRequest(messageOnProhibitShared)),
-			CanModifyResult.Unauthorized   => Task.FromResult<IResult>(TypedResults.Unauthorized()),
+			CanModifyResult.NotFound       => Task.FromResult<ModifyResult>(TypedResults.NotFound()),
+			CanModifyResult.ProhibitShared => Task.FromResult<ModifyResult>(TypedResults.BadRequest(messageOnProhibitShared)),
+			CanModifyResult.Unauthorized   => Task.FromResult<ModifyResult>(TypedResults.Unauthorized()),
 			_                              => throw new UnreachableException()
 		};
 }
