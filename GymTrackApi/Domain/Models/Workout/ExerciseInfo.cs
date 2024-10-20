@@ -22,8 +22,14 @@ public class ExerciseInfo
 
 	private ExerciseInfo() { }
 
-	private ExerciseInfo(Name name, FilePath thumbnailImage, Description description, ExerciseMetricType allowedMetricTypes)
+	private ExerciseInfo(
+		Id<ExerciseInfo> id,
+		Name name,
+		FilePath thumbnailImage,
+		Description description,
+		ExerciseMetricType allowedMetricTypes)
 	{
+		Id = id;
 		Name = name;
 		ThumbnailImage = thumbnailImage;
 		Description = description;
@@ -34,17 +40,20 @@ public class ExerciseInfo
 		Name name,
 		FilePath thumbnailImage,
 		Description description,
-		ExerciseMetricType allowedMetricTypes) =>
-		new(name, thumbnailImage, description, allowedMetricTypes);
+		ExerciseMetricType allowedMetricTypes,
+		Id<ExerciseInfo>? id = null) =>
+		new(id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
 
 	public static ExerciseInfo CreateForUser(
 		Name name,
 		FilePath thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
-		ClaimsPrincipal user)
+		ClaimsPrincipal user,
+		Id<ExerciseInfo>? id = null)
 	{
-		var exerciseInfo = new ExerciseInfo(name, thumbnailImage, description, allowedMetricTypes);
+		var exerciseInfo = new ExerciseInfo(
+			id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
 		var userExerciseInfo = new UserExerciseInfo(user.GetUserId(), exerciseInfo.Id);
 		exerciseInfo.Users.Add(userExerciseInfo);
 		return exerciseInfo;

@@ -21,7 +21,6 @@ internal static class PropertyBuilderExtensions
 			.HasMaxLength(FilePath.MAX_LENGTH);
 
 	public static PropertyBuilder<TProperty> ConfigureOptionalFilePath<TProperty>(this PropertyBuilder<TProperty> builder) =>
-		builder
-			.HasConversion(OptionalFilePath.Converter, OptionalFilePath.Comparer)
+		builder.HasConversion(FilePath.OptionalConverter, FilePath.OptionalComparer)
 			.HasMaxLength(FilePath.MAX_LENGTH);
 }

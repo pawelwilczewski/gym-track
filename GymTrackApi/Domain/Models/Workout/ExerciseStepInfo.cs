@@ -1,3 +1,5 @@
+using Domain.Common;
+
 namespace Domain.Models.Workout;
 
 public class ExerciseStepInfo
@@ -8,11 +10,11 @@ public class ExerciseStepInfo
 	public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 	public Description Description { get; private set; }
-	public OptionalFilePath ImageFile { get; private set; }
+	public Option<FilePath> ImageFile { get; private set; }
 
 	private ExerciseStepInfo() { }
 
-	public ExerciseStepInfo(Id<ExerciseInfo> exerciseInfoId, int index, Description description, OptionalFilePath imageFile)
+	public ExerciseStepInfo(Id<ExerciseInfo> exerciseInfoId, int index, Description description, Option<FilePath> imageFile)
 	{
 		ExerciseInfoId = exerciseInfoId;
 		Index = index;

@@ -1,30 +1,35 @@
+using Domain.Common;
 using Domain.Validation;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Models;
 
-public sealed record class FilePath() : ValidatedText<FilePath>(string.Empty)
+public sealed record class FilePath : ValidatedText<FilePath>
 {
 	public const int MAX_LENGTH = 500;
 
+	public static ValueConverter<Option<FilePath>, string> OptionalConverter { get; } = new(
+		option => option.Map(filePath => filePath.ToString()).Reduce(null!),
+		value => string.IsNullOrWhiteSpace(value)
+			? Option<FilePath>.None()
+			: Option<FilePath>.Some(new FilePath(value)));
+
+	public static ValueComparer<Option<FilePath>> OptionalComparer { get; } = new(
+		(a, b) => (a == null && b == null) || (a != null && b != null && a == b),
+		value => value.GetHashCode(),
+		text => text.Reduce(null!) == null
+			? Option<FilePath>.None()
+			: Option<FilePath>.Some(new FilePath(text.Reduce(null!))));
+
 	protected override TextValidator Validator => TextValidators.FilePath;
+
+	private FilePath(string value = "") : base(value) { }
 
 	public static TextValidationResult TryCreate(string value, out FilePath filePath)
 	{
-		filePath = new FilePath();
+		filePath = new FilePath(string.Empty);
 		return filePath.Set(value);
-	}
-
-	public override string ToString() => base.ToString();
-}
-
-public sealed record class OptionalFilePath() : ValidatedText<OptionalFilePath>(string.Empty)
-{
-	protected override TextValidator Validator => TextValidators.OptionalFilePath;
-
-	public static TextValidationResult TryCreate(string value, out OptionalFilePath optionalFilePath)
-	{
-		optionalFilePath = new OptionalFilePath();
-		return optionalFilePath.Set(value);
 	}
 
 	public override string ToString() => base.ToString();

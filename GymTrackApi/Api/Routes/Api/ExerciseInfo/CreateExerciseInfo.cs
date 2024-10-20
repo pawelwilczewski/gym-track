@@ -35,19 +35,16 @@ internal sealed class CreateExerciseInfo : IEndpoint
 					return TypedResults.BadRequest(invalidDescription.Error);
 				}
 
-				var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-					? Domain.Models.Workout.ExerciseInfo.CreateForEveryone(
-						exerciseInfoName, new FilePath(), exerciseInfoDescription, allowedMetricTypes)
-					: Domain.Models.Workout.ExerciseInfo.CreateForUser(
-						exerciseInfoName, new FilePath(), exerciseInfoDescription, allowedMetricTypes, httpContext.User);
+				var id = Id<Domain.Models.Workout.ExerciseInfo>.New();
 
-				var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{exerciseInfo.Id}{Path.GetExtension(thumbnailImage.FileName)}";
+				var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
 				var localPath = Path.Combine(environment.WebRootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
-				await using (var stream = thumbnailImage.OpenReadStream())
+				var stream = thumbnailImage.OpenReadStream();
+				await using (stream.ConfigureAwait(false))
 				{
 					var outputStream = File.Create(localPath);
-					await stream.CopyToAsync(outputStream, cancellationToken);
-					await outputStream.DisposeAsync();
+					await stream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
+					await outputStream.DisposeAsync().ConfigureAwait(false);
 				}
 
 				if (FilePath.TryCreate(urlPath, out var path)
@@ -56,7 +53,11 @@ internal sealed class CreateExerciseInfo : IEndpoint
 					return TypedResults.BadRequest(invalidPath.Error);
 				}
 
-				exerciseInfo.ThumbnailImage = path;
+				var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
+					? Domain.Models.Workout.ExerciseInfo.CreateForEveryone(
+						exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, id)
+					: Domain.Models.Workout.ExerciseInfo.CreateForUser(
+						exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
 
 				dataContext.ExerciseInfos.Add(exerciseInfo);
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
