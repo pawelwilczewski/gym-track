@@ -14,11 +14,11 @@ internal sealed class CreateWorkout : IEndpoint
 	{
 		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>>> (
 				HttpContext httpContext,
-				[FromBody] CreateWorkoutRequest createWorkout,
+				[FromBody] CreateWorkoutRequest request,
 				[FromServices] IDataContext dataContext,
 				CancellationToken cancellationToken) =>
 			{
-				if (Name.TryCreate(createWorkout.Name, out var name) is TextValidationResult.Invalid invalid)
+				if (Name.TryCreate(request.Name, out var name) is TextValidationResult.Invalid invalid)
 				{
 					return TypedResults.BadRequest(invalid.Error);
 				}

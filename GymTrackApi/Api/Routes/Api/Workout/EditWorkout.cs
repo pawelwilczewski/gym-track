@@ -17,7 +17,7 @@ internal sealed class EditWorkout : IEndpoint
 		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 				HttpContext httpContext,
 				Guid id,
-				[FromBody] EditWorkoutRequest editWorkout,
+				[FromBody] EditWorkoutRequest request,
 				[FromServices] IDataContext dataContext,
 				CancellationToken cancellationToken) =>
 			{
@@ -34,7 +34,7 @@ internal sealed class EditWorkout : IEndpoint
 				return await httpContext.User.CanModifyOrDeleteWorkout(workout.Users)
 					.ToResult(async () =>
 					{
-						if (workout.Name.Set(editWorkout.Name) is TextValidationResult.Invalid invalid)
+						if (workout.Name.Set(request.Name) is TextValidationResult.Invalid invalid)
 						{
 							return TypedResults.BadRequest(invalid.Error);
 						}

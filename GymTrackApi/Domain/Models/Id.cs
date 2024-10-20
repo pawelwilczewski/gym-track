@@ -18,4 +18,6 @@ public readonly record struct Id<T>(Guid Value) : IParsable<Id<T>>
 		result = success ? new Id<T>(guid) : Empty;
 		return success;
 	}
+
+	public override string ToString() => Value.ToString();
 }

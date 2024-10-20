@@ -16,6 +16,10 @@ if (builder.Environment.IsDevelopment())
 {
 	builder.Services.AddSwaggerGen();
 }
+else
+{
+	builder.Services.AddAntiforgery();
+}
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorizationBuilder()
@@ -39,11 +43,17 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+else
+{
+	app.UseAntiforgery();
+}
 
 app.UseHttpsRedirection();
 
 await app.Services.AddRoles();
 
 app.MapAllRoutes();
+
+app.UseStaticFiles();
 
 app.Run();
