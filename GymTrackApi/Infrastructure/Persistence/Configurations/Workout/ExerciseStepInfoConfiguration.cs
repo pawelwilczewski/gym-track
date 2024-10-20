@@ -19,8 +19,7 @@ internal sealed class ExerciseStepInfoConfiguration : IEntityTypeConfiguration<E
 
 		builder.Property(step => step.Description).ConfigureDescription();
 
-		builder.ComplexProperty(step => step.ImageFile)
-			.Configure(new OptionalFilePathConfiguration());
+		builder.Property(step => step.ImageFile).ConfigureOptionalFilePath();
 
 		builder
 			.HasOne(stepInfo => stepInfo.ExerciseInfo)

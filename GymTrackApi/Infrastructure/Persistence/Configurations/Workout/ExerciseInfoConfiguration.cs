@@ -16,8 +16,7 @@ internal sealed class ExerciseInfoConfiguration : IEntityTypeConfiguration<Exerc
 		builder.Property(exerciseInfo => exerciseInfo.Id)
 			.HasConversion(Id<ExerciseInfo>.Converter);
 
-		builder.ComplexProperty(info => info.ThumbnailImage)
-			.Configure(new FilePathConfiguration());
+		builder.Property(info => info.ThumbnailImage).ConfigureFilePath();
 
 		builder.Property(info => info.Name).ConfigureName();
 		builder.Property(info => info.Description).ConfigureDescription();

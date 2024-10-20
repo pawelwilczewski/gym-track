@@ -1,5 +1,3 @@
-using Domain.Common;
-
 namespace Domain.Models.Workout;
 
 public class ExerciseStepInfo

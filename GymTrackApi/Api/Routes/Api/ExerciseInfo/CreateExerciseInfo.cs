@@ -1,6 +1,5 @@
 using Api.Files;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
@@ -51,7 +50,13 @@ internal sealed class CreateExerciseInfo : IEndpoint
 					await outputStream.DisposeAsync();
 				}
 
-				exerciseInfo.ThumbnailImage = new FilePath(urlPath);
+				if (FilePath.TryCreate(urlPath, out var path)
+					is TextValidationResult.Invalid invalidPath)
+				{
+					return TypedResults.BadRequest(invalidPath.Error);
+				}
+
+				exerciseInfo.ThumbnailImage = path;
 
 				dataContext.ExerciseInfos.Add(exerciseInfo);
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
