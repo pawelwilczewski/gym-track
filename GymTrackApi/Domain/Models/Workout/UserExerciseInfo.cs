@@ -1,8 +1,10 @@
 using Domain.Models.Identity;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
+
 namespace Domain.Models.Workout;
 
-public class UserExerciseInfo
+public class UserExerciseInfo : IUserOwned
 {
 	public Guid UserId { get; private set; }
 	public Id<ExerciseInfo> ExerciseInfoId { get; private set; }

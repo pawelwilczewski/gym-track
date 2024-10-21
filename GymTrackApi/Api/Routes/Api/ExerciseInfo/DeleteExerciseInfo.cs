@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.Workout;
+namespace Api.Routes.Api.ExerciseInfo;
 
-internal sealed class DeleteWorkout : IEndpoint
+internal sealed class DeleteExerciseInfo : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
@@ -18,20 +18,20 @@ internal sealed class DeleteWorkout : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
-			var workout = await dataContext.Workouts
-				.Include(workout => workout.Users)
+			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(id);
+			var exerciseInfo = await dataContext.ExerciseInfos
+				.Include(exerciseInfo => exerciseInfo.Users)
 				.FirstOrDefaultAsync(
-					workout => workout.Id == workoutId,
+					exerciseInfo => exerciseInfo.Id == exerciseInfoId,
 					cancellationToken)
 				.ConfigureAwait(false);
 
-			if (workout is null) return TypedResults.NotFound();
+			if (exerciseInfo is null) return TypedResults.NotFound();
 
-			return await httpContext.User.CanModifyOrDelete(workout.Users)
+			return await httpContext.User.CanModifyOrDelete(exerciseInfo.Users)
 				.ToResult(async () =>
 				{
-					dataContext.Workouts.Remove(workout);
+					dataContext.ExerciseInfos.Remove(exerciseInfo);
 					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 					return TypedResults.Ok();
 				});

@@ -11,10 +11,10 @@ public class ExerciseInfo
 
 	public Name Name { get; private set; }
 
-	public FilePath ThumbnailImage { get; set; }
+	public FilePath ThumbnailImage { get; private set; }
 	public Description Description { get; private set; }
 
-	public ExerciseMetricType AllowedMetricTypes { get; private set; }
+	public ExerciseMetricType AllowedMetricTypes { get; set; }
 
 	public virtual List<ExerciseStepInfo> Steps { get; private set; } = [];
 	public virtual List<Exercise> Exercises { get; private set; } = [];
