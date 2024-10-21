@@ -10,34 +10,19 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 {
 	public static ValueConverter<T, string> Converter { get; } = new(
 		text => text.Value,
-		value => (T)Activator.CreateInstance(
-			typeof(T),
-			BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-			null,
-			new object[] { value },
-			null)!);
+		value => CreateTSingleArgument(value));
 
 	public static ValueComparer<T> Comparer { get; } = new(
 		(a, b) => (a == null && b == null) || (a != null && b != null && a.Value == b.Value),
 		value => value.GetHashCode(),
-		text => (T)Activator.CreateInstance(
-			typeof(T),
-			BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-			null,
-			new object[] { text },
-			null)!);
+		text => CreateTSingleArgument(text));
 
 	public static bool TryCreate(
 		string value,
 		[NotNullWhen(true)] out T? text,
 		[NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
 	{
-		text = (T)Activator.CreateInstance(
-			typeof(T),
-			BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-			null,
-			[""],
-			null)!;
+		text = CreateTSingleArgument(string.Empty);
 
 		var result = text.Set(value);
 		if (result is TextValidationResult.Success)
@@ -49,6 +34,13 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 		invalid = (TextValidationResult.Invalid)result;
 		return false;
 	}
+
+	private static T CreateTSingleArgument(object argument) => (T)Activator.CreateInstance(
+		typeof(T),
+		BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+		null,
+		[argument],
+		null)!;
 
 	private string Value { get; set; }
 	protected abstract TextValidator Validator { get; }
