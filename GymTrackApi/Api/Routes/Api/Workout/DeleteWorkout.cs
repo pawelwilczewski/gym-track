@@ -35,8 +35,7 @@ internal sealed class DeleteWorkout : IEndpoint
 						await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 						return TypedResults.Ok();
 					});
-			})
-			.RequireAuthorization();
+			});
 
 		return builder;
 	}

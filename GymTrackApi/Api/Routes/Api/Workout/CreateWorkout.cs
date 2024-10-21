@@ -31,8 +31,7 @@ internal sealed class CreateWorkout : IEndpoint
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 				return TypedResults.Ok();
-			})
-			.RequireAuthorization();
+			});
 
 		return builder;
 	}

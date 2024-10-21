@@ -42,8 +42,7 @@ internal sealed class EditWorkout : IEndpoint
 						await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 						return TypedResults.Ok();
 					});
-			})
-			.RequireAuthorization();
+			});
 
 		return builder;
 	}

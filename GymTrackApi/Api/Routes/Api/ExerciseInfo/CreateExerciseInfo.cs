@@ -64,8 +64,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 
 				return TypedResults.Ok();
 			})
-			.DisableAntiforgery() // TODO Pawel: enable anti forgery outside of development
-			.RequireAuthorization();
+			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
 
 		return builder;
 	}

@@ -29,8 +29,7 @@ internal sealed class GetWorkout : IEndpoint
 				return TypedResults.Ok(new GetWorkoutResponse(
 					workout.Name.ToString(),
 					workout.Exercises.Select(exercise => new ExerciseKey(exercise.Index)).ToList()));
-			})
-			.RequireAuthorization();
+			});
 
 		return builder;
 	}
