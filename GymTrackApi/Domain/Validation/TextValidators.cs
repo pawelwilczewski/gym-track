@@ -61,11 +61,4 @@ public static class TextValidators
 
 		return new TextValidationResult.Success();
 	}
-
-	public static TextValidationResult OptionalFilePath(string text)
-	{
-		if (MaxLength(text, Models.FilePath.MAX_LENGTH) is TextValidationResult.Invalid invalid) return invalid;
-
-		return new TextValidationResult.Success();
-	}
 }
