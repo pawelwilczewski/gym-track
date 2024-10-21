@@ -1,3 +1,5 @@
+using Api.Routes.Api.ExerciseInfo.Step;
+
 namespace Api.Routes.Api.ExerciseInfo;
 
 internal static class ExerciseInfoRoutes
@@ -8,7 +10,8 @@ internal static class ExerciseInfoRoutes
 			.Map(new CreateExerciseInfo())
 			.Map(new GetExerciseInfo())
 			.Map(new EditExerciseInfo())
-			.Map(new DeleteExerciseInfo());
+			.Map(new DeleteExerciseInfo())
+			.MapExerciseStepInfoRoutes();
 
 		return builder;
 	}

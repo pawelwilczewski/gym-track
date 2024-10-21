@@ -21,9 +21,9 @@ public static class UserOwnedExtensions
 {
 	public static CanModifyResult CanModifyOrDelete(
 		this ClaimsPrincipal user,
-		IReadOnlyList<IUserOwned> workoutUsers)
+		IReadOnlyList<IUserOwned> users)
 	{
-		switch (workoutUsers)
+		switch (users)
 		{
 			// in case there are no user owned items,
 			// this is a template item - can be only deleted by admins
@@ -47,10 +47,10 @@ public static class UserOwnedExtensions
 
 	public static bool CanAccess(
 		this ClaimsPrincipal user,
-		IReadOnlyList<IUserOwned> workoutUsers)
+		IReadOnlyList<IUserOwned> users)
 	{
 		var userId = user.GetUserId();
-		return workoutUsers.Count == 0
-			|| workoutUsers.FirstOrDefault(userWorkout => userWorkout.UserId == userId) is not null;
+		return users.Count == 0
+			|| users.FirstOrDefault(userWorkout => userWorkout.UserId == userId) is not null;
 	}
 }
