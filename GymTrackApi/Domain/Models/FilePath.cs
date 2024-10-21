@@ -26,11 +26,5 @@ public sealed record class FilePath : ValidatedText<FilePath>
 
 	private FilePath(string value = "") : base(value) { }
 
-	public static TextValidationResult TryCreate(string value, out FilePath filePath)
-	{
-		filePath = new FilePath(string.Empty);
-		return filePath.Set(value);
-	}
-
 	public override string ToString() => base.ToString();
 }

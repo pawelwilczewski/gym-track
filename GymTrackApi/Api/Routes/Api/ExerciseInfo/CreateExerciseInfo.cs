@@ -3,7 +3,6 @@ using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
-using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,14 +22,12 @@ internal sealed class CreateExerciseInfo : IEndpoint
 				IWebHostEnvironment environment,
 				CancellationToken cancellationToken) =>
 			{
-				if (Name.TryCreate(name, out var exerciseInfoName)
-					is TextValidationResult.Invalid invalidName)
+				if (!Name.TryCreate(name, out var exerciseInfoName, out var invalidName))
 				{
 					return TypedResults.BadRequest(invalidName.Error);
 				}
 
-				if (Description.TryCreate(description, out var exerciseInfoDescription)
-					is TextValidationResult.Invalid invalidDescription)
+				if (!Description.TryCreate(description, out var exerciseInfoDescription, out var invalidDescription))
 				{
 					return TypedResults.BadRequest(invalidDescription.Error);
 				}
@@ -47,8 +44,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 					await outputStream.DisposeAsync().ConfigureAwait(false);
 				}
 
-				if (FilePath.TryCreate(urlPath, out var path)
-					is TextValidationResult.Invalid invalidPath)
+				if (!FilePath.TryCreate(urlPath, out var path, out var invalidPath))
 				{
 					return TypedResults.BadRequest(invalidPath.Error);
 				}

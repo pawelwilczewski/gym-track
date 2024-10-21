@@ -10,11 +10,5 @@ public sealed record class Name : ValidatedText<Name>
 
 	private Name(string value = "") : base(value) { }
 
-	public static TextValidationResult TryCreate(string value, out Name name)
-	{
-		name = new Name();
-		return name.Set(value);
-	}
-
 	public override string ToString() => base.ToString();
 }

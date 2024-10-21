@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -25,6 +26,29 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 			null,
 			new object[] { text },
 			null)!);
+
+	public static bool TryCreate(
+		string value,
+		[NotNullWhen(true)] out T? text,
+		[NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
+	{
+		text = (T)Activator.CreateInstance(
+			typeof(T),
+			BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+			null,
+			[""],
+			null)!;
+
+		var result = text.Set(value);
+		if (result is TextValidationResult.Success)
+		{
+			invalid = null;
+			return true;
+		}
+
+		invalid = (TextValidationResult.Invalid)result;
+		return false;
+	}
 
 	private string Value { get; set; }
 	protected abstract TextValidator Validator { get; }
