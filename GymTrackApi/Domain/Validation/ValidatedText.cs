@@ -23,16 +23,7 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 		[NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
 	{
 		text = CreateTSingleArgument(string.Empty);
-
-		var result = text.Set(value);
-		if (result is TextValidationResult.Success)
-		{
-			invalid = null;
-			return true;
-		}
-
-		invalid = (TextValidationResult.Invalid)result;
-		return false;
+		return text.TrySet(value, out invalid);
 	}
 
 	private static T CreateTSingleArgument(object argument) => (T)Activator.CreateInstance(
@@ -47,14 +38,21 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 
 	protected ValidatedText(string value = "") => Value = value;
 
-	public TextValidationResult Set(string value)
+	public bool TrySet(string value, [NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
 	{
 		switch (Validator(value))
 		{
-			case TextValidationResult.Invalid invalid: return invalid;
+			case TextValidationResult.Invalid invalidResult:
+			{
+				invalid = invalidResult;
+				return false;
+			}
 			case TextValidationResult.Success:
+			{
 				Value = value.Trim();
-				return new TextValidationResult.Success();
+				invalid = null;
+				return true;
+			}
 			default: throw new UnreachableException();
 		}
 	}

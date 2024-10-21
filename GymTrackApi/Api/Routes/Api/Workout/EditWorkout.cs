@@ -3,7 +3,6 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
-using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +33,7 @@ internal sealed class EditWorkout : IEndpoint
 			return await httpContext.User.CanModifyOrDelete(workout.Users)
 				.ToResult(async () =>
 				{
-					if (workout.Name.Set(request.Name) is TextValidationResult.Invalid invalid)
+					if (!workout.Name.TrySet(request.Name, out var invalid))
 					{
 						return TypedResults.BadRequest(invalid.Error);
 					}
