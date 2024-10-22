@@ -11,6 +11,7 @@ internal static class ExerciseInfoRoutes
 			.Map(new GetExerciseInfo())
 			.Map(new EditExerciseInfo())
 			.Map(new DeleteExerciseInfo())
+			.Map(new EditExerciseInfoThumbnail())
 			.MapExerciseStepInfoRoutes();
 
 		return builder;

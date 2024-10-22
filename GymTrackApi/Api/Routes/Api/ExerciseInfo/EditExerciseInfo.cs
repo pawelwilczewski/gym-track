@@ -15,7 +15,7 @@ internal sealed class EditExerciseInfo : IEndpoint
 	{
 		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			Guid id,
+			[FromRoute] Guid id,
 			[FromBody] EditExerciseInfoRequest request,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
