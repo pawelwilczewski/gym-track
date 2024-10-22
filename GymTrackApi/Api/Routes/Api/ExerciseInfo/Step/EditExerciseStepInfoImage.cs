@@ -3,35 +3,29 @@ using Application.Persistence;
 using Domain.Common;
 using Domain.Models;
 using Domain.Models.Identity;
-using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.Api.ExerciseInfo.Step;
 
-internal sealed class CreateExerciseStepInfo : IEndpoint
+internal sealed class EditExerciseStepInfoImage : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>, NotFound>> (
+		builder.MapPost("/{index:int}/image", async Task<Results<Ok, BadRequest<string>, NotFound>> (
 				HttpContext httpContext,
 				[FromRoute] Guid exerciseInfoId,
-				[FromForm] int index,
-				[FromForm] string description,
+				[FromRoute] int index,
 				[FromForm] IFormFile? image,
 				[FromServices] IDataContext dataContext,
 				IWebHostEnvironment environment,
 				CancellationToken cancellationToken) =>
 			{
-				if (!Description.TryCreate(description, out var exerciseStepInfoDescription, out var invalidDescription))
-				{
-					return TypedResults.BadRequest(invalidDescription.Error);
-				}
-
 				var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 				var exerciseInfo = await dataContext.ExerciseInfos
 					.Include(exerciseInfo => exerciseInfo.Users)
+					.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 					.ConfigureAwait(false);
 
@@ -40,28 +34,43 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					return TypedResults.NotFound();
 				}
 
-				Option<FilePath> path;
+				var exerciseStepInfo = exerciseInfo.Steps.SingleOrDefault();
+				if (exerciseStepInfo is null) return TypedResults.NotFound();
+
+				string? test = null;
+				var a = FilePath.OptionalConverter.ConvertFromProviderTyped(test);
+
 				if (image is not null)
 				{
-					var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
-					if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
+					string? localPath = null;
+					if (exerciseStepInfo.ImageFile.Reduce(null) is null)
 					{
-						return TypedResults.BadRequest(invalidPath.Error);
+						var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
+						if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
+						{
+							return TypedResults.BadRequest(invalidPath.Error);
+						}
+
+						localPath = Paths.UrlToLocal(urlPath, environment);
+						await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
+
+						exerciseStepInfo.ImageFile = Option<FilePath>.Some(successfulPath);
 					}
 
-					var localPath = Paths.UrlToLocal(urlPath, environment);
+					localPath ??= Paths.UrlToLocal(exerciseStepInfo.ImageFile.Reduce(null)!.ToString(), environment);
 					await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
-
-					path = Option<FilePath>.Some(successfulPath);
 				}
 				else
 				{
-					path = Option<FilePath>.None();
+					var url = exerciseStepInfo.ImageFile.Reduce(null);
+					if (url is not null)
+					{
+						File.Delete(Paths.UrlToLocal(url, environment).ToString());
+					}
+
+					exerciseStepInfo.ImageFile = Option<FilePath>.None();
 				}
 
-				var exerciseStepInfo = new ExerciseStepInfo(id, index, exerciseStepInfoDescription, path);
-
-				exerciseInfo.Steps.Add(exerciseStepInfo);
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 				return TypedResults.Ok();

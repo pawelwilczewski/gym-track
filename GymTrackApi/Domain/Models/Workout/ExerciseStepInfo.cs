@@ -10,7 +10,7 @@ public class ExerciseStepInfo
 	public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 	public Description Description { get; private set; }
-	public Option<FilePath> ImageFile { get; private set; }
+	public Option<FilePath> ImageFile { get; set; }
 
 	private ExerciseStepInfo() { }
 

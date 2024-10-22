@@ -22,7 +22,7 @@ internal sealed class GetExerciseStepInfo : IEndpoint
 			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
 				.Include(exerciseInfo => exerciseInfo.Users)
-				.Include(exerciseInfo => exerciseInfo.Steps)
+				.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 				.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
 			if (exerciseInfo is null || !httpContext.User.CanAccess(exerciseInfo.Users))
@@ -30,7 +30,7 @@ internal sealed class GetExerciseStepInfo : IEndpoint
 				return TypedResults.NotFound();
 			}
 
-			var stepInfo = exerciseInfo.Steps.FirstOrDefault(exerciseStepInfo => exerciseStepInfo.Index == index);
+			var stepInfo = exerciseInfo.Steps.SingleOrDefault();
 			if (stepInfo is null) return TypedResults.NotFound();
 
 			return TypedResults.Ok(new GetExerciseStepInfoResponse(

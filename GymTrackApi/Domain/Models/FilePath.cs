@@ -9,11 +9,12 @@ public sealed record class FilePath : ValidatedText<FilePath>
 {
 	public const int MAX_LENGTH = 500;
 
-	public static ValueConverter<Option<FilePath>, string> OptionalConverter { get; } = new(
-		option => option.Map(filePath => filePath.ToString()).Reduce(null)!,
+	public static ValueConverter<Option<FilePath>, string?> OptionalConverter { get; } = new(
+		option => option.Map(filePath => filePath.ToString()).Reduce(null),
 		value => string.IsNullOrWhiteSpace(value)
 			? Option<FilePath>.None()
-			: Option<FilePath>.Some(new FilePath(value)));
+			: Option<FilePath>.Some(new FilePath(value)),
+		true);
 
 	public static ValueComparer<Option<FilePath>> OptionalComparer { get; } = new(
 		(a, b) => (a == null && b == null) || (a != null && b != null && a == b),
