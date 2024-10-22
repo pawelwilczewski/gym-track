@@ -1,4 +1,5 @@
 using Api.Common;
+using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
@@ -16,6 +17,7 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 			HttpContext httpContext,
 			Guid id,
 			[FromServices] IDataContext dataContext,
+			IWebHostEnvironment environment,
 			CancellationToken cancellationToken) =>
 		{
 			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(id);
@@ -28,6 +30,8 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 
 			if (exerciseInfo is null) return TypedResults.NotFound();
 			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
+
+			File.Delete(Paths.UrlToLocal(exerciseInfo.ThumbnailImage.ToString(), environment));
 
 			dataContext.ExerciseInfos.Remove(exerciseInfo);
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

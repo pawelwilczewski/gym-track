@@ -1,3 +1,4 @@
+using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
@@ -16,11 +17,13 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 			[FromRoute] Guid exerciseInfoId,
 			[FromRoute] int index,
 			[FromServices] IDataContext dataContext,
+			IWebHostEnvironment environment,
 			CancellationToken cancellationToken) =>
 		{
 			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseStepInfo = await dataContext.ExerciseStepInfos
 				.Include(exerciseStepInfo => exerciseStepInfo.ExerciseInfo)
+				.ThenInclude(exerciseInfo => exerciseInfo.Users)
 				.FirstOrDefaultAsync(exerciseStepInfo =>
 					exerciseStepInfo.ExerciseInfoId == id
 					&& exerciseStepInfo.Index == index, cancellationToken)
@@ -32,6 +35,11 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _))
 			{
 				return TypedResults.NotFound();
+			}
+
+			if (exerciseStepInfo.ImageFile.Reduce(null) is not null)
+			{
+				File.Delete(Paths.UrlToLocal(exerciseStepInfo.ImageFile.Reduce(null!).ToString(), environment));
 			}
 
 			exerciseInfo.Steps.Remove(exerciseStepInfo);
