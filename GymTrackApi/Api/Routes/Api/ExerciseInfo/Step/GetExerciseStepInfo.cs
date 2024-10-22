@@ -14,16 +14,16 @@ internal sealed class GetExerciseStepInfo : IEndpoint
 	{
 		builder.MapGet("/{index:int}", async Task<Results<Ok<GetExerciseStepInfoResponse>, NotFound>> (
 			HttpContext httpContext,
-			[FromRoute] Guid exerciseId,
+			[FromRoute] Guid exerciseInfoId,
 			[FromRoute] int index,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
+			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
 				.Include(exerciseInfo => exerciseInfo.Users)
 				.Include(exerciseInfo => exerciseInfo.Steps)
-				.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken);
+				.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
 			if (exerciseInfo is null || !httpContext.User.CanAccess(exerciseInfo.Users))
 			{

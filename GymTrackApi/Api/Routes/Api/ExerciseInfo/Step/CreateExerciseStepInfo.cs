@@ -16,7 +16,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 	{
 		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>, NotFound>> (
 				HttpContext httpContext,
-				[FromRoute] Guid exerciseId,
+				[FromRoute] Guid exerciseInfoId,
 				[FromForm] int index,
 				[FromForm] string description,
 				[FromForm] IFormFile? image,
@@ -34,10 +34,10 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					return TypedResults.BadRequest("Index must be greater than or equal to 0.");
 				}
 
-				var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
+				var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 				var exerciseInfo = await dataContext.ExerciseInfos
 					.Include(exerciseInfo => exerciseInfo.Users)
-					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
+					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 					.ConfigureAwait(false);
 
 				if (exerciseInfo is null || !httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _)) // TODO Pawel: this is inconsistent to other usages of CanModifyOrDelete - should we return little info with NotFound or a more specific code instead?
@@ -48,7 +48,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 				Option<FilePath> path;
 				if (image is not null)
 				{
-					var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseId}_{index}{Path.GetExtension(image.FileName)}";
+					var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
 					if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
 					{
 						return TypedResults.BadRequest(invalidPath.Error);
@@ -67,7 +67,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					path = Option<FilePath>.None();
 				}
 
-				var exerciseStepInfo = new ExerciseStepInfo(exerciseInfoId, index, exerciseStepInfoDescription, path);
+				var exerciseStepInfo = new ExerciseStepInfo(id, index, exerciseStepInfoDescription, path);
 
 				exerciseInfo.Steps.Add(exerciseStepInfo);
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

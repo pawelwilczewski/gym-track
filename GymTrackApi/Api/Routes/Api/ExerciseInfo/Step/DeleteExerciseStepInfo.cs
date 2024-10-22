@@ -13,16 +13,16 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 	{
 		builder.MapDelete("/{index:int}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			[FromRoute] Guid exerciseId,
+			[FromRoute] Guid exerciseInfoId,
 			[FromRoute] int index,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
+			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseStepInfo = await dataContext.ExerciseStepInfos
 				.Include(exerciseStepInfo => exerciseStepInfo.ExerciseInfo)
 				.FirstOrDefaultAsync(exerciseStepInfo =>
-					exerciseStepInfo.ExerciseInfoId == exerciseInfoId
+					exerciseStepInfo.ExerciseInfoId == id
 					&& exerciseStepInfo.Index == index, cancellationToken)
 				.ConfigureAwait(false);
 

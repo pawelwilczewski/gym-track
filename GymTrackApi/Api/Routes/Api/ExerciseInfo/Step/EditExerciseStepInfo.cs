@@ -14,18 +14,18 @@ internal sealed class EditExerciseStepInfo : IEndpoint
 	{
 		builder.MapPut("/{index:int}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			[FromRoute] Guid exerciseId,
+			[FromRoute] Guid exerciseInfoId,
 			[FromRoute] int index,
 			[FromBody] EditExerciseStepInfoRequest request,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
+			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
 				.Include(exerciseInfo => exerciseInfo.Users)
 				.Include(exerciseInfo => exerciseInfo.Steps)
 				.FirstOrDefaultAsync(
-					exerciseInfo => exerciseInfo.Id == exerciseInfoId,
+					exerciseInfo => exerciseInfo.Id == id,
 					cancellationToken)
 				.ConfigureAwait(false);
 
