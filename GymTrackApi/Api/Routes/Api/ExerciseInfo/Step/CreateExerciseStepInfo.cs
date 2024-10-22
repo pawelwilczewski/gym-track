@@ -16,7 +16,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 	{
 		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>, NotFound>> (
 				HttpContext httpContext,
-				[FromForm] Guid id,
+				[FromRoute] Guid exerciseId,
 				[FromForm] int index,
 				[FromForm] string description,
 				[FromForm] IFormFile? image,
@@ -34,7 +34,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					return TypedResults.BadRequest("Index must be greater than or equal to 0.");
 				}
 
-				var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(id);
+				var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
 				var exerciseInfo = await dataContext.ExerciseInfos
 					.FindAsync([exerciseInfoId], cancellationToken)
 					.ConfigureAwait(false);
@@ -48,7 +48,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 				Option<FilePath> path;
 				if (image is not null)
 				{
-					var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{id}_{index}{Path.GetExtension(image.FileName)}";
+					var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseId}_{index}{Path.GetExtension(image.FileName)}";
 					if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
 					{
 						return TypedResults.BadRequest(invalidPath.Error);

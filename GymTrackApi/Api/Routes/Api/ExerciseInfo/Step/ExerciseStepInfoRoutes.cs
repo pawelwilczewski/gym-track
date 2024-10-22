@@ -4,7 +4,7 @@ internal static class ExerciseStepInfoRoutes
 {
 	internal static IEndpointRouteBuilder MapExerciseStepInfoRoutes(this IEndpointRouteBuilder builder)
 	{
-		builder.MapGroup("stepInfo")
+		builder.MapGroup("/{exerciseId:Guid}/step/")
 			.Map(new CreateExerciseStepInfo())
 			.Map(new GetExerciseStepInfo())
 			.Map(new EditExerciseStepInfo())

@@ -1,4 +1,3 @@
-using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Common;
@@ -13,18 +12,19 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("/delete", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapDelete("/{index:int}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			[FromBody] ExerciseStepInfoKey exerciseStepInfoKey,
+			[FromRoute] Guid exerciseId,
+			[FromRoute] int index,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseStepInfoKey.ExerciseInfoId);
+			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
 			var exerciseStepInfo = await dataContext.ExerciseStepInfos
 				.Include(exerciseStepInfo => exerciseStepInfo.ExerciseInfo)
 				.FirstOrDefaultAsync(exerciseStepInfo =>
 					exerciseStepInfo.ExerciseInfoId == exerciseInfoId
-					&& exerciseStepInfo.Index == exerciseStepInfoKey.Index, cancellationToken)
+					&& exerciseStepInfo.Index == index, cancellationToken)
 				.ConfigureAwait(false);
 
 			if (exerciseStepInfo is null) return TypedResults.NotFound();
