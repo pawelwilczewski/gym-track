@@ -7,6 +7,7 @@ using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.Api.ExerciseInfo.Step;
 
@@ -36,11 +37,11 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 
 				var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseId);
 				var exerciseInfo = await dataContext.ExerciseInfos
-					.FindAsync([exerciseInfoId], cancellationToken)
+					.Include(exerciseInfo => exerciseInfo.Users)
+					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 					.ConfigureAwait(false);
 
-				if (exerciseInfo is null
-					|| httpContext.User.CanModifyOrDelete(exerciseInfo.Users) is not CanModifyResult.Ok)
+				if (exerciseInfo is null || httpContext.User.CanModifyOrDelete(exerciseInfo.Users) is not CanModifyResult.Ok)
 				{
 					return TypedResults.NotFound();
 				}
