@@ -20,6 +20,7 @@ internal sealed class GetWorkout : IEndpoint
 		{
 			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
 			var workout = await dataContext.Workouts
+				.AsNoTracking()
 				.Include(workout => workout.Users)
 				.Include(workout => workout.Exercises)
 				.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken);

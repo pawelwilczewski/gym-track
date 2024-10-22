@@ -21,6 +21,7 @@ internal sealed class GetExerciseStepInfo : IEndpoint
 		{
 			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
+				.AsNoTracking()
 				.Include(exerciseInfo => exerciseInfo.Users)
 				.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 				.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
