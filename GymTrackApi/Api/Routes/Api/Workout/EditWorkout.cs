@@ -29,18 +29,15 @@ internal sealed class EditWorkout : IEndpoint
 				.ConfigureAwait(false);
 
 			if (workout is null) return TypedResults.NotFound();
+			if (!httpContext.User.CanModifyOrDelete(workout.Users, out var reason)) return reason.ToResult();
 
-			return await httpContext.User.CanModifyOrDelete(workout.Users)
-				.ToResult(async () =>
-				{
-					if (!workout.Name.TrySet(request.Name, out var invalid))
-					{
-						return TypedResults.BadRequest(invalid.Error);
-					}
+			if (!workout.Name.TrySet(request.Name, out var invalid))
+			{
+				return TypedResults.BadRequest(invalid.Error);
+			}
 
-					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-					return TypedResults.Ok();
-				});
+			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+			return TypedResults.Ok();
 		});
 
 		return builder;

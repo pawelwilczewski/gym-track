@@ -27,14 +27,11 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 				.ConfigureAwait(false);
 
 			if (exerciseInfo is null) return TypedResults.NotFound();
+			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
 
-			return await httpContext.User.CanModifyOrDelete(exerciseInfo.Users)
-				.ToResult(async () =>
-				{
-					dataContext.ExerciseInfos.Remove(exerciseInfo);
-					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-					return TypedResults.Ok();
-				});
+			dataContext.ExerciseInfos.Remove(exerciseInfo);
+			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+			return TypedResults.Ok();
 		});
 
 		return builder;

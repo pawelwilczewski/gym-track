@@ -1,6 +1,5 @@
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 			if (exerciseStepInfo is null) return TypedResults.NotFound();
 
 			var exerciseInfo = exerciseStepInfo.ExerciseInfo;
-			if (httpContext.User.CanModifyOrDelete(exerciseInfo.Users) is not CanModifyResult.Ok)
+			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _))
 			{
 				return TypedResults.NotFound();
 			}

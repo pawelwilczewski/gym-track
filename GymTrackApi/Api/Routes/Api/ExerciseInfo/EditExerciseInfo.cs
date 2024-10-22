@@ -29,25 +29,22 @@ internal sealed class EditExerciseInfo : IEndpoint
 				.ConfigureAwait(false);
 
 			if (exerciseInfo is null) return TypedResults.NotFound();
+			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
 
-			return await httpContext.User.CanModifyOrDelete(exerciseInfo.Users)
-				.ToResult(async () =>
-				{
-					if (!exerciseInfo.Name.TrySet(request.Name, out var invalidName))
-					{
-						return TypedResults.BadRequest(invalidName.Error);
-					}
+			if (!exerciseInfo.Name.TrySet(request.Name, out var invalidName))
+			{
+				return TypedResults.BadRequest(invalidName.Error);
+			}
 
-					if (!exerciseInfo.Description.TrySet(request.Description, out var invalidDescription))
-					{
-						return TypedResults.BadRequest(invalidDescription.Error);
-					}
+			if (!exerciseInfo.Description.TrySet(request.Description, out var invalidDescription))
+			{
+				return TypedResults.BadRequest(invalidDescription.Error);
+			}
 
-					exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;
+			exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;
 
-					await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-					return TypedResults.Ok();
-				});
+			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+			return TypedResults.Ok();
 		});
 
 		return builder;

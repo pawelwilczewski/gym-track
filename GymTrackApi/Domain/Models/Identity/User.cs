@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using Domain.Common;
 using Domain.Models.Common;
@@ -19,9 +20,10 @@ public interface IUserOwned
 
 public static class UserOwnedExtensions
 {
-	public static CanModifyResult CanModifyOrDelete(
+	public static bool CanModifyOrDelete(
 		this ClaimsPrincipal user,
-		IReadOnlyList<IUserOwned> users)
+		IReadOnlyList<IUserOwned> users,
+		[NotNullWhen(false)] out CantModifyReason? reason)
 	{
 		switch (users)
 		{
@@ -29,20 +31,33 @@ public static class UserOwnedExtensions
 			// this is a template item - can be only deleted by admins
 			case []:
 			{
-				if (!user.IsInRole(Role.ADMINISTRATOR)) return new CanModifyResult.Unauthorized();
+				if (!user.IsInRole(Role.ADMINISTRATOR))
+				{
+					reason = new CantModifyReason.Unauthorized();
+					return false;
+				}
 
 				break;
 			}
 			case [var userWorkout]:
 			{
-				if (userWorkout.UserId != user.GetUserId()) return new CanModifyResult.NotFound();
+				if (userWorkout.UserId != user.GetUserId())
+				{
+					reason = new CantModifyReason.NotFound();
+					return false;
+				}
 
 				break;
 			}
-			case [..]: return new CanModifyResult.ProhibitShared();
+			case [..]:
+			{
+				reason = new CantModifyReason.ProhibitShared();
+				return false;
+			}
 		}
 
-		return new CanModifyResult.Ok();
+		reason = null;
+		return true;
 	}
 
 	public static bool CanAccess(

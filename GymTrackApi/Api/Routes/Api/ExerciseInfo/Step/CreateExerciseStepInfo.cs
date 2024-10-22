@@ -2,7 +2,6 @@ using Api.Files;
 using Application.Persistence;
 using Domain.Common;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -41,7 +40,7 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 					.ConfigureAwait(false);
 
-				if (exerciseInfo is null || httpContext.User.CanModifyOrDelete(exerciseInfo.Users) is not CanModifyResult.Ok)
+				if (exerciseInfo is null || !httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _)) // TODO Pawel: this is inconsistent to other usages of CanModifyOrDelete - should we return little info with NotFound or a more specific code instead?
 				{
 					return TypedResults.NotFound();
 				}
