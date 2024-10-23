@@ -1,4 +1,4 @@
-using Api.Routes.Api;
+using Api.Routes.App;
 using Api.Routes.Auth;
 
 namespace Api.Routes;

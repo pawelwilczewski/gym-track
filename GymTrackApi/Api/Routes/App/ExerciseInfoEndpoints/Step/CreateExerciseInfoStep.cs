@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.ExerciseInfo.Step;
+namespace Api.Routes.App.ExerciseInfoEndpoints.Step;
 
-internal sealed class CreateExerciseStepInfo : IEndpoint
+internal sealed class CreateExerciseInfoStep : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
@@ -24,12 +24,12 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 				IWebHostEnvironment environment,
 				CancellationToken cancellationToken) =>
 			{
-				if (!Description.TryCreate(description, out var exerciseStepInfoDescription, out var invalidDescription))
+				if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var invalidDescription))
 				{
 					return TypedResults.BadRequest(invalidDescription.Error);
 				}
 
-				var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
+				var id = new Id<ExerciseInfo>(exerciseInfoId);
 				var exerciseInfo = await dataContext.ExerciseInfos
 					.Include(exerciseInfo => exerciseInfo.Users)
 					.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
@@ -59,9 +59,9 @@ internal sealed class CreateExerciseStepInfo : IEndpoint
 					path = Option<FilePath>.None();
 				}
 
-				var exerciseStepInfo = new ExerciseStepInfo(id, index, exerciseStepInfoDescription, path);
+				var exerciseInfoStep = new ExerciseInfo.Step(id, index, exerciseInfoStepDescription, path);
 
-				exerciseInfo.Steps.Add(exerciseStepInfo);
+				exerciseInfo.Steps.Add(exerciseInfoStep);
 				await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 				return TypedResults.Ok();

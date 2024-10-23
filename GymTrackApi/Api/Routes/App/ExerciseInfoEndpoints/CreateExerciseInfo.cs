@@ -6,7 +6,7 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Api.ExerciseInfo;
+namespace Api.Routes.App.ExerciseInfoEndpointsEndpoints;
 
 internal sealed class CreateExerciseInfo : IEndpoint
 {
@@ -32,7 +32,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 					return TypedResults.BadRequest(invalidDescription.Error);
 				}
 
-				var id = Id<Domain.Models.Workout.ExerciseInfo>.New();
+				var id = Id<ExerciseInfo>.New();
 
 				var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
 				if (!FilePath.TryCreate(urlPath, out var path, out var invalidPath))
@@ -44,9 +44,9 @@ internal sealed class CreateExerciseInfo : IEndpoint
 				await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 				var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-					? Domain.Models.Workout.ExerciseInfo.CreateForEveryone(
+					? ExerciseInfo.CreateForEveryone(
 						exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, id)
-					: Domain.Models.Workout.ExerciseInfo.CreateForUser(
+					: ExerciseInfo.CreateForUser(
 						exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
 
 				dataContext.ExerciseInfos.Add(exerciseInfo);

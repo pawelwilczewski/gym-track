@@ -2,13 +2,14 @@ using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.ExerciseInfo.Step;
+namespace Api.Routes.App.ExerciseInfoEndpoints.Step;
 
-internal sealed class DeleteExerciseStepInfo : IEndpoint
+internal sealed class DeleteExerciseInfoStep : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
@@ -20,29 +21,29 @@ internal sealed class DeleteExerciseStepInfo : IEndpoint
 			IWebHostEnvironment environment,
 			CancellationToken cancellationToken) =>
 		{
-			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
-			var exerciseStepInfo = await dataContext.ExerciseStepInfos
-				.Include(exerciseStepInfo => exerciseStepInfo.ExerciseInfo)
+			var id = new Id<ExerciseInfo>(exerciseInfoId);
+			var exerciseInfoStep = await dataContext.ExerciseInfoSteps
+				.Include(exerciseInfoStep => exerciseInfoStep.ExerciseInfo)
 				.ThenInclude(exerciseInfo => exerciseInfo.Users)
-				.FirstOrDefaultAsync(exerciseStepInfo =>
-					exerciseStepInfo.ExerciseInfoId == id
-					&& exerciseStepInfo.Index == index, cancellationToken)
+				.FirstOrDefaultAsync(exerciseInfoStep =>
+					exerciseInfoStep.ExerciseInfoId == id
+					&& exerciseInfoStep.Index == index, cancellationToken)
 				.ConfigureAwait(false);
 
-			if (exerciseStepInfo is null) return TypedResults.NotFound();
+			if (exerciseInfoStep is null) return TypedResults.NotFound();
 
-			var exerciseInfo = exerciseStepInfo.ExerciseInfo;
+			var exerciseInfo = exerciseInfoStep.ExerciseInfo;
 			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _))
 			{
 				return TypedResults.NotFound();
 			}
 
-			if (exerciseStepInfo.ImageFile.Reduce(null) is not null)
+			if (exerciseInfoStep.ImageFile.Reduce(null) is not null)
 			{
-				File.Delete(Paths.UrlToLocal(exerciseStepInfo.ImageFile.Reduce(null!).ToString(), environment));
+				File.Delete(Paths.UrlToLocal(exerciseInfoStep.ImageFile.Reduce(null!).ToString(), environment));
 			}
 
-			exerciseInfo.Steps.Remove(exerciseStepInfo);
+			exerciseInfo.Steps.Remove(exerciseInfoStep);
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 			return TypedResults.Ok();

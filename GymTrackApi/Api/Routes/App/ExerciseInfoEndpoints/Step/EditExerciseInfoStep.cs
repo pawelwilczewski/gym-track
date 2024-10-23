@@ -2,13 +2,14 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.ExerciseInfo.Step;
+namespace Api.Routes.App.ExerciseInfoEndpoints.Step;
 
-internal sealed class EditExerciseStepInfo : IEndpoint
+internal sealed class EditExerciseInfoStep : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
@@ -16,11 +17,11 @@ internal sealed class EditExerciseStepInfo : IEndpoint
 			HttpContext httpContext,
 			[FromRoute] Guid exerciseInfoId,
 			[FromRoute] int index,
-			[FromBody] EditExerciseStepInfoRequest request,
+			[FromBody] EditExerciseInfoStepRequest request,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var id = new Id<Domain.Models.Workout.ExerciseInfo>(exerciseInfoId);
+			var id = new Id<ExerciseInfo>(exerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
 				.Include(exerciseInfo => exerciseInfo.Users)
 				.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))

@@ -3,11 +3,12 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.Workout;
+namespace Api.Routes.App.WorkoutEndpoints;
 
 internal sealed class EditWorkout : IEndpoint
 {
@@ -20,7 +21,7 @@ internal sealed class EditWorkout : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var workoutId = new Id<Domain.Models.Workout.Workout>(id);
+			var workoutId = new Id<Workout>(id);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.Users)
 				.FirstOrDefaultAsync(

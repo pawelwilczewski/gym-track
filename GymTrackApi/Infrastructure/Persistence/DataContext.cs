@@ -12,7 +12,7 @@ internal sealed class DataContext : IDataContext
 	public DbSet<Workout> Workouts => dbContext.Workouts;
 	public DbSet<UserWorkout> UserWorkouts => dbContext.UserWorkouts;
 	public DbSet<ExerciseInfo> ExerciseInfos => dbContext.ExerciseInfos;
-	public DbSet<ExerciseStepInfo> ExerciseStepInfos => dbContext.ExerciseStepInfos;
+	public DbSet<ExerciseInfo.Step> ExerciseInfoSteps => dbContext.ExerciseInfoSteps;
 	public DbSet<Exercise> Exercises => dbContext.Exercises;
 	public DbSet<ExerciseSet> ExerciseSets => dbContext.ExerciseSets;
 

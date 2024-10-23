@@ -2,10 +2,11 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.Api.Workout;
+namespace Api.Routes.App.WorkoutEndpoints;
 
 internal sealed class CreateWorkout : IEndpoint
 {
@@ -23,8 +24,8 @@ internal sealed class CreateWorkout : IEndpoint
 			}
 
 			var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-				? Domain.Models.Workout.Workout.CreateForEveryone(name)
-				: Domain.Models.Workout.Workout.CreateForUser(name, httpContext.User);
+				? Workout.CreateForEveryone(name)
+				: Workout.CreateForUser(name, httpContext.User);
 
 			dataContext.Workouts.Add(workout);
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

@@ -1,7 +1,7 @@
-using Api.Routes.Api.ExerciseInfo;
-using Api.Routes.Api.Workout;
+using Api.Routes.App.ExerciseInfoEndpoints;
+using Api.Routes.App.WorkoutEndpoints;
 
-namespace Api.Routes.Api;
+namespace Api.Routes.App;
 
 internal static class ApiRoutes
 {

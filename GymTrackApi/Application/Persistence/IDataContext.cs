@@ -11,7 +11,7 @@ public interface IDataContext : IDisposable
 	DbSet<Workout> Workouts { get; }
 	DbSet<UserWorkout> UserWorkouts { get; }
 	DbSet<ExerciseInfo> ExerciseInfos { get; }
-	DbSet<ExerciseStepInfo> ExerciseStepInfos { get; }
+	DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; }
 	DbSet<Exercise> Exercises { get; }
 	DbSet<ExerciseSet> ExerciseSets { get; }
 

@@ -2,11 +2,12 @@ using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.Api.ExerciseInfo;
+namespace Api.Routes.App.ExerciseInfoEndpoints;
 
 internal sealed class GetExerciseInfo : IEndpoint
 {
@@ -18,7 +19,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var exerciseInfoId = new Id<Domain.Models.Workout.ExerciseInfo>(id);
+			var exerciseInfoId = new Id<ExerciseInfo>(id);
 			var exerciseInfo = await dataContext.ExerciseInfos
 				.AsNoTracking()
 				.Include(exerciseInfo => exerciseInfo.Users)

@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
-internal sealed class ExerciseStepInfoConfiguration : IEntityTypeConfiguration<ExerciseStepInfo>
+internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<ExerciseInfo.Step>
 {
-	public void Configure(EntityTypeBuilder<ExerciseStepInfo> builder)
+	public void Configure(EntityTypeBuilder<ExerciseInfo.Step> builder)
 	{
 		builder
-			.ToTable("ExerciseStepInfos", Schemas.WORKOUT)
+			.ToTable("ExerciseInfoSteps", Schemas.WORKOUT)
 			.HasKey(step => new
 			{
 				step.ExerciseInfoId,
