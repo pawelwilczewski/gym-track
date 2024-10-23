@@ -7,13 +7,14 @@ namespace Application.Persistence;
 public interface IDataContext : IDisposable
 {
 	DbSet<User> Users { get; }
-	DbSet<Role> Roles { get; }
-	DbSet<Workout> Workouts { get; }
+	DbSet<UserExerciseInfo> UserExerciseInfos { get; }
 	DbSet<UserWorkout> UserWorkouts { get; }
+	DbSet<Role> Roles { get; }
 	DbSet<ExerciseInfo> ExerciseInfos { get; }
 	DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; }
-	DbSet<Workout.Exercise> Exercises { get; }
-	DbSet<ExerciseSet> ExerciseSets { get; }
+	DbSet<Workout> Workouts { get; }
+	DbSet<Workout.Exercise> WorkoutExercises { get; }
+	DbSet<Workout.Exercise.Set> WorkoutExerciseSets { get; }
 
 	Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

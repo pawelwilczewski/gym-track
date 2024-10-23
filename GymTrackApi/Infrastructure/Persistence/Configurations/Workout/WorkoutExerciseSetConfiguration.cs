@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
-internal sealed class ExerciseSetConfiguration : IEntityTypeConfiguration<ExerciseSet>
+internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration<Domain.Models.Workout.Workout.Exercise.Set>
 {
-	public void Configure(EntityTypeBuilder<ExerciseSet> builder)
+	public void Configure(EntityTypeBuilder<Domain.Models.Workout.Workout.Exercise.Set> builder)
 	{
 		builder
-			.ToTable("ExerciseSets", Schemas.WORKOUT)
+			.ToTable("WorkoutExerciseSets", Schemas.WORKOUT)
 			.HasKey(set => new
 			{
 				set.WorkoutId,

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Domain.Common;
 
@@ -37,7 +38,7 @@ public class Workout
 		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
 		public virtual ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
-		public virtual List<ExerciseSet> Sets { get; private set; } = [];
+		public virtual List<Set> Sets { get; private set; } = [];
 
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
@@ -47,6 +48,32 @@ public class Workout
 			WorkoutId = workoutId;
 			Index = index;
 			ExerciseInfoId = exerciseInfoId;
+		}
+
+		public class Set
+		{
+			public Id<Workout> WorkoutId { get; private set; }
+			public int ExerciseIndex { get; private set; }
+			public int SetIndex { get; private set; }
+
+			public virtual Exercise Exercise { get; private set; }
+
+			public ExerciseMetric Metric { get; private set; }
+
+			[Range(1, int.MaxValue, ErrorMessage = "Reps count can not be negative.")]
+			public int Reps { get; private set; }
+
+			private Set() { }
+
+			public Set(Exercise exercise, int setIndex, ExerciseMetric metric, int reps)
+			{
+				WorkoutId = exercise.WorkoutId;
+				ExerciseIndex = exercise.Index;
+				SetIndex = setIndex;
+				Exercise = exercise;
+				Metric = metric;
+				Reps = reps;
+			}
 		}
 	}
 }

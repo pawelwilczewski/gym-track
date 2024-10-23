@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
-internal sealed class ExerciseConfiguration : IEntityTypeConfiguration<Domain.Models.Workout.Workout.Exercise>
+internal sealed class WorkoutExerciseConfiguration : IEntityTypeConfiguration<Domain.Models.Workout.Workout.Exercise>
 {
 	public void Configure(EntityTypeBuilder<Domain.Models.Workout.Workout.Exercise> builder)
 	{

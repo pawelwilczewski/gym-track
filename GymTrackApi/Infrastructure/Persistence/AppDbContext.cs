@@ -8,12 +8,13 @@ namespace Infrastructure.Persistence;
 
 internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 {
-	public DbSet<Workout> Workouts { get; private set; } = null!;
 	public DbSet<UserWorkout> UserWorkouts { get; private set; } = null!;
+	public DbSet<UserExerciseInfo> UserExerciseInfos { get; private set; } = null!;
+	public DbSet<Workout> Workouts { get; private set; } = null!;
+	public DbSet<Workout.Exercise> WorkoutExercises { get; private set; } = null!;
+	public DbSet<Workout.Exercise.Set> WorkoutExerciseSets { get; private set; } = null!;
 	public DbSet<ExerciseInfo> ExerciseInfos { get; private set; } = null!;
 	public DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; private set; } = null!;
-	public DbSet<Workout.Exercise> Exercises { get; private set; } = null!;
-	public DbSet<ExerciseSet> ExerciseSets { get; private set; } = null!;
 
 	public AppDbContext(DbContextOptions<AppDbContext> options)
 		: base(options) =>
