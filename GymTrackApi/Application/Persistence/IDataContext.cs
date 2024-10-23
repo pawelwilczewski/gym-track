@@ -12,7 +12,7 @@ public interface IDataContext : IDisposable
 	DbSet<UserWorkout> UserWorkouts { get; }
 	DbSet<ExerciseInfo> ExerciseInfos { get; }
 	DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; }
-	DbSet<Exercise> Exercises { get; }
+	DbSet<Workout.Exercise> Exercises { get; }
 	DbSet<ExerciseSet> ExerciseSets { get; }
 
 	Task<int> SaveChangesAsync(CancellationToken cancellationToken);

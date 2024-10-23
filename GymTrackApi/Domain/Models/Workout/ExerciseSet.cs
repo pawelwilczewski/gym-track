@@ -8,7 +8,7 @@ public class ExerciseSet
 	public int ExerciseIndex { get; private set; }
 	public int SetIndex { get; private set; }
 
-	public virtual Exercise Exercise { get; private set; }
+	public virtual Workout.Exercise Exercise { get; private set; }
 
 	public ExerciseMetric Metric { get; private set; }
 
@@ -17,7 +17,7 @@ public class ExerciseSet
 
 	private ExerciseSet() { }
 
-	public ExerciseSet(Exercise exercise, int setIndex, ExerciseMetric metric, int reps)
+	public ExerciseSet(Workout.Exercise exercise, int setIndex, ExerciseMetric metric, int reps)
 	{
 		WorkoutId = exercise.WorkoutId;
 		ExerciseIndex = exercise.Index;
