@@ -1,5 +1,5 @@
-using Api.Routes.App.ExerciseInfoEndpoints;
-using Api.Routes.App.WorkoutEndpoints;
+using Api.Routes.App.ExerciseInfos;
+using Api.Routes.App.Workouts;
 
 namespace Api.Routes.App;
 

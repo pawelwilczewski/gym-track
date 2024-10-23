@@ -1,4 +1,4 @@
-namespace Api.Routes.App.WorkoutEndpoints;
+namespace Api.Routes.App.Workouts;
 
 internal static class WorkoutRoutes
 {

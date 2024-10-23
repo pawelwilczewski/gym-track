@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.ExerciseInfoEndpoints;
+namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class EditExerciseInfoThumbnail : IEndpoint
 {

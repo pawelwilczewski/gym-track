@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.ExerciseInfoEndpoints.Step;
+namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal sealed class GetExerciseInfoStep : IEndpoint
 {

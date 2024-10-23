@@ -1,7 +1,7 @@
-using Api.Routes.App.ExerciseInfoEndpoints.Step;
 using Api.Routes.App.ExerciseInfoEndpointsEndpoints;
+using Api.Routes.App.ExerciseInfos.Steps;
 
-namespace Api.Routes.App.ExerciseInfoEndpoints;
+namespace Api.Routes.App.ExerciseInfos;
 
 internal static class ExerciseInfoRoutes
 {

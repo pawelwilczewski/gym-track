@@ -1,5 +1,5 @@
 using Api.Common;
-using Api.Files;
+using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
@@ -8,17 +8,17 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.ExerciseInfoEndpoints;
+namespace Api.Routes.App.ExerciseInfos;
 
-internal sealed class DeleteExerciseInfo : IEndpoint
+internal sealed class EditExerciseInfo : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			Guid id,
+			[FromRoute] Guid id,
+			[FromBody] EditExerciseInfoRequest request,
 			[FromServices] IDataContext dataContext,
-			IWebHostEnvironment environment,
 			CancellationToken cancellationToken) =>
 		{
 			var exerciseInfoId = new Id<ExerciseInfo>(id);
@@ -32,9 +32,18 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 			if (exerciseInfo is null) return TypedResults.NotFound();
 			if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
 
-			File.Delete(Paths.UrlToLocal(exerciseInfo.ThumbnailImage.ToString(), environment));
+			if (!exerciseInfo.Name.TrySet(request.Name, out var invalidName))
+			{
+				return TypedResults.BadRequest(invalidName.Error);
+			}
 
-			dataContext.ExerciseInfos.Remove(exerciseInfo);
+			if (!exerciseInfo.Description.TrySet(request.Description, out var invalidDescription))
+			{
+				return TypedResults.BadRequest(invalidDescription.Error);
+			}
+
+			exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;
+
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 			return TypedResults.Ok();
 		});

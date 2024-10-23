@@ -1,5 +1,4 @@
 using Api.Common;
-using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Identity;
@@ -8,16 +7,15 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.WorkoutEndpoints;
+namespace Api.Routes.App.Workouts;
 
-internal sealed class EditWorkout : IEndpoint
+internal sealed class DeleteWorkout : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapDelete("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
 			Guid id,
-			[FromBody] EditWorkoutRequest request,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
@@ -32,11 +30,7 @@ internal sealed class EditWorkout : IEndpoint
 			if (workout is null) return TypedResults.NotFound();
 			if (!httpContext.User.CanModifyOrDelete(workout.Users, out var reason)) return reason.ToResult();
 
-			if (!workout.Name.TrySet(request.Name, out var invalid))
-			{
-				return TypedResults.BadRequest(invalid.Error);
-			}
-
+			dataContext.Workouts.Remove(workout);
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 			return TypedResults.Ok();
 		});

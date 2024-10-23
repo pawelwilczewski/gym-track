@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.WorkoutEndpoints;
+namespace Api.Routes.App.Workouts;
 
 internal sealed class GetWorkout : IEndpoint
 {

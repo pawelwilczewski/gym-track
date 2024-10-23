@@ -6,7 +6,7 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Routes.App.WorkoutEndpoints;
+namespace Api.Routes.App.Workouts;
 
 internal sealed class CreateWorkout : IEndpoint
 {

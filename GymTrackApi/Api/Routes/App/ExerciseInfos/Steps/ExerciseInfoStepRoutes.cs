@@ -1,4 +1,4 @@
-namespace Api.Routes.App.ExerciseInfoEndpoints.Step;
+namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal static class ExerciseInfoStepRoutes
 {
