@@ -12,7 +12,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>>> (
+		builder.MapPost("/", async Task<Results<Ok, BadRequest<string>>> (
 				HttpContext httpContext,
 				[FromForm] string name,
 				[FromForm] string description,

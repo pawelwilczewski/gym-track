@@ -14,7 +14,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/create", async Task<Results<Ok, BadRequest<string>, NotFound>> (
+		builder.MapPost("/", async Task<Results<Ok, BadRequest<string>, NotFound>> (
 				HttpContext httpContext,
 				[FromRoute] Guid exerciseInfoId,
 				[FromForm] int index,
