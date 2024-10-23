@@ -4,7 +4,7 @@ internal static class WorkoutRoutes
 {
 	public static IEndpointRouteBuilder MapWorkoutRoutes(this IEndpointRouteBuilder builder)
 	{
-		builder.MapGroup("workout")
+		builder.MapGroup("workouts")
 			.RequireAuthorization()
 			.Map(new CreateWorkout())
 			.Map(new GetWorkout())
