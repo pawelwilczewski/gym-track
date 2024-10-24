@@ -22,9 +22,9 @@ internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<E
 		builder.Property(step => step.ImageFile).ConfigureOptionalFilePath();
 
 		builder
-			.HasOne(stepInfo => stepInfo.ExerciseInfo)
+			.HasOne(step => step.ExerciseInfo)
 			.WithMany(exerciseInfo => exerciseInfo.Steps)
-			.HasForeignKey(stepInfo => stepInfo.ExerciseInfoId)
+			.HasForeignKey(step => step.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

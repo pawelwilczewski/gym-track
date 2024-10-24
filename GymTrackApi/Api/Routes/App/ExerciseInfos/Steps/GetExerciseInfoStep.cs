@@ -32,13 +32,13 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 				return TypedResults.NotFound();
 			}
 
-			var stepInfo = exerciseInfo.Steps.SingleOrDefault();
-			if (stepInfo is null) return TypedResults.NotFound();
+			var step = exerciseInfo.Steps.SingleOrDefault();
+			if (step is null) return TypedResults.NotFound();
 
 			return TypedResults.Ok(new GetExerciseInfoStepResponse(
-				stepInfo.Index,
-				stepInfo.Description.ToString(),
-				stepInfo.ImageFile.Reduce(null)?.ToString()));
+				step.Index,
+				step.Description.ToString(),
+				step.ImageFile.Reduce(null)?.ToString()));
 		});
 
 		return builder;
