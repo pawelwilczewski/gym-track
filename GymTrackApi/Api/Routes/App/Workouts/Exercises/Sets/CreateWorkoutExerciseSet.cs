@@ -44,7 +44,9 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 
 			if (!exercise.ExerciseInfo.AllowedMetricTypes.HasFlag(request.Metric.Type))
 			{
-				return TypedResults.BadRequest($"Invalid metric type: {request.Metric.Type}. Accepted types are: {exercise.ExerciseInfo.AllowedMetricTypes}.");
+				return TypedResults.BadRequest(
+					$"Invalid metric type: {request.Metric.Type}. "
+					+ $"Accepted types are: {exercise.ExerciseInfo.AllowedMetricTypes}.");
 			}
 
 			var set = new Workout.Exercise.Set(exercise, request.Index, request.Metric, request.Reps);
