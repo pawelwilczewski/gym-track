@@ -1,3 +1,5 @@
+using Api.Routes.App.Workouts.Exercises;
+
 namespace Api.Routes.App.Workouts;
 
 internal static class WorkoutRoutes
@@ -9,7 +11,8 @@ internal static class WorkoutRoutes
 			.Map(new CreateWorkout())
 			.Map(new GetWorkout())
 			.Map(new EditWorkout())
-			.Map(new DeleteWorkout());
+			.Map(new DeleteWorkout())
+			.MapWorkoutExerciseRoutes();
 
 		return builder;
 	}
