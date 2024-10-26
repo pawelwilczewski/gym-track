@@ -13,7 +13,6 @@ public abstract record class ExerciseMetric
 }
 
 [DataContract]
-[method: JsonConstructor]
 public sealed record class Weight(
 	[property: DataMember] double Value,
 	[property: DataMember] Weight.Unit Units) : ExerciseMetric
@@ -28,7 +27,6 @@ public sealed record class Weight(
 }
 
 [DataContract]
-[method: JsonConstructor]
 public sealed record class Duration(
 	[property: DataMember] TimeSpan Time) : ExerciseMetric
 {
@@ -36,7 +34,6 @@ public sealed record class Duration(
 }
 
 [DataContract]
-[method: JsonConstructor]
 public sealed record class Distance(
 	[property: DataMember] double Value,
 	[property: DataMember] Distance.Unit Units) : ExerciseMetric
