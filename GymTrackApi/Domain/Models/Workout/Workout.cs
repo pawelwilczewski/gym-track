@@ -56,13 +56,14 @@ public class Workout
 			public int ExerciseIndex { get; private set; }
 			public int Index { get; private set; }
 
-			public virtual Exercise Exercise { get; private set; }
+			public virtual Exercise Exercise { get; private set; } = default!;
 
-			public ExerciseMetric Metric { get; private set; }
+			public ExerciseMetric Metric { get; private set; } = default!;
 
 			[Range(1, int.MaxValue, ErrorMessage = "Reps count can not be negative.")]
 			public int Reps { get; private set; }
 
+			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
 			public Set(Exercise exercise, int index, ExerciseMetric metric, int reps)
