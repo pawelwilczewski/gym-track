@@ -1,6 +1,7 @@
 using Api.Authorization;
 using Api.Routes;
 using Application.Serialization;
+using Asp.Versioning;
 using Domain.Models.Identity;
 using Infrastructure;
 using Infrastructure.Persistence;
@@ -31,6 +32,17 @@ builder.Services
 builder.Services
 	.AddIdentityApiEndpoints<User>()
 	.AddDefaultTokenProviders();
+
+builder.Services.AddApiVersioning(options =>
+	{
+		options.DefaultApiVersion = new ApiVersion(1);
+		options.ApiVersionReader = new UrlSegmentApiVersionReader();
+	})
+	.AddApiExplorer(options =>
+	{
+		options.GroupNameFormat = "'v'V";
+		options.SubstituteApiVersionInUrl = true;
+	});
 
 builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Configure());
 
