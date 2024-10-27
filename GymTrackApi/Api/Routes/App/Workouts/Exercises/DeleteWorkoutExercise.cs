@@ -6,23 +6,25 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Routes.App.Workouts;
+namespace Api.Routes.App.Workouts.Exercises;
 
-internal sealed class DeleteWorkout : IEndpoint
+internal sealed class DeleteWorkoutExercise : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("/{id:guid}", async Task<Results<Ok, NotFound<string>, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapDelete("{index:int}", async Task<Results<Ok, NotFound<string>, BadRequest<string>, UnauthorizedHttpResult>> (
 			HttpContext httpContext,
-			Guid id,
+			[FromRoute] Guid workoutId,
+			[FromRoute] int index,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
-			var workoutId = new Id<Workout>(id);
+			var workoutIdTyped = new Id<Workout>(workoutId);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.Users)
+				.Include(workout => workout.Exercises)
 				.FirstOrDefaultAsync(
-					workout => workout.Id == workoutId,
+					workout => workout.Id == workoutIdTyped,
 					cancellationToken)
 				.ConfigureAwait(false);
 
@@ -31,7 +33,10 @@ internal sealed class DeleteWorkout : IEndpoint
 				return TypedResults.NotFound("Workout not found.");
 			}
 
-			dataContext.Workouts.Remove(workout);
+			var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
+			if (exercise is null) return TypedResults.NotFound("Exercise not found.");
+
+			workout.Exercises.Remove(exercise);
 			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 			return TypedResults.Ok();
 		});
