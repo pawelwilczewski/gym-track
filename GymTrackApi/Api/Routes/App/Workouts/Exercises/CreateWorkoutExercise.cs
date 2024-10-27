@@ -35,6 +35,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 
 			var exerciseInfoId = new Id<ExerciseInfo>(request.ExerciseInfoId);
 			var exerciseInfo = await dataContext.ExerciseInfos
+				.AsNoTracking()
 				.Include(exerciseInfo => exerciseInfo.Users)
 				.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 				.ConfigureAwait(false);

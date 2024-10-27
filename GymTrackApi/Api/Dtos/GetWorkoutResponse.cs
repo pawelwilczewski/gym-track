@@ -5,4 +5,4 @@ namespace Api.Dtos;
 [DataContract]
 internal sealed record class GetWorkoutResponse(
 	[property: DataMember] string Name,
-	[property: DataMember] List<ExerciseKey> Exercises);
+	[property: DataMember] List<WorkoutExerciseKey> Exercises);

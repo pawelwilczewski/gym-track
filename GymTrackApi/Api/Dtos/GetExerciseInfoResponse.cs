@@ -9,4 +9,4 @@ internal sealed record class GetExerciseInfoResponse(
 	[property: DataMember] string Description,
 	[property: DataMember] ExerciseMetricType AllowedMetricTypes,
 	[property: DataMember] string ThumbnailUrl,
-	[property: DataMember] List<ExerciseKey> Exercises);
+	[property: DataMember] List<WorkoutExerciseKey> Exercises);

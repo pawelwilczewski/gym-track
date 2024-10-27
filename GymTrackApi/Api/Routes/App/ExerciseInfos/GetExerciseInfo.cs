@@ -33,7 +33,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 				exerciseInfo.Description.ToString(),
 				exerciseInfo.AllowedMetricTypes,
 				exerciseInfo.ThumbnailImage.ToString(),
-				exerciseInfo.Exercises.Select(exercise => new ExerciseKey(exercise.WorkoutId.Value, exercise.Index)).ToList()));
+				exerciseInfo.Exercises.Select(exercise => new WorkoutExerciseKey(exercise.WorkoutId.Value, exercise.Index)).ToList()));
 		});
 
 		return builder;

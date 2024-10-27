@@ -30,7 +30,7 @@ internal sealed class GetWorkout : IEndpoint
 
 			return TypedResults.Ok(new GetWorkoutResponse(
 				workout.Name.ToString(),
-				workout.Exercises.Select(exercise => new ExerciseKey(workoutId.Value, exercise.Index)).ToList()));
+				workout.Exercises.Select(exercise => new WorkoutExerciseKey(workoutId.Value, exercise.Index)).ToList()));
 		});
 
 		return builder;

@@ -54,7 +54,7 @@ public class Workout
 		{
 			public Id<Workout> WorkoutId { get; private set; }
 			public int ExerciseIndex { get; private set; }
-			public int SetIndex { get; private set; }
+			public int Index { get; private set; }
 
 			public virtual Exercise Exercise { get; private set; }
 
@@ -65,11 +65,11 @@ public class Workout
 
 			private Set() { }
 
-			public Set(Exercise exercise, int setIndex, ExerciseMetric metric, int reps)
+			public Set(Exercise exercise, int index, ExerciseMetric metric, int reps)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;
-				SetIndex = setIndex;
+				Index = index;
 				Exercise = exercise;
 				Metric = metric;
 				Reps = reps;

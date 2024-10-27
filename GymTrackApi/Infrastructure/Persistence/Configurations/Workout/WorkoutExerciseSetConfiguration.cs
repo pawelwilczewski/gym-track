@@ -16,7 +16,7 @@ internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration
 			{
 				set.WorkoutId,
 				set.ExerciseIndex,
-				set.SetIndex
+				SetIndex = set.Index
 			});
 
 		builder

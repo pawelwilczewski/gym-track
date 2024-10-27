@@ -9,6 +9,7 @@ internal static class WorkoutExerciseRoutes
 		builder.MapGroup("{workoutId:guid}/exercises")
 			.RequireAuthorization()
 			.Map(new CreateWorkoutExercise())
+			.Map(new GetWorkoutExercise())
 			.MapWorkoutExerciseSetRoutes();
 
 		return builder;
