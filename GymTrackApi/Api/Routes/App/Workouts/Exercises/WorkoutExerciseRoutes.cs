@@ -10,6 +10,7 @@ internal static class WorkoutExerciseRoutes
 			.RequireAuthorization()
 			.Map(new CreateWorkoutExercise())
 			.Map(new GetWorkoutExercise())
+			// .Map(new EditWorkoutExercise())
 			.Map(new DeleteWorkoutExercise())
 			.MapWorkoutExerciseSetRoutes();
 
