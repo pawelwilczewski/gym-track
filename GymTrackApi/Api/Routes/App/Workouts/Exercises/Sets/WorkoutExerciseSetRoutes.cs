@@ -7,7 +7,8 @@ internal static class WorkoutExerciseSetRoutes
 		builder.MapGroup("{exerciseIndex:int}/sets")
 			.RequireAuthorization()
 			.Map(new CreateWorkoutExerciseSet())
-			.Map(new DeleteWorkoutExerciseSet());
+			.Map(new DeleteWorkoutExerciseSet())
+			.Map(new GetWorkoutExerciseSet());
 
 		return builder;
 	}
