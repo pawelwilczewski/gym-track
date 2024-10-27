@@ -12,7 +12,7 @@ internal sealed class DeleteWorkoutExercise : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{index:int}", async Task<Results<Ok, NotFound<string>, BadRequest<string>, UnauthorizedHttpResult>> (
+		builder.MapDelete("{index:int}", async Task<Results<Ok, NotFound<string>>> (
 			HttpContext httpContext,
 			[FromRoute] Guid workoutId,
 			[FromRoute] int index,

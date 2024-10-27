@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Domain.Common;
 
@@ -58,10 +57,9 @@ public class Workout
 
 			public virtual Exercise Exercise { get; private set; } = default!;
 
-			public ExerciseMetric Metric { get; private set; } = default!;
+			public ExerciseMetric Metric { get; set; } = default!;
 
-			[Range(1, int.MaxValue, ErrorMessage = "Reps count can not be negative.")]
-			public int Reps { get; private set; }
+			public int Reps { get; set; }
 
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }

@@ -9,21 +9,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.Workouts.Exercises.Sets;
 
-internal sealed class GetWorkoutExerciseSet : IEndpoint
+internal sealed class EditWorkoutExerciseSet : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{index:int}", async Task<Results<Ok<GetWorkoutExerciseSetResponse>, NotFound<string>>> (
+		builder.MapPut("{index:int}", async Task<Results<Ok, NotFound<string>, BadRequest<string>>> (
 			HttpContext httpContext,
 			[FromRoute] Guid workoutId,
 			[FromRoute] int exerciseIndex,
 			[FromRoute] int index,
+			[FromBody] EditWorkoutExerciseSetRequest request,
 			[FromServices] IDataContext dataContext,
 			CancellationToken cancellationToken) =>
 		{
 			var workoutIdTyped = new Id<Workout>(workoutId);
 			var workout = await dataContext.Workouts
 				.Include(workout => workout.Users)
+				.Include(workout => workout.Exercises)
+				.ThenInclude(exercise => exercise.ExerciseInfo)
 				.Include(workout => workout.Exercises)
 				.ThenInclude(exercise => exercise.Sets)
 				.FirstOrDefaultAsync(
@@ -42,7 +45,17 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 			var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
 			if (set is null) return TypedResults.NotFound("Set not found.");
 
-			return TypedResults.Ok(new GetWorkoutExerciseSetResponse(set.Index, set.Metric, set.Reps));
+			if (!exercise.ExerciseInfo.AllowedMetricTypes.HasFlag(request.Metric.Type))
+			{
+				return TypedResults.BadRequest(
+					$"Invalid metric type: {request.Metric.Type}. "
+					+ $"Accepted types are: {exercise.ExerciseInfo.AllowedMetricTypes}.");
+			}
+
+			set.Metric = request.Metric;
+			set.Reps = request.Reps;
+
+			return TypedResults.Ok();
 		});
 
 		return builder;
