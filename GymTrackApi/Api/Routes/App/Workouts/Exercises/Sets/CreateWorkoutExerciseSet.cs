@@ -20,7 +20,6 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			[FromRoute] int exerciseIndex,
 			[FromBody] CreateWorkoutExerciseSetRequest request,
 			[FromServices] IDataContext dataContext,
-			[FromServices] UserManager<User> userManager,
 			CancellationToken cancellationToken) =>
 		{
 			var workoutIdTyped = new Id<Workout>(workoutId);

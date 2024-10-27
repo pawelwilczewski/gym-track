@@ -4,7 +4,6 @@ using Domain.Models;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +18,6 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 			[FromRoute] Guid workoutId,
 			[FromBody] CreateWorkoutExerciseRequest request,
 			[FromServices] IDataContext dataContext,
-			[FromServices] UserManager<User> userManager,
 			CancellationToken cancellationToken) =>
 		{
 			var workoutIdTyped = new Id<Workout>(workoutId);
