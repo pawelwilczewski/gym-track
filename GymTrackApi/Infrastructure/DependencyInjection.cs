@@ -12,7 +12,7 @@ public static class DependencyInjection
 	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
 		services
-			.AddDbContext<AppDbContext>(options =>
+			.AddDbContext<IDataContext, AppDbContext>(options =>
 			{
 				options
 					.UseNpgsql(configuration.GetConnectionString("AppDb"));
@@ -21,8 +21,7 @@ public static class DependencyInjection
 				{
 					options.EnableSensitiveDataLogging();
 				}
-			})
-			.AddScoped<IDataContext, DataContext>();
+			});
 
 		services
 			.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)

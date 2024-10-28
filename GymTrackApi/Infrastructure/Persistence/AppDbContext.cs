@@ -1,13 +1,15 @@
-using System.Reflection;
+using Application.Persistence;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
+
 namespace Infrastructure.Persistence;
 
-internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
+internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>, IDataContext
 {
 	public DbSet<UserWorkout> UserWorkouts { get; private set; } = null!;
 	public DbSet<UserExerciseInfo> UserExerciseInfos { get; private set; } = null!;
@@ -17,8 +19,7 @@ internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 	public DbSet<ExerciseInfo> ExerciseInfos { get; private set; } = null!;
 	public DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; private set; } = null!;
 
-	public AppDbContext(DbContextOptions<AppDbContext> options)
-		: base(options) =>
+	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) =>
 		ChangeTracker.LazyLoadingEnabled = false;
 
 	public AppDbContext() // for creating migrations
