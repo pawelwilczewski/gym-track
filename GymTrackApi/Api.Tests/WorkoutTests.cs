@@ -8,34 +8,25 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Tests;
 
-internal sealed class WorkoutTests
+internal sealed class WorkoutTests : DataContextBasedTests
 {
-	private IDataContext dataContext = default!;
-
-	[Before(Test)]
-	public async Task SetUpEach()
+	protected override async Task SetUpDataContext(IDataContext dataContext)
 	{
-		dataContext = DataContextMocks.CreateEmpty();
-
 		Name.TryCreate("Hello", out var name, out _);
-		await dataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!));
-	}
-
-	[After(Test)]
-	public void CleanUpEach()
-	{
-		dataContext.Dispose();
+		await DataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!));
 	}
 
 	[Test]
 	public async Task CreateWorkout_AdminWithValidData_ReturnsOk()
 	{
+		Name.TryCreate("Hello", out var name, out _);
+		await DataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!));
+
 		var result = await CreateWorkout.Handler(
 			HttpContextMocks.Admin,
 			new CreateWorkoutRequest("Test Workout"),
-			dataContext,
-			CancellationToken.None
-		);
+			DataContext,
+			CancellationToken.None);
 
 		await Assert.That(result.Result).IsTypeOf<Ok>();
 	}
