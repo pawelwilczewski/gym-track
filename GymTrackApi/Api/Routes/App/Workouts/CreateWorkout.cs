@@ -10,29 +10,30 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class CreateWorkout : IEndpoint
 {
+	public static async Task<Results<Ok, BadRequest<string>>> Handler(
+		HttpContext httpContext,
+		[FromBody] CreateWorkoutRequest request,
+		[FromServices] IDataContext dataContext,
+		CancellationToken cancellationToken)
+	{
+		if (!Name.TryCreate(request.Name, out var name, out var invalid))
+		{
+			return TypedResults.BadRequest(invalid.Error);
+		}
+
+		var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
+			? Workout.CreateForEveryone(name)
+			: Workout.CreateForUser(name, httpContext.User);
+
+		dataContext.Workouts.Add(workout);
+		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+		return TypedResults.Ok();
+	}
+
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/", async Task<Results<Ok, BadRequest<string>>> (
-			HttpContext httpContext,
-			[FromBody] CreateWorkoutRequest request,
-			[FromServices] IDataContext dataContext,
-			CancellationToken cancellationToken) =>
-		{
-			if (!Name.TryCreate(request.Name, out var name, out var invalid))
-			{
-				return TypedResults.BadRequest(invalid.Error);
-			}
-
-			var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-				? Workout.CreateForEveryone(name)
-				: Workout.CreateForUser(name, httpContext.User);
-
-			dataContext.Workouts.Add(workout);
-			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-			return TypedResults.Ok();
-		});
-
+		builder.MapPost("/", Handler);
 		return builder;
 	}
 }
