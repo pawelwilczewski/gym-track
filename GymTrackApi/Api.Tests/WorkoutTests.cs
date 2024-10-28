@@ -2,39 +2,57 @@
 using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Application.Persistence;
+using Domain.Models;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Moq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Tests;
 
 internal sealed class WorkoutTests
 {
+	private static HttpContext httpContext = default!;
+
+	[Before(Class)]
+	public static void SetUpAll()
+	{
+		Claim[] identityClaims = [new(ClaimTypes.Role, Role.ADMINISTRATOR)];
+		var userClaims = new ClaimsPrincipal(new ClaimsIdentity(identityClaims));
+		httpContext = new DefaultHttpContext
+		{
+			User = userClaims
+		};
+	}
+
+	private IDataContext dataContext = default!;
+
 	[Before(Test)]
-	public void Setup() { }
+	public async Task SetUpEach()
+	{
+		dataContext = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
+			.UseInMemoryDatabase("GymTrack-Test")
+			.Options);
+
+		Name.TryCreate("Hello", out var name, out _);
+		await dataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!));
+	}
+
+	[After(Test)]
+	public void CleanUpEach()
+	{
+		dataContext.Dispose();
+	}
 
 	[Test]
 	public async Task CreateWorkout_AdminWithValidData_ReturnsOk()
 	{
-		var mockDataContext = new Mock<IDataContext>();
-
-		mockDataContext.Setup(dc => dc.Workouts.Add(It.IsAny<Workout>()));
-		mockDataContext.Setup(dc => dc.SaveChangesAsync(CancellationToken.None)).ReturnsAsync(1);
-
-		var userClaims = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Role, Role.ADMINISTRATOR)]));
-		var mockHttpContext = new DefaultHttpContext
-		{
-			User = userClaims
-		};
-
-		var request = new CreateWorkoutRequest("Test Workout");
-
 		var result = await CreateWorkout.Handler(
-			mockHttpContext,
-			request,
-			mockDataContext.Object,
+			httpContext,
+			new CreateWorkoutRequest("Test Workout"),
+			dataContext,
 			CancellationToken.None
 		);
 
