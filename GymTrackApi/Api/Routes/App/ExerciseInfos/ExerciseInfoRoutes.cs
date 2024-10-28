@@ -1,4 +1,3 @@
-using Api.Routes.App.ExerciseInfoEndpointsEndpoints;
 using Api.Routes.App.ExerciseInfos.Steps;
 
 namespace Api.Routes.App.ExerciseInfos;

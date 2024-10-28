@@ -12,35 +12,33 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class EditWorkout : IEndpoint
 {
+	public static async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+		HttpContext httpContext,
+		[FromRoute] Guid id,
+		[FromBody] EditWorkoutRequest request,
+		[FromServices] IDataContext dataContext,
+		CancellationToken cancellationToken)
+	{
+		var workoutId = new Id<Workout>(id);
+		var workout = await dataContext.Workouts.Include(workout => workout.Users)
+			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken)
+			.ConfigureAwait(false);
+
+		if (workout is null) return TypedResults.NotFound();
+		if (!httpContext.User.CanModifyOrDelete(workout.Users, out var reason)) return reason.ToResult();
+
+		if (!workout.Name.TrySet(request.Name, out var invalid))
+		{
+			return TypedResults.BadRequest(invalid.Error);
+		}
+
+		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+		return TypedResults.Ok();
+	}
+
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("/{id:guid}", async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> (
-			HttpContext httpContext,
-			Guid id,
-			[FromBody] EditWorkoutRequest request,
-			[FromServices] IDataContext dataContext,
-			CancellationToken cancellationToken) =>
-		{
-			var workoutId = new Id<Workout>(id);
-			var workout = await dataContext.Workouts
-				.Include(workout => workout.Users)
-				.FirstOrDefaultAsync(
-					workout => workout.Id == workoutId,
-					cancellationToken)
-				.ConfigureAwait(false);
-
-			if (workout is null) return TypedResults.NotFound();
-			if (!httpContext.User.CanModifyOrDelete(workout.Users, out var reason)) return reason.ToResult();
-
-			if (!workout.Name.TrySet(request.Name, out var invalid))
-			{
-				return TypedResults.BadRequest(invalid.Error);
-			}
-
-			await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-			return TypedResults.Ok();
-		});
-
+		builder.MapPut("{id:guid}", Handler);
 		return builder;
 	}
 }

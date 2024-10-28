@@ -33,7 +33,7 @@ internal sealed class CreateWorkout : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/", Handler);
+		builder.MapPost("", Handler);
 		return builder;
 	}
 }
