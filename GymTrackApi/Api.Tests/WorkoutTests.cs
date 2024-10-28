@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Application.Persistence;
@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 
-namespace Api.Tests.App;
+namespace Api.Tests;
 
-public sealed class WorkoutTests
+internal sealed class WorkoutTests
 {
-	[Fact]
+	[Before(Test)]
+	public void Setup() { }
+
+	[Test]
 	public async Task CreateWorkout_AdminWithValidData_ReturnsOk()
 	{
 		var mockDataContext = new Mock<IDataContext>();
@@ -35,6 +38,6 @@ public sealed class WorkoutTests
 			CancellationToken.None
 		);
 
-		Assert.IsType<Ok>(result.Result);
+		await Assert.That(result.Result).IsTypeOf<Ok>();
 	}
 }
