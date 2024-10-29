@@ -20,6 +20,7 @@ internal static class AuthRoutes
 	{
 		var root = builder.MapGroup("auth");
 		root
+			.WithTags("Auth")
 			.Map(new Login())
 			.Map(new Register())
 			.Map(new Refresh())

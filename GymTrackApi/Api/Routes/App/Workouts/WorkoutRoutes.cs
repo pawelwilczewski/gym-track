@@ -8,6 +8,7 @@ internal static class WorkoutRoutes
 	{
 		builder.MapGroup("workouts")
 			.RequireAuthorization()
+			.WithTags("Workout")
 			.Map(new CreateWorkout())
 			.Map(new GetWorkout())
 			.Map(new EditWorkout())
