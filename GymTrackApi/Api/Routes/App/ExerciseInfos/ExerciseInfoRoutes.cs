@@ -7,6 +7,7 @@ internal static class ExerciseInfoRoutes
 	public static IEndpointRouteBuilder MapExerciseInfoRoutes(this IEndpointRouteBuilder builder)
 	{
 		builder.MapGroup("exerciseInfos")
+			.RequireAuthorization()
 			.Map(new CreateExerciseInfo())
 			.Map(new GetExerciseInfo())
 			.Map(new EditExerciseInfo())
