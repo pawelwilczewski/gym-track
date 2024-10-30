@@ -19,6 +19,8 @@ internal static class HttpContextMocks
 	// TODO: ^ Fix this and \/
 	// TODO: Add basic admin and user entities to the "empty" db so they can be used easily
 
-	// TODO: more appropriate response types (i.e. 201 Created)
+	// TODO: more appropriate response types (i.e. 201 Created, 403 Forbidden)
+	// TODO: ^ return 403 in dev, and in production return 404 using middleware
+
 	// TODO: finish writing tests
 }
