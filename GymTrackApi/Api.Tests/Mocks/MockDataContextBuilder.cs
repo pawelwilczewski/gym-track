@@ -40,8 +40,7 @@ internal sealed class MockDataContextBuilder
 			var userValidators = new List<IUserValidator<User>>();
 			var validator = new Mock<IUserValidator<User>>();
 			userValidators.Add(validator.Object);
-			var passwordValidators = new List<PasswordValidator<User>>();
-			passwordValidators.Add(new PasswordValidator<User>());
+			List<PasswordValidator<User>> passwordValidators = [new()];
 			var userManager = new UserManager<User>(userStore, options.Object, new PasswordHasher<User>(),
 				userValidators, passwordValidators, new UpperInvariantLookupNormalizer(),
 				new IdentityErrorDescriber(), new ServiceContainer(),
@@ -55,24 +54,23 @@ internal sealed class MockDataContextBuilder
 		async Task<RoleManager<Role>> CreateRoleManager(AppDbContext dbContext)
 		{
 			var roleStore = new RoleStore<Role, AppDbContext, Guid>(dbContext);
-			var roles = new List<IRoleValidator<Role>>();
-			roles.Add(new RoleValidator<Role>());
-			var roleManager = new RoleManager<Role>(roleStore, roles,
+			List<IRoleValidator<Role>> validators = [new RoleValidator<Role>()];
+			var roleManager = new RoleManager<Role>(roleStore, validators,
 				MockLookupNormalizer(),
 				new IdentityErrorDescriber(),
 				new Mock<ILogger<RoleManager<Role>>>().Object);
 
 			// add default roles
-			await roleManager.CreateAsync(new Role(Role.ADMINISTRATOR));
+			await roleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
 
 			return roleManager;
 
 			static ILookupNormalizer MockLookupNormalizer()
 			{
-				var normalizerFunc = new Func<string, string>(i => i == null ? null : Convert.ToBase64String(Encoding.UTF8.GetBytes(i)).ToUpperInvariant());
+				var normalizerFunc = new Func<string?, string?>(i => i == null ? null : Convert.ToBase64String(Encoding.UTF8.GetBytes(i)).ToUpperInvariant());
 				var lookupNormalizer = new Mock<ILookupNormalizer>();
-				lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string>())).Returns(normalizerFunc);
-				lookupNormalizer.Setup(i => i.NormalizeEmail(It.IsAny<string>())).Returns(normalizerFunc);
+				lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string?>())).Returns(normalizerFunc);
+				lookupNormalizer.Setup(i => i.NormalizeEmail(It.IsAny<string?>())).Returns(normalizerFunc);
 				return lookupNormalizer.Object;
 			}
 		}
