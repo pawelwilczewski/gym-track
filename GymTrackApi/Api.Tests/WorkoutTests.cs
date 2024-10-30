@@ -12,7 +12,7 @@ internal sealed class WorkoutTests
 	[Test]
 	public async Task CreateWorkout_AdminWithValidData_ReturnsOk()
 	{
-		using var dataContext = await (await MockDataContextBuilder.CreateEmpty())
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser("test@test.com")
 			.WithAdminUser("admin@admin.com")
 			.Build()

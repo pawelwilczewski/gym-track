@@ -1,5 +1,4 @@
 using System.ComponentModel.Design;
-using System.Text;
 using Application.Persistence;
 using Domain.Models.Identity;
 using Infrastructure.Persistence;
@@ -17,18 +16,22 @@ internal sealed class MockDataContextBuilder
 	private const string ADMIN_PASSWORD = "Admin!123";
 	private const string USER_PASSWORD = "User!123";
 
-	public static async Task<MockDataContextBuilder> CreateEmpty()
+	public static MockDataContextBuilder CreateEmpty()
 	{
 		var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
 			.UseInMemoryDatabase("GymTrack-Test")
 			.Options);
 
-		return new MockDataContextBuilder
+		var builder = new MockDataContextBuilder
 		{
 			Context = context,
-			RoleManager = await CreateRoleManager(context).ConfigureAwait(false),
+			RoleManager = CreateRoleManager(context),
 			UserManager = CreateUserManager(context)
 		};
+
+		builder.tasks.Add(async () => await AddDefaultRoles(builder));
+
+		return builder;
 
 		UserManager<User> CreateUserManager(AppDbContext dbContext)
 		{
@@ -51,30 +54,21 @@ internal sealed class MockDataContextBuilder
 			return userManager;
 		}
 
-		async Task<RoleManager<Role>> CreateRoleManager(AppDbContext dbContext)
+		RoleManager<Role> CreateRoleManager(AppDbContext dbContext)
 		{
 			var roleStore = new RoleStore<Role, AppDbContext, Guid>(dbContext);
 			List<IRoleValidator<Role>> validators = [new RoleValidator<Role>()];
 			var roleManager = new RoleManager<Role>(roleStore, validators,
-				MockLookupNormalizer(),
+				new UpperInvariantLookupNormalizer(),
 				new IdentityErrorDescriber(),
 				new Mock<ILogger<RoleManager<Role>>>().Object);
 
-			// add default roles
-			await roleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
-
 			return roleManager;
-
-			static ILookupNormalizer MockLookupNormalizer()
-			{
-				var normalizerFunc = new Func<string?, string?>(i => i == null ? null : Convert.ToBase64String(Encoding.UTF8.GetBytes(i)).ToUpperInvariant());
-				var lookupNormalizer = new Mock<ILookupNormalizer>();
-				lookupNormalizer.Setup(i => i.NormalizeName(It.IsAny<string?>())).Returns(normalizerFunc);
-				lookupNormalizer.Setup(i => i.NormalizeEmail(It.IsAny<string?>())).Returns(normalizerFunc);
-				return lookupNormalizer.Object;
-			}
 		}
 	}
+
+	private static async Task AddDefaultRoles(MockDataContextBuilder builder) =>
+		await builder.RoleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
 
 	private IDataContext Context { get; init; } = default!;
 	private UserManager<User> UserManager { get; init; } = default!;
