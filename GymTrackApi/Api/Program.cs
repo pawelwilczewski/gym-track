@@ -1,4 +1,5 @@
 using Api.Authorization;
+using Api.Common;
 using Api.Routes;
 using Application.Serialization;
 using Asp.Versioning;
@@ -55,8 +56,11 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
-else
+
+if (app.Environment.IsProduction())
 {
+	app.Use404InsteadOf403();
+	app.Strip404Body();
 	app.UseAntiforgery();
 }
 
