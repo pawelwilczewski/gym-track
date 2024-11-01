@@ -1,7 +1,7 @@
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal sealed class GetExerciseInfoStep : IEndpoint
 {
-	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound>> Handler(
+	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
@@ -24,13 +24,11 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
-		if (exerciseInfo is null || !httpContext.User.CanAccess(exerciseInfo.Users))
-		{
-			return TypedResults.NotFound();
-		}
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
+		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var step = exerciseInfo.Steps.SingleOrDefault();
-		if (step is null) return TypedResults.NotFound();
+		if (step is null) return TypedResults.NotFound("Step not found.");
 
 		return TypedResults.Ok(new GetExerciseInfoStepResponse(step.Index, step.Description.ToString(), step.ImageFile.Reduce(null)?.ToString()));
 	}

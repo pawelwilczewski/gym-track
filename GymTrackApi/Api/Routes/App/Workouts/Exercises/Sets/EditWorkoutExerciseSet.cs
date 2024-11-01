@@ -1,7 +1,8 @@
+using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace Api.Routes.App.Workouts.Exercises.Sets;
 
 internal sealed class EditWorkoutExerciseSet : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound<string>, BadRequest<string>>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int exerciseIndex,
@@ -29,10 +30,8 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (workout is null || !httpContext.User.CanAccess(workout.Users))
-		{
-			return TypedResults.NotFound("Workout not found.");
-		}
+		if (workout is null) return TypedResults.NotFound("Workout not found.");
+		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
@@ -42,14 +41,13 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 
 		if (!exercise.ExerciseInfo.AllowedMetricTypes.HasFlag(request.Metric.Type))
 		{
-			return TypedResults.BadRequest($"Invalid metric type: {request.Metric.Type}. "
-				+ $"Accepted types are: {exercise.ExerciseInfo.AllowedMetricTypes}.");
+			return request.Metric.NotAllowedValidationProblem();
 		}
 
 		set.Metric = request.Metric;
 		set.Reps = request.Reps;
 
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

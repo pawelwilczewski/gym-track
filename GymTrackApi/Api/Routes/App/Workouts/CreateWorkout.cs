@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
@@ -10,7 +11,7 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class CreateWorkout : IEndpoint
 {
-	public static async Task<Results<Ok, BadRequest<string>>> Handler(
+	public static async Task<Results<Created, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromBody] CreateWorkoutRequest request,
 		[FromServices] IDataContext dataContext,
@@ -18,7 +19,7 @@ internal sealed class CreateWorkout : IEndpoint
 	{
 		if (!Name.TryCreate(request.Name, out var name, out var invalid))
 		{
-			return TypedResults.BadRequest(invalid.Error);
+			return invalid.ToValidationProblem("Name");
 		}
 
 		var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)
@@ -28,7 +29,7 @@ internal sealed class CreateWorkout : IEndpoint
 		dataContext.Workouts.Add(workout);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Ok();
+		return TypedResults.Created();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

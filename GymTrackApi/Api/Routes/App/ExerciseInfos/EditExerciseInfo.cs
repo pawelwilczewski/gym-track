@@ -2,7 +2,7 @@ using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class EditExerciseInfo : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromBody] EditExerciseInfoRequest request,
@@ -24,23 +24,23 @@ internal sealed class EditExerciseInfo : IEndpoint
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfo is null) return TypedResults.NotFound();
-		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
+		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		if (!exerciseInfo.Name.TrySet(request.Name, out var invalidName))
 		{
-			return TypedResults.BadRequest(invalidName.Error);
+			return invalidName.ToValidationProblem("Name");
 		}
 
 		if (!exerciseInfo.Description.TrySet(request.Description, out var invalidDescription))
 		{
-			return TypedResults.BadRequest(invalidDescription.Error);
+			return invalidDescription.ToValidationProblem("Description");
 		}
 
 		exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

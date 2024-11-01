@@ -1,7 +1,7 @@
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal sealed class DeleteExerciseInfoStep : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
@@ -27,13 +27,10 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 				&& exerciseInfoStep.Index == index, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfoStep is null) return TypedResults.NotFound();
+		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found");
 
 		var exerciseInfo = exerciseInfoStep.ExerciseInfo;
-		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _))
-		{
-			return TypedResults.NotFound();
-		}
+		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		if (exerciseInfoStep.ImageFile.Reduce(null) is not null)
 		{
@@ -43,7 +40,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		exerciseInfo.Steps.Remove(exerciseInfoStep);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

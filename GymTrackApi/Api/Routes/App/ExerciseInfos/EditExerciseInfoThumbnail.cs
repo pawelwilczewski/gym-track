@@ -1,7 +1,7 @@
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class EditExerciseInfoThumbnail : IEndpoint
 {
-	public static async Task<Results<Ok, BadRequest<string>, NotFound>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromForm] IFormFile thumbnailImage,
@@ -24,16 +24,14 @@ internal sealed class EditExerciseInfoThumbnail : IEndpoint
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfo is null || !httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _))
-		{
-			return TypedResults.NotFound();
-		}
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
+		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
 		var localPath = Path.Combine(environment.WebRootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
 		await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

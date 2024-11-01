@@ -1,7 +1,7 @@
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class GetWorkout : IEndpoint
 {
-	public static async Task<Results<Ok<GetWorkoutResponse>, NotFound>> Handler(
+	public static async Task<Results<Ok<GetWorkoutResponse>, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromServices] IDataContext dataContext,
@@ -23,7 +23,8 @@ internal sealed class GetWorkout : IEndpoint
 			.Include(workout => workout.Exercises)
 			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken);
 
-		if (workout is null || !httpContext.User.CanAccess(workout.Users)) return TypedResults.NotFound();
+		if (workout is null) return TypedResults.NotFound("Workout not found.");
+		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
 
 		return TypedResults.Ok(new GetWorkoutResponse(
 			workout.Name.ToString(),

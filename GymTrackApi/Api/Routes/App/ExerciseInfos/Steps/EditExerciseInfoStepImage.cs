@@ -1,8 +1,9 @@
+using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Common;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal sealed class EditExerciseInfoStepImage : IEndpoint
 {
-	public static async Task<Results<Ok, BadRequest<string>, NotFound>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
@@ -27,16 +28,11 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfo is null || !httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out _)) // TODO Pawel: this is inconsistent to other usages of CanModifyOrDelete - should we return little info with NotFound or a more specific code instead?
-		{
-			return TypedResults.NotFound();
-		}
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
+		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var exerciseInfoStep = exerciseInfo.Steps.SingleOrDefault();
-		if (exerciseInfoStep is null) return TypedResults.NotFound();
-
-		string? test = null;
-		var a = FilePath.OptionalConverter.ConvertFromProviderTyped(test);
+		if (exerciseInfoStep is null) return TypedResults.NotFound("Exercise info step not found.");
 
 		if (image is not null)
 		{
@@ -46,7 +42,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 				var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
 				if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
 				{
-					return TypedResults.BadRequest(invalidPath.Error);
+					return invalidPath.ToValidationProblem("Image File Path");
 				}
 
 				localPath = Paths.UrlToLocal(urlPath, environment);
@@ -71,7 +67,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

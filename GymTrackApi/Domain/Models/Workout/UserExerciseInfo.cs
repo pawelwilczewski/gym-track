@@ -1,3 +1,4 @@
+using Domain.Models.Common;
 using Domain.Models.Identity;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local

@@ -1,8 +1,7 @@
-using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,7 @@ namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class DeleteExerciseInfo : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromServices] IDataContext dataContext,
@@ -24,20 +23,19 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfo is null) return TypedResults.NotFound();
-		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users, out var reason)) return reason.ToResult();
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
+		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		File.Delete(Paths.UrlToLocal(exerciseInfo.ThumbnailImage.ToString(), environment));
 
 		dataContext.ExerciseInfos.Remove(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapDelete("{id:guid}", Handler);
-
 		return builder;
 	}
 }

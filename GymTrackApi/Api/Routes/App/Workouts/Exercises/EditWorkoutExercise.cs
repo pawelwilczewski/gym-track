@@ -1,7 +1,7 @@
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,9 @@ namespace Api.Routes.App.Workouts.Exercises;
 
 internal sealed class EditWorkoutExercise : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound<string>, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	// NOTE: this is currently useless
+
+	public static async Task<Results<NoContent, NotFound<string>, ValidationProblem, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int index,
@@ -25,10 +27,8 @@ internal sealed class EditWorkoutExercise : IEndpoint
 			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (workout is null || !httpContext.User.CanModifyOrDelete(workout.Users, out _))
-		{
-			return TypedResults.NotFound("Workout not found.");
-		}
+		if (workout is null) return TypedResults.NotFound("Workout not found.");
+		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
@@ -37,7 +37,7 @@ internal sealed class EditWorkoutExercise : IEndpoint
 		// exercise.Index = request.Index;
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

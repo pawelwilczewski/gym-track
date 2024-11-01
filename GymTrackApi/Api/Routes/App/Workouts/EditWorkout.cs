@@ -2,7 +2,7 @@ using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class EditWorkout : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ValidationProblem, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromBody] EditWorkoutRequest request,
@@ -24,16 +24,13 @@ internal sealed class EditWorkout : IEndpoint
 			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (workout is null) return TypedResults.NotFound();
-		if (!httpContext.User.CanModifyOrDelete(workout.Users, out var reason)) return reason.ToResult();
+		if (workout is null) return TypedResults.NotFound("Workout not found.");
+		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
-		if (!workout.Name.TrySet(request.Name, out var invalid))
-		{
-			return TypedResults.BadRequest(invalid.Error);
-		}
+		if (!workout.Name.TrySet(request.Name, out var invalid)) return invalid.ToValidationProblem("Name");
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

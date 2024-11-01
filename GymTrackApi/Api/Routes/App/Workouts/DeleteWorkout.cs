@@ -1,6 +1,6 @@
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Identity;
+using Domain.Models.Common;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace Api.Routes.App.Workouts;
 
 internal sealed class DeleteWorkout : IEndpoint
 {
-	public static async Task<Results<Ok, NotFound<string>, BadRequest<string>, UnauthorizedHttpResult>> Handler(
+	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromServices] IDataContext dataContext,
@@ -21,14 +21,12 @@ internal sealed class DeleteWorkout : IEndpoint
 			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (workout is null || !httpContext.User.CanModifyOrDelete(workout.Users, out _))
-		{
-			return TypedResults.NotFound("Workout not found.");
-		}
+		if (workout is null) return TypedResults.NotFound("Workout not found.");
+		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
 		dataContext.Workouts.Remove(workout);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.Ok();
+		return TypedResults.NoContent();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

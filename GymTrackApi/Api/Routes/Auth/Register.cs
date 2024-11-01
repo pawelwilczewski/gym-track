@@ -10,7 +10,7 @@ internal sealed class Register : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/register", async Task<Results<Ok, ValidationProblem>> (
+		builder.MapPost("/register", async Task<Results<NoContent, ValidationProblem>> (
 			[FromBody] RegisterRequest registration,
 			HttpContext context,
 			[FromServices] UserManager<User> userManager,
@@ -42,7 +42,7 @@ internal sealed class Register : IEndpoint
 			}
 
 			await AuthRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
-			return TypedResults.Ok();
+			return TypedResults.NoContent();
 		});
 
 		return builder;

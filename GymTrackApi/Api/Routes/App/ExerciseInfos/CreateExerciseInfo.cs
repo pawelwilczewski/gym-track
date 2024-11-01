@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
@@ -10,7 +11,7 @@ namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class CreateExerciseInfo : IEndpoint
 {
-	public static async Task<Results<Ok, BadRequest<string>>> Handler(
+	public static async Task<Results<Created, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromForm] string name,
 		[FromForm] string description,
@@ -22,12 +23,12 @@ internal sealed class CreateExerciseInfo : IEndpoint
 	{
 		if (!Name.TryCreate(name, out var exerciseInfoName, out var invalidName))
 		{
-			return TypedResults.BadRequest(invalidName.Error);
+			return invalidName.ToValidationProblem("Name");
 		}
 
 		if (!Description.TryCreate(description, out var exerciseInfoDescription, out var invalidDescription))
 		{
-			return TypedResults.BadRequest(invalidDescription.Error);
+			return invalidDescription.ToValidationProblem("Description");
 		}
 
 		var id = Id<ExerciseInfo>.New();
@@ -35,7 +36,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
 		if (!FilePath.TryCreate(urlPath, out var path, out var invalidPath))
 		{
-			return TypedResults.BadRequest(invalidPath.Error);
+			return invalidPath.ToValidationProblem("Thumbnail File Path");
 		}
 
 		var localPath = Path.Combine(environment.WebRootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
@@ -48,7 +49,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		dataContext.ExerciseInfos.Add(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Ok();
+		return TypedResults.Created();
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

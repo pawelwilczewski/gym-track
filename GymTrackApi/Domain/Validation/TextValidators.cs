@@ -5,11 +5,11 @@ public delegate TextValidationResult TextValidator(string text);
 public static class TextValidators
 {
 	private static TextValidationResult NotNull(string? text) => text == null
-		? new TextValidationResult.Invalid("Text is required.")
+		? new TextValidationResult.Invalid("Value required.")
 		: new TextValidationResult.Success();
 
 	private static TextValidationResult NotNullOrWhitespace(string text) => string.IsNullOrWhiteSpace(text)
-		? new TextValidationResult.Invalid("Text cannot be empty.")
+		? new TextValidationResult.Invalid("Value cannot be empty.")
 		: new TextValidationResult.Success();
 
 	private static TextValidationResult MinLength(string text, int minLength)
@@ -17,7 +17,7 @@ public static class TextValidators
 		if (minLength < 0) return new TextValidationResult.Invalid("Min length must be greater than or equal to 0 (internal error).");
 
 		return text.Length < minLength
-			? new TextValidationResult.Invalid($"Text too short (min {minLength} characters).")
+			? new TextValidationResult.Invalid($"Too short (min {minLength} characters).")
 			: new TextValidationResult.Success();
 	}
 
@@ -26,14 +26,16 @@ public static class TextValidators
 		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0 (internal error).");
 
 		return text.Length > maxLength
-			? new TextValidationResult.Invalid($"Text too long (max {maxLength} characters).")
+			? new TextValidationResult.Invalid($"Too long (max {maxLength} characters).")
 			: new TextValidationResult.Success();
 	}
 
 	private static TextValidationResult NotJustPunctuation(string text) =>
 		text.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c))
-			? new TextValidationResult.Invalid("Text can't be just punctuation.")
+			? new TextValidationResult.Invalid("Cannot be just punctuation.")
 			: new TextValidationResult.Success();
+
+	// TODO Pawel: fluent chain of responsibility here? the ifs are annoying
 
 	public static TextValidationResult Name(string text)
 	{
