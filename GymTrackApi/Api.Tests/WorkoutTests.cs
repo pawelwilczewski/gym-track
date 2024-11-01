@@ -28,6 +28,6 @@ internal sealed class WorkoutTests
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf<Ok>();
+		await Assert.That(result.Result).IsTypeOf<Created>();
 	}
 }
