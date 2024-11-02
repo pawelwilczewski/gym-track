@@ -13,11 +13,16 @@ internal static class HttpContextMocks
 
 	public static HttpContext User { get; } = new DefaultHttpContext
 	{
-		User = new ClaimsPrincipal()
+		User = new ClaimsPrincipal([
+			new ClaimsIdentity(ClaimTypes.NameIdentifier)
+			{
+				// Claims = [new Claim(ClaimTypes.NameIdentifier, "test@test.com")]
+			}
+		])
 	};
 
-	// TODO: more appropriate response types (i.e. 201 Created, 403 Forbidden)
-	// TODO: ^ return 403 in dev, and in production return 404 using middleware
+	// return 403 in dev, and in production return 404 using middleware
+	// TODO: ^^^ document that
 
 	// TODO: finish writing tests
 }

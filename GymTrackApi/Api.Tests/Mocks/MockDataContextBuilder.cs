@@ -19,7 +19,7 @@ internal sealed class MockDataContextBuilder
 	public static MockDataContextBuilder CreateEmpty()
 	{
 		var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
-			.UseInMemoryDatabase("GymTrack-Test")
+			.UseInMemoryDatabase(Guid.NewGuid().ToString())
 			.Options);
 
 		var builder = new MockDataContextBuilder
@@ -67,8 +67,13 @@ internal sealed class MockDataContextBuilder
 		}
 	}
 
-	private static async Task AddDefaultRoles(MockDataContextBuilder builder) =>
-		await builder.RoleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
+	private static async Task AddDefaultRoles(MockDataContextBuilder builder)
+	{
+		if (!await builder.RoleManager.RoleExistsAsync(Role.ADMINISTRATOR).ConfigureAwait(false))
+		{
+			await builder.RoleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
+		}
+	}
 
 	private IDataContext Context { get; init; } = default!;
 	private UserManager<User> UserManager { get; init; } = default!;
