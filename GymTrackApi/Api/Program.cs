@@ -8,6 +8,10 @@ using Infrastructure;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
+using NSwag;
+
+var apiVersion = new ApiVersion(1);
+const string apiVersionGroupNameFormat = "'v'V";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +20,15 @@ builder.Services
 
 if (builder.Environment.IsDevelopment())
 {
-	builder.Services.AddSwaggerGen();
+	builder.Services.AddOpenApiDocument(options =>
+		options.PostProcess = document => document.Info = new OpenApiInfo
+		{
+			Version = apiVersion.ToString(apiVersionGroupNameFormat),
+			Title = "Gym Track API"
+		});
 }
-else
+
+if (builder.Environment.IsProduction())
 {
 	builder.Services.AddAntiforgery();
 }
@@ -36,12 +46,12 @@ builder.Services
 
 builder.Services.AddApiVersioning(options =>
 	{
-		options.DefaultApiVersion = new ApiVersion(1);
+		options.DefaultApiVersion = apiVersion;
 		options.ApiVersionReader = new UrlSegmentApiVersionReader();
 	})
 	.AddApiExplorer(options =>
 	{
-		options.GroupNameFormat = "'v'V";
+		options.GroupNameFormat = apiVersionGroupNameFormat;
 		options.SubstituteApiVersionInUrl = true;
 	});
 
@@ -53,7 +63,7 @@ if (app.Environment.IsDevelopment())
 {
 	app.Services.ApplyMigrations();
 
-	app.UseSwagger();
+	app.UseOpenApi();
 	app.UseSwaggerUI();
 }
 
