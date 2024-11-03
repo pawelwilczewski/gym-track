@@ -72,7 +72,7 @@ internal sealed class MockDataContextBuilder
 		}
 	}
 
-	private IDataContext Context { get; init; } = default!;
+	private AppDbContext Context { get; init; } = default!;
 	private UserManager<User> UserManager { get; init; } = default!;
 	private RoleManager<Role> RoleManager { get; init; } = default!;
 	private readonly List<Func<Task>> tasks = [];
@@ -112,6 +112,12 @@ internal sealed class MockDataContextBuilder
 		});
 
 		return user;
+	}
+
+	public MockDataContextBuilder WithEntity(object entity)
+	{
+		tasks.Add(async () => await Context.AddAsync(entity));
+		return this;
 	}
 
 	public async Task<IDataContext> Build()
