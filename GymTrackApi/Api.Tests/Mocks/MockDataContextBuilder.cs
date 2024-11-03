@@ -116,7 +116,12 @@ internal sealed class MockDataContextBuilder
 
 	public MockDataContextBuilder WithEntity(object entity)
 	{
-		tasks.Add(async () => await Context.AddAsync(entity));
+		tasks.Add(async () =>
+		{
+			await Context.AddAsync(entity);
+			await Context.SaveChangesAsync();
+		});
+
 		return this;
 	}
 
