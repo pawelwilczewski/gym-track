@@ -13,9 +13,6 @@ namespace Api.Tests.Mocks;
 
 internal sealed class MockDataContextBuilder
 {
-	private const string ADMIN_PASSWORD = "Admin!123";
-	private const string USER_PASSWORD = "User!123";
-
 	public static MockDataContextBuilder CreateEmpty()
 	{
 		var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
@@ -80,41 +77,41 @@ internal sealed class MockDataContextBuilder
 	private RoleManager<Role> RoleManager { get; init; } = default!;
 	private readonly List<Func<Task>> tasks = [];
 
-	public MockDataContextBuilder WithAdminUser(string email)
+	public MockDataContextBuilder WithUser(UserInfo userInfo)
 	{
-		var user = new User
-		{
-			Email = email,
-			EmailConfirmed = true
-		};
+		AddUser(userInfo);
+		return this;
+	}
+
+	public MockDataContextBuilder WithAdminUser(UserInfo userInfo)
+	{
+		var user = AddUser(userInfo);
 
 		tasks.Add(async () =>
 		{
-			var result = await UserManager.CreateAsync(user, ADMIN_PASSWORD).ConfigureAwait(false);
-			await Assert.That(result.Succeeded).IsTrue();
-
-			result = await UserManager.AddToRoleAsync(user, Role.ADMINISTRATOR).ConfigureAwait(false);
+			var result = await UserManager.AddToRoleAsync(user, Role.ADMINISTRATOR).ConfigureAwait(false);
 			await Assert.That(result.Succeeded).IsTrue();
 		});
 
 		return this;
 	}
 
-	public MockDataContextBuilder WithUser(string email)
+	private User AddUser(UserInfo userInfo)
 	{
 		var user = new User
 		{
-			Email = email,
+			Id = userInfo.Id,
+			Email = userInfo.Email,
 			EmailConfirmed = true
 		};
 
 		tasks.Add(async () =>
 		{
-			var result = await UserManager.CreateAsync(user, USER_PASSWORD).ConfigureAwait(false);
+			var result = await UserManager.CreateAsync(user, userInfo.Password).ConfigureAwait(false);
 			await Assert.That(result.Succeeded).IsTrue();
 		});
 
-		return this;
+		return user;
 	}
 
 	public async Task<IDataContext> Build()

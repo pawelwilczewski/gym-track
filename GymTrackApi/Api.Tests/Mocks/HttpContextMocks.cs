@@ -6,23 +6,24 @@ namespace Api.Tests.Mocks;
 
 internal static class HttpContextMocks
 {
-	public static HttpContext Admin { get; } = new DefaultHttpContext
+	public static HttpContext ForAdmin(UserInfo userInfo) => new DefaultHttpContext
 	{
-		User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Role, Role.ADMINISTRATOR)]))
+		User = new ClaimsPrincipal(
+			new ClaimsIdentity([
+				new Claim(ClaimTypes.NameIdentifier, userInfo.Id.ToString()),
+				new Claim(ClaimTypes.Name, userInfo.Email),
+				new Claim(ClaimTypes.Email, userInfo.Email),
+				new Claim(ClaimTypes.Role, Role.ADMINISTRATOR)
+			], "mock"))
 	};
 
-	public static HttpContext User { get; } = new DefaultHttpContext
+	public static HttpContext ForUser(UserInfo userInfo) => new DefaultHttpContext
 	{
-		User = new ClaimsPrincipal([
-			new ClaimsIdentity(ClaimTypes.NameIdentifier)
-			{
-				// Claims = [new Claim(ClaimTypes.NameIdentifier, "test@test.com")]
-			}
-		])
+		User = new ClaimsPrincipal(
+			new ClaimsIdentity([
+				new Claim(ClaimTypes.NameIdentifier, userInfo.Id.ToString()),
+				new Claim(ClaimTypes.Name, userInfo.Email),
+				new Claim(ClaimTypes.Email, userInfo.Email)
+			], "mock"))
 	};
-
-	// return 403 in dev, and in production return 404 using middleware
-	// TODO: ^^^ document that
-
-	// TODO: finish writing tests
 }

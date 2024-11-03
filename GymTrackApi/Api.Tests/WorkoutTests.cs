@@ -12,9 +12,10 @@ internal sealed class WorkoutTests
 	[Test]
 	public async Task CreateWorkout_AdminWithValidData_ReturnsSuccess()
 	{
+		var adminInfo = new UserInfo(Guid.NewGuid(), "admin@admin.com", "Password@123");
+
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser("test@test.com")
-			.WithAdminUser("admin@admin.com")
+			.WithAdminUser(adminInfo)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -22,7 +23,7 @@ internal sealed class WorkoutTests
 		await dataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!)).ConfigureAwait(false);
 
 		var result = await CreateWorkout.Handler(
-				HttpContextMocks.Admin,
+				HttpContextMocks.ForAdmin(adminInfo),
 				new CreateWorkoutRequest("Admin's Workout"),
 				dataContext,
 				CancellationToken.None)
@@ -34,9 +35,10 @@ internal sealed class WorkoutTests
 	[Test]
 	public async Task CreateWorkout_UserWithValidData_ReturnsSuccess()
 	{
+		var userInfo = new UserInfo(Guid.NewGuid(), "user@user.com", "Password@123");
+
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser("test@test.com")
-			.WithAdminUser("admin@admin.com")
+			.WithUser(userInfo)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -44,7 +46,7 @@ internal sealed class WorkoutTests
 		await dataContext.Workouts.AddAsync(Workout.CreateForEveryone(name!)).ConfigureAwait(false);
 
 		var result = await CreateWorkout.Handler(
-				HttpContextMocks.User,
+				HttpContextMocks.ForUser(userInfo),
 				new CreateWorkoutRequest("User's Workout"),
 				dataContext,
 				CancellationToken.None)
