@@ -79,25 +79,6 @@ internal sealed class MockDataContextBuilder
 
 	public MockDataContextBuilder WithUser(IUserInfo userInfo)
 	{
-		AddUser(userInfo);
-		return this;
-	}
-
-	public MockDataContextBuilder WithAdmin(IUserInfo userInfo)
-	{
-		var user = AddUser(userInfo);
-
-		tasks.Add(async () =>
-		{
-			var result = await UserManager.AddToRoleAsync(user, Role.ADMINISTRATOR).ConfigureAwait(false);
-			await Assert.That(result.Succeeded).IsTrue();
-		});
-
-		return this;
-	}
-
-	private User AddUser(IUserInfo userInfo)
-	{
 		var user = new User
 		{
 			Id = userInfo.Id,
@@ -109,9 +90,15 @@ internal sealed class MockDataContextBuilder
 		{
 			var result = await UserManager.CreateAsync(user, userInfo.Password).ConfigureAwait(false);
 			await Assert.That(result.Succeeded).IsTrue();
+
+			if (userInfo is AdminInfo)
+			{
+				result = await UserManager.AddToRoleAsync(user, Role.ADMINISTRATOR).ConfigureAwait(false);
+				await Assert.That(result.Succeeded).IsTrue();
+			}
 		});
 
-		return user;
+		return this;
 	}
 
 	public MockDataContextBuilder WithEntity(object entity)
