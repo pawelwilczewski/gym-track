@@ -36,6 +36,33 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
+	public async Task CreateWorkout_AdminWithInvalidData_ReturnsValidationProblem()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAdminUser(admin)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await CreateWorkout.Handler(
+				httpContextAdmin,
+				new CreateWorkoutRequest(""),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
+
+		result = await CreateWorkout.Handler(
+				httpContextAdmin,
+				new CreateWorkoutRequest(null!),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
+	}
+
+	[Test]
 	public async Task CreateWorkout_UserWithValidData_ReturnsCreated()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
@@ -51,6 +78,33 @@ internal sealed class WorkoutTests
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Result).IsTypeOf<Created>();
+	}
+
+	[Test]
+	public async Task CreateWorkout_UserWithInvalidData_ReturnsValidationProblem()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(user1)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await CreateWorkout.Handler(
+				httpContextUser1,
+				new CreateWorkoutRequest(""),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
+
+		result = await CreateWorkout.Handler(
+				httpContextUser1,
+				new CreateWorkoutRequest(null!),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
 	}
 
 	[Test]
