@@ -1,4 +1,5 @@
-﻿using Api.Dtos;
+﻿using System.Security.Claims;
+using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Api.Tests.Mocks;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,9 +23,16 @@ internal sealed class WorkoutTests
 		return users.SelectMany(user => workoutNames.Select(tuple => (user, tuple.name, tuple.responseType)));
 	}
 
+	public static IEnumerable<(ClaimsPrincipal? workoutOwner, Type responseType)> GetWorkoutData() =>
+	[
+		new(null, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User1.GetHttpContext().User, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User2.GetHttpContext().User, typeof(ForbidHttpResult))
+	];
+
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutData))]
-	public async Task CreateWorkout_Admin_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
+	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.Admin1)
@@ -42,61 +50,24 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
-	public async Task GetWorkout_UserAccessShared_ReturnsOk()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithWorkout(out var workout)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await GetWorkout.Handler(
-				Users.User1.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<Ok<GetWorkoutResponse>>();
-	}
-
-	[Test]
-	public async Task GetWorkout_UserAccessTheirOwn_ReturnsOk()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await GetWorkout.Handler(
-				Users.User1.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<Ok<GetWorkoutResponse>>();
-	}
-
-	[Test]
-	public async Task GetWorkout_UserAccessAnotherUsers_ReturnsForbid()
+	[MethodDataSource(nameof(GetWorkoutData))]
+	public async Task GetWorkout_ReturnsCorrectResponse(ClaimsPrincipal? workoutOwner, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.User1)
 			.WithUser(Users.User2)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
+			.WithWorkout(out var workout, workoutOwner)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await GetWorkout.Handler(
-				Users.User2.GetHttpContext(),
+				Users.User1.GetHttpContext(),
 				workout.Id.Value,
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
+		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
 
 	[Test]
