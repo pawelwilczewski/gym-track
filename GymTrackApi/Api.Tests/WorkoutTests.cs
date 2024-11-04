@@ -164,4 +164,122 @@ internal sealed class WorkoutTests
 
 		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
 	}
+
+	[Test]
+	public async Task EditWorkout_AdminWithValidData_ReturnsNoContent()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAdminUser(admin)
+			.WithWorkout(out var workout)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await EditWorkout.Handler(
+				httpContextAdmin,
+				workout.Id.Value,
+				new EditWorkoutRequest("Updated Workout"),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<NoContent>();
+	}
+
+	[Test]
+	public async Task EditWorkout_UserWithValidData_ReturnsNoContent()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(user1)
+			.WithWorkout(out var workout, httpContextUser1.User)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await EditWorkout.Handler(
+				httpContextUser1,
+				workout.Id.Value,
+				new EditWorkoutRequest("Updated Workout"),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<NoContent>();
+	}
+
+	[Test]
+	public async Task EditWorkout_UserWithInvalidData_ReturnsValidationProblem()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(user1)
+			.WithWorkout(out var workout, httpContextUser1.User)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await EditWorkout.Handler(
+				httpContextUser1,
+				workout.Id.Value,
+				new EditWorkoutRequest(""),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
+	}
+
+	[Test]
+	public async Task DeleteWorkout_Admin_ReturnsNoContent()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAdminUser(admin)
+			.WithWorkout(out var workout)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await DeleteWorkout.Handler(
+				httpContextAdmin,
+				workout.Id.Value,
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<NoContent>();
+	}
+
+	[Test]
+	public async Task DeleteWorkout_User_ReturnsNoContent()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(user1)
+			.WithWorkout(out var workout, httpContextUser1.User)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await DeleteWorkout.Handler(
+				httpContextUser1,
+				workout.Id.Value,
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<NoContent>();
+	}
+
+	[Test]
+	public async Task DeleteWorkout_UserAccessAnotherUsers_ReturnsForbid()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(user1)
+			.WithUser(user2)
+			.WithWorkout(out var workout, httpContextUser1.User)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await DeleteWorkout.Handler(
+				httpContextUser2,
+				workout.Id.Value,
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
+	}
 }
