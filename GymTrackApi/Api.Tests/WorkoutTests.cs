@@ -50,8 +50,7 @@ internal sealed class WorkoutTests
 	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.Admin1)
-			.WithUser(Users.User1)
+			.WithUser(user)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -70,8 +69,8 @@ internal sealed class WorkoutTests
 	public async Task GetWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo accessor, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithUser(Users.User2)
+			.WithUser(workoutOwner ?? Users.Admin1)
+			.WithUser(accessor)
 			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
@@ -91,8 +90,8 @@ internal sealed class WorkoutTests
 	public async Task EditWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo editor, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.Admin1)
-			.WithUser(Users.User1)
+			.WithUser(workoutOwner ?? Users.Admin1)
+			.WithUser(editor)
 			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
@@ -113,7 +112,8 @@ internal sealed class WorkoutTests
 	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo deleter, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.Admin1)
+			.WithUser(workoutOwner ?? Users.Admin1)
+			.WithUser(deleter)
 			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);

@@ -88,6 +88,8 @@ internal sealed class MockDataContextBuilder
 
 		tasks.Add(async () =>
 		{
+			if (await UserManager.FindByIdAsync(userInfo.Id.ToString()).ConfigureAwait(false) is not null) return;
+
 			var result = await UserManager.CreateAsync(user, userInfo.Password).ConfigureAwait(false);
 			await Assert.That(result.Succeeded).IsTrue();
 
