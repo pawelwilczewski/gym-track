@@ -29,12 +29,20 @@ internal sealed class WorkoutTests
 		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
 	];
 
-	public static IEnumerable<(UserInfo? owner, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
+	public static IEnumerable<(IUserInfo? owner, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
 	[
 		new(null, Users.User1, "ValidName", typeof(ForbidHttpResult)),
 		new(null, Users.Admin1, "ValidName", typeof(NoContent)),
 		new(Users.User1, Users.User1, "ValidName", typeof(NoContent)),
 		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult))
+	];
+
+	public static IEnumerable<(IUserInfo? owner, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
+	[
+		new(null, Users.User1, typeof(ForbidHttpResult)),
+		new(null, Users.Admin1, typeof(NoContent)),       // TODO: or forbid if other users reference it?
+		new(Users.User1, Users.User1, typeof(NoContent)), // TODO: or forbid if other users reference it?
+		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
 	];
 
 	[Test]
@@ -101,60 +109,22 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
-	public async Task DeleteWorkout_Admin_ReturnsNoContent()
+	[MethodDataSource(nameof(DeleteWorkoutData))]
+	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo deleter, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.Admin1)
-			.WithWorkout(out var workout)
+			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await DeleteWorkout.Handler(
-				Users.Admin1.GetHttpContext(),
+				deleter.GetHttpContext(),
 				workout.Id.Value,
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf<NoContent>();
-	}
-
-	[Test]
-	public async Task DeleteWorkout_User_ReturnsNoContent()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await DeleteWorkout.Handler(
-				Users.User1.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<NoContent>();
-	}
-
-	[Test]
-	public async Task DeleteWorkout_UserAccessAnotherUsers_ReturnsForbid()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithUser(Users.User2)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await DeleteWorkout.Handler(
-				Users.User2.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
+		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
 }
