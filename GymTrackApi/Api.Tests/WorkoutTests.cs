@@ -73,7 +73,7 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
-	public async Task GetWorkout_UserAccessUsers_ReturnsOk()
+	public async Task GetWorkout_UserAccessTheirOwn_ReturnsOk()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(user1)
