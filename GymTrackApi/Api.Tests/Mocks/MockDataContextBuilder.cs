@@ -77,13 +77,13 @@ internal sealed class MockDataContextBuilder
 	private RoleManager<Role> RoleManager { get; init; } = default!;
 	private readonly List<Func<Task>> tasks = [];
 
-	public MockDataContextBuilder WithUser(UserInfo userInfo)
+	public MockDataContextBuilder WithUser(IUserInfo userInfo)
 	{
 		AddUser(userInfo);
 		return this;
 	}
 
-	public MockDataContextBuilder WithAdminUser(UserInfo userInfo)
+	public MockDataContextBuilder WithAdminUser(IUserInfo userInfo)
 	{
 		var user = AddUser(userInfo);
 
@@ -96,7 +96,7 @@ internal sealed class MockDataContextBuilder
 		return this;
 	}
 
-	private User AddUser(UserInfo userInfo)
+	private User AddUser(IUserInfo userInfo)
 	{
 		var user = new User
 		{
