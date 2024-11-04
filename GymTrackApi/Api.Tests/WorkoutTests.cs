@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Api.Dtos;
+﻿using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Api.Tests.Mocks;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -23,11 +22,19 @@ internal sealed class WorkoutTests
 		return users.SelectMany(user => workoutNames.Select(tuple => (user, tuple.name, tuple.responseType)));
 	}
 
-	public static IEnumerable<(ClaimsPrincipal? workoutOwner, Type responseType)> GetWorkoutData() =>
+	public static IEnumerable<(IUserInfo? owner, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
 	[
-		new(null, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User1.GetHttpContext().User, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User2.GetHttpContext().User, typeof(ForbidHttpResult))
+		new(null, Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User1, Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
+	];
+
+	public static IEnumerable<(UserInfo? owner, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
+	[
+		new(null, Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new(null, Users.Admin1, "ValidName", typeof(NoContent)),
+		new(Users.User1, Users.User1, "ValidName", typeof(NoContent)),
+		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult))
 	];
 
 	[Test]
@@ -36,11 +43,12 @@ internal sealed class WorkoutTests
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.Admin1)
+			.WithUser(Users.User1)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await CreateWorkout.Handler(
-				Users.Admin1.GetHttpContext(),
+				user.GetHttpContext(),
 				new CreateWorkoutRequest(workoutName),
 				dataContext,
 				CancellationToken.None)
@@ -51,17 +59,17 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutData))]
-	public async Task GetWorkout_ReturnsCorrectResponse(ClaimsPrincipal? workoutOwner, Type responseType)
+	public async Task GetWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo accessor, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.User1)
 			.WithUser(Users.User2)
-			.WithWorkout(out var workout, workoutOwner)
+			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await GetWorkout.Handler(
-				Users.User1.GetHttpContext(),
+				accessor.GetHttpContext(),
 				workout.Id.Value,
 				dataContext,
 				CancellationToken.None)
@@ -71,84 +79,25 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
-	public async Task EditWorkout_AdminWithValidData_ReturnsNoContent()
+	[MethodDataSource(nameof(EditWorkoutData))]
+	public async Task EditWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo editor, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.Admin1)
-			.WithWorkout(out var workout)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await EditWorkout.Handler(
-				Users.Admin1.GetHttpContext(),
-				workout.Id.Value,
-				new EditWorkoutRequest("Updated Workout"),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<NoContent>();
-	}
-
-	[Test]
-	public async Task EditWorkout_UserWithValidData_ReturnsNoContent()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithUser(Users.User1)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
+			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await EditWorkout.Handler(
-				Users.User1.GetHttpContext(),
+				editor.GetHttpContext(),
 				workout.Id.Value,
-				new EditWorkoutRequest("Updated Workout"),
+				new EditWorkoutRequest(workoutName),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf<NoContent>();
-	}
-
-	[Test]
-	public async Task EditWorkout_UserSomeoneElsesWithValidData_ReturnsForbid()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithUser(Users.User2)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await EditWorkout.Handler(
-				Users.User2.GetHttpContext(),
-				workout.Id.Value,
-				new EditWorkoutRequest("Updated Workout"),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
-	}
-
-	[Test]
-	public async Task EditWorkout_UserWithInvalidData_ReturnsValidationProblem()
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.User1)
-			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await EditWorkout.Handler(
-				Users.User1.GetHttpContext(),
-				workout.Id.Value,
-				new EditWorkoutRequest(""),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf<ValidationProblem>();
+		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
 
 	[Test]
