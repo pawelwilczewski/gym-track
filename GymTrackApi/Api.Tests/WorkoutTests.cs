@@ -11,7 +11,7 @@ internal sealed class WorkoutTests
 	public async Task CreateWorkout_AdminWithValidData_ReturnsCreated()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAdminUser(Users.Admin1)
+			.WithAdmin(Users.Admin1)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -29,7 +29,7 @@ internal sealed class WorkoutTests
 	public async Task CreateWorkout_AdminWithInvalidData_ReturnsValidationProblem()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAdminUser(Users.Admin1)
+			.WithAdmin(Users.Admin1)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -159,7 +159,7 @@ internal sealed class WorkoutTests
 	public async Task EditWorkout_AdminWithValidData_ReturnsNoContent()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAdminUser(Users.Admin1)
+			.WithAdmin(Users.Admin1)
 			.WithWorkout(out var workout)
 			.Build()
 			.ConfigureAwait(false);
@@ -240,7 +240,7 @@ internal sealed class WorkoutTests
 	public async Task DeleteWorkout_Admin_ReturnsNoContent()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAdminUser(Users.Admin1)
+			.WithAdmin(Users.Admin1)
 			.WithWorkout(out var workout)
 			.Build()
 			.ConfigureAwait(false);

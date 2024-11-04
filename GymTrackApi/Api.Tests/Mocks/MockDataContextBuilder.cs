@@ -83,7 +83,7 @@ internal sealed class MockDataContextBuilder
 		return this;
 	}
 
-	public MockDataContextBuilder WithAdminUser(IUserInfo userInfo)
+	public MockDataContextBuilder WithAdmin(IUserInfo userInfo)
 	{
 		var user = AddUser(userInfo);
 
