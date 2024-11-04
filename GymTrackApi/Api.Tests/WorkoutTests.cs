@@ -196,6 +196,27 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
+	public async Task EditWorkout_UserSomeoneElsesWithValidData_ReturnsForbid()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithUser(Users.User1)
+			.WithUser(Users.User2)
+			.WithWorkout(out var workout, Users.User1.GetHttpContext().User)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await EditWorkout.Handler(
+				Users.User2.GetHttpContext(),
+				workout.Id.Value,
+				new EditWorkoutRequest("Updated Workout"),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf<ForbidHttpResult>();
+	}
+
+	[Test]
 	public async Task EditWorkout_UserWithInvalidData_ReturnsValidationProblem()
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
