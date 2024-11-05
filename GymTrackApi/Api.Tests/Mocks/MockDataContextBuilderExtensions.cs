@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Domain.Models;
+using Domain.Models.Identity;
 using Domain.Models.Workout;
 
 namespace Api.Tests.Mocks;
@@ -26,14 +27,14 @@ internal static class MockDataContextBuilderExtensions
 
 	public static MockDataContextBuilder WithWorkout(this MockDataContextBuilder builder, out Workout workout, ClaimsPrincipal? user = null)
 	{
-		workout = user is null ? Workout.CreateForEveryone(GenerateRandomName()) : Workout.CreateForUser(GenerateRandomName(), user);
+		workout = user is null || user.IsInRole(Role.ADMINISTRATOR) ? Workout.CreateForEveryone(GenerateRandomName()) : Workout.CreateForUser(GenerateRandomName(), user);
 		builder.WithEntity(workout);
 		return builder;
 	}
 
 	public static MockDataContextBuilder WithExerciseInfo(this MockDataContextBuilder builder, out ExerciseInfo exerciseInfo, ExerciseMetricType allowedMetricTypes, ClaimsPrincipal? user = null)
 	{
-		exerciseInfo = user is null
+		exerciseInfo = user is null || user.IsInRole(Role.ADMINISTRATOR)
 			? ExerciseInfo.CreateForEveryone(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes)
 			: ExerciseInfo.CreateForUser(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes, user);
 		builder.WithEntity(exerciseInfo);
