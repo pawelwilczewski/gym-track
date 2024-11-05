@@ -26,6 +26,8 @@ internal sealed class WorkoutTests
 	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
 	[
 		new(Users.Admin1, Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User1, Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
+		new(Users.User2, Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
 		new(Users.User1, Users.User1, typeof(Ok<GetWorkoutResponse>)),
 		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
 	];

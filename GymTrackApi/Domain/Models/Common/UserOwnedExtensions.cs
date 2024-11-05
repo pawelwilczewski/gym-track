@@ -39,7 +39,7 @@ public static class UserOwnedExtensions
 		this ClaimsPrincipal user,
 		IReadOnlyList<IUserOwned> users)
 	{
-		if (users.Count <= 0) return true;
+		if (users.Count <= 0 || user.IsInRole(Role.ADMINISTRATOR)) return true;
 
 		var userId = user.GetUserId();
 		return users.FirstOrDefault(userWorkout => userWorkout.UserId == userId) is not null;
