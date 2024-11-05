@@ -32,8 +32,8 @@ internal sealed class GetWorkoutExercise : IEndpoint
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
 		return TypedResults.Ok(new GetWorkoutExerciseResponse(
-			exercise.Index,
-			exercise.Sets.Select(set => new WorkoutExerciseSetKey(workoutId, index, set.Index))
+			exercise.Index.IntValue,
+			exercise.Sets.Select(set => new WorkoutExerciseSetKey(workoutId, index, set.Index.IntValue))
 				.ToList()));
 	}
 

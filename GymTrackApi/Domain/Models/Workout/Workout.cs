@@ -30,7 +30,7 @@ public class Workout
 	public class Exercise
 	{
 		public Id<Workout> WorkoutId { get; private set; }
-		public int Index { get; private set; }
+		public Index Index { get; private set; }
 
 		public virtual Workout Workout { get; private set; } = default!;
 
@@ -42,7 +42,7 @@ public class Workout
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo> exerciseInfoId)
+		public Exercise(Id<Workout> workoutId, Index index, Id<ExerciseInfo> exerciseInfoId)
 		{
 			WorkoutId = workoutId;
 			Index = index;
@@ -52,8 +52,8 @@ public class Workout
 		public class Set
 		{
 			public Id<Workout> WorkoutId { get; private set; }
-			public int ExerciseIndex { get; private set; }
-			public int Index { get; private set; }
+			public Index ExerciseIndex { get; private set; }
+			public Index Index { get; private set; }
 
 			public virtual Exercise Exercise { get; private set; } = default!;
 
@@ -64,7 +64,7 @@ public class Workout
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
-			public Set(Exercise exercise, int index, ExerciseMetric metric, int reps)
+			public Set(Exercise exercise, Index index, ExerciseMetric metric, int reps)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;

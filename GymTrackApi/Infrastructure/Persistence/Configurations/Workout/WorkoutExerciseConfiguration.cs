@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Index = Domain.Models.Index;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
@@ -26,5 +27,8 @@ internal sealed class WorkoutExerciseConfiguration : IEntityTypeConfiguration<Do
 			.WithMany(info => info.Exercises)
 			.HasForeignKey(exercise => exercise.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Restrict);
+
+		builder.Property(exercise => exercise.Index)
+			.HasConversion(Index.Converter);
 	}
 }

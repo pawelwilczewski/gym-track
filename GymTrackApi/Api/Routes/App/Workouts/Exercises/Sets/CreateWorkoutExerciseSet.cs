@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
@@ -6,6 +7,7 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.Workouts.Exercises.Sets;
 
@@ -19,6 +21,8 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
+		if (!Index.TryCreate(request.Index, out var index)) return ValidationErrors.NegativeIndex();
+
 		var workoutIdTyped = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
@@ -40,7 +44,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			});
 		}
 
-		var set = new Workout.Exercise.Set(exercise, request.Index, request.Metric, request.Reps);
+		var set = new Workout.Exercise.Set(exercise, index, request.Metric, request.Reps);
 
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
