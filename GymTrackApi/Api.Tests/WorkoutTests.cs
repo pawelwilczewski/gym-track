@@ -1,6 +1,7 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Api.Tests.Mocks;
+using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Tests;
@@ -29,20 +30,25 @@ internal sealed class WorkoutTests
 		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
 	];
 
-	public static IEnumerable<(IUserInfo? owner, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
+	public static IEnumerable<(IUserInfo? owner, IUserInfo editor, string workoutName, Type responseType, Action<Workout>? configureWorkout)> EditWorkoutData() =>
 	[
-		new(null, Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new(null, Users.Admin1, "ValidName", typeof(NoContent)),
-		new(Users.User1, Users.User1, "ValidName", typeof(NoContent)),
-		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult))
+		new(null, Users.User1, "ValidName", typeof(ForbidHttpResult), null),
+		new(null, Users.Admin1, "ValidName", typeof(NoContent), null),
+		new(null, Users.Admin1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
+		new(Users.User1, Users.User1, "ValidName", typeof(NoContent), null),
+		new(Users.User1, Users.User1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
+		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult), null),
+		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User1.Id, workout.Id)))
 	];
 
-	public static IEnumerable<(IUserInfo? owner, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
+	public static IEnumerable<(IUserInfo? owner, IUserInfo deleter, Type responseType, Action<Workout>? configureWorkout)> DeleteWorkoutData() =>
 	[
-		new(null, Users.User1, typeof(ForbidHttpResult)),
-		new(null, Users.Admin1, typeof(NoContent)),       // TODO: or forbid if other users reference it?
-		new(Users.User1, Users.User1, typeof(NoContent)), // TODO: or forbid if other users reference it?
-		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
+		new(null, Users.User1, typeof(ForbidHttpResult), null),
+		new(null, Users.Admin1, typeof(NoContent), null),
+		new(null, Users.Admin1, typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
+		new(Users.User1, Users.User1, typeof(NoContent), null),
+		new(Users.User1, Users.User1, typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
+		new(Users.User2, Users.User1, typeof(ForbidHttpResult), null)
 	];
 
 	[Test]
@@ -87,14 +93,21 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(EditWorkoutData))]
-	public async Task EditWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo editor, string workoutName, Type responseType)
+	public async Task EditWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo editor, string workoutName, Type responseType, Action<Workout>? configureWorkout = null)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(workoutOwner ?? Users.Admin1)
-			.WithUser(editor)
+			.WithUser(Users.Admin1)
+			.WithUser(Users.User1)
+			.WithUser(Users.User2)
 			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
+
+		if (configureWorkout is not null)
+		{
+			configureWorkout(workout);
+			await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		}
 
 		var result = await EditWorkout.Handler(
 				editor.GetHttpContext(),
@@ -109,14 +122,21 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutData))]
-	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo deleter, Type responseType)
+	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo? workoutOwner, IUserInfo deleter, Type responseType, Action<Workout>? configureWorkout = null)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(workoutOwner ?? Users.Admin1)
-			.WithUser(deleter)
+			.WithUser(Users.Admin1)
+			.WithUser(Users.User1)
+			.WithUser(Users.User2)
 			.WithWorkout(out var workout, workoutOwner?.GetHttpContext().User)
 			.Build()
 			.ConfigureAwait(false);
+
+		if (configureWorkout is not null)
+		{
+			configureWorkout(workout);
+			await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		}
 
 		var result = await DeleteWorkout.Handler(
 				deleter.GetHttpContext(),
