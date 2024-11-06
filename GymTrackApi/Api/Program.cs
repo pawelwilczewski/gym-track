@@ -1,11 +1,11 @@
 using Api.Authorization;
 using Api.Common;
 using Api.Routes;
-using Application.Serialization;
 using Asp.Versioning;
 using Domain.Models.Identity;
 using Infrastructure;
 using Infrastructure.Persistence;
+using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using NSwag;

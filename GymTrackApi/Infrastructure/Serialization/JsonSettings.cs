@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Application.Serialization;
+namespace Infrastructure.Serialization;
 
 public static class JsonSettings
 {

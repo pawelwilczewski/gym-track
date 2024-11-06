@@ -22,6 +22,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		if (!Index.TryCreate(request.Index, out var index)) return ValidationErrors.NegativeIndex();
+		if (!PositiveCount.TryCreate(request.Reps, out var repsCount)) return ValidationErrors.NonPositiveCount("Reps");
 
 		var workoutIdTyped = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
@@ -44,7 +45,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			});
 		}
 
-		var set = new Workout.Exercise.Set(exercise, index, request.Metric, request.Reps);
+		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount);
 
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

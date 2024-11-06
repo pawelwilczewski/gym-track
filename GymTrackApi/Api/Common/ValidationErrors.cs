@@ -9,4 +9,10 @@ internal static class ValidationErrors
 		{
 			{ fieldName, ["Index must be >= 0."] }
 		});
+
+	public static ValidationProblem NonPositiveCount(string fieldName) =>
+		TypedResults.ValidationProblem(new Dictionary<string, string[]>
+		{
+			{ fieldName, ["Count must be > 0."] }
+		});
 }

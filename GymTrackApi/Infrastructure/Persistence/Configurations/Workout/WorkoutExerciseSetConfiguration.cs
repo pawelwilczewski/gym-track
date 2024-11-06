@@ -1,6 +1,7 @@
 using System.Text.Json;
-using Application.Serialization;
+using Domain.Models;
 using Domain.Models.Workout;
+using Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Index = Domain.Models.Index;
@@ -32,6 +33,9 @@ internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration
 
 		builder.Property(set => set.Index)
 			.HasConversion(Index.Converter);
+
+		builder.Property(set => set.Reps)
+			.HasConversion(PositiveCount.Converter);
 
 		builder.Property(exerciseSet => exerciseSet.Metric)
 			.HasConversion(

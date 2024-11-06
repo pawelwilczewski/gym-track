@@ -59,12 +59,12 @@ public class Workout
 
 			public ExerciseMetric Metric { get; set; } = default!;
 
-			public int Reps { get; set; }
+			public PositiveCount Reps { get; set; }
 
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
-			public Set(Exercise exercise, Index index, ExerciseMetric metric, int reps)
+			public Set(Exercise exercise, Index index, ExerciseMetric metric, PositiveCount reps)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;

@@ -14,7 +14,7 @@ public abstract record class ExerciseMetric
 
 [DataContract]
 public sealed record class Weight(
-	[property: DataMember] double Value,
+	[property: DataMember] Amount Value,
 	[property: DataMember] Weight.Unit Units) : ExerciseMetric
 {
 	public override ExerciseMetricType Type => ExerciseMetricType.Weight;
@@ -35,7 +35,7 @@ public sealed record class Duration(
 
 [DataContract]
 public sealed record class Distance(
-	[property: DataMember] double Value,
+	[property: DataMember] Amount Value,
 	[property: DataMember] Distance.Unit Units) : ExerciseMetric
 {
 	public override ExerciseMetricType Type => ExerciseMetricType.Distance;

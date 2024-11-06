@@ -21,6 +21,8 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
+		if (!PositiveCount.TryCreate(request.Reps, out var repsCount)) return ValidationErrors.NonPositiveCount("Reps");
+
 		var workoutIdTyped = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
@@ -45,7 +47,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		}
 
 		set.Metric = request.Metric;
-		set.Reps = request.Reps;
+		set.Reps = repsCount;
 
 		return TypedResults.NoContent();
 	}
