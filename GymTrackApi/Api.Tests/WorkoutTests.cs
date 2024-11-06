@@ -99,6 +99,25 @@ internal sealed class WorkoutTests
 	}
 
 	[Test]
+	public async Task GetWorkout_InvalidId_ReturnsNotFound()
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithWorkout(out _, [])
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await GetWorkout.Handler(
+				Users.User1.GetHttpContext(),
+				new Guid(),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
+	}
+
+	[Test]
 	[MethodDataSource(nameof(EditWorkoutData))]
 	public async Task EditWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)
 	{

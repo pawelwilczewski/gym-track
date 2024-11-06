@@ -20,7 +20,8 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var workoutIdTyped = new Id<Workout>(workoutId);
-		var workout = await dataContext.Workouts.Include(workout => workout.Users)
+		var workout = await dataContext.Workouts
+			.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
 			.ThenInclude(exercise => exercise.Sets)
 			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
@@ -29,7 +30,7 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
 
-		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
+		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
 		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
