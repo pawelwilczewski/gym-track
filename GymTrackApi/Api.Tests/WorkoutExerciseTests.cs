@@ -22,6 +22,7 @@ internal sealed class WorkoutExerciseTests
 		new(Users.Admin1, Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
 		new(Users.Admin1, Users.User1, 0, 1, typeof(NotFound<string>)),
 		new(Users.User1, Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
+		new(Users.User1, Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseResponse>)),
 		new(Users.User2, Users.User1, 0, 0, typeof(ForbidHttpResult)),
 		new(Users.User1, Users.Admin1, 0, -1, typeof(NotFound<string>)),
 		new(Users.User1, Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>))
@@ -85,7 +86,8 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		Index.TryCreate(0, out var index);
+		if (!Index.TryCreate(exerciseIndex, out var index)) throw new Exception("Invalid test case");
+
 		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
