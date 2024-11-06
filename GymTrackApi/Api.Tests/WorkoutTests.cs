@@ -1,14 +1,13 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.Workouts;
 using Api.Tests.Mocks;
-using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Tests;
 
 internal sealed class WorkoutTests
 {
-	public static IEnumerable<(IUserInfo userInfo, string workoutName, Type responseType)> CreateWorkoutData()
+	public static IEnumerable<(IUserInfo creator, string workoutName, Type responseType)> CreateWorkoutData()
 	{
 		List<IUserInfo> users = [Users.Admin1, Users.User1];
 		List<(string name, Type responseType)> workoutNames =
@@ -20,37 +19,43 @@ internal sealed class WorkoutTests
 			new("", typeof(ValidationProblem))
 		];
 
-		return users.SelectMany(user => workoutNames.Select(tuple => (user, tuple.name, tuple.responseType)));
+		foreach (var user in users)
+		{
+			foreach (var (name, responseType) in workoutNames)
+			{
+				yield return new ValueTuple<IUserInfo, string, Type>(user, name, responseType);
+			}
+		}
 	}
 
-	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User1, Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User2, Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User1, Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new(Users.User2, Users.User1, typeof(ForbidHttpResult))
+		new([Users.Admin1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User1], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User2], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
 	];
 
-	public static IEnumerable<(IUserInfo owner, IUserInfo editor, string workoutName, Type responseType, Action<Workout>? configureWorkout)> EditWorkoutData() =>
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, "ValidName", typeof(ForbidHttpResult), null),
-		new(Users.Admin1, Users.Admin1, "ValidName", typeof(NoContent), null),
-		new(Users.Admin1, Users.Admin1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
-		new(Users.User1, Users.User1, "ValidName", typeof(NoContent), null),
-		new(Users.User1, Users.User1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
-		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult), null),
-		new(Users.User2, Users.User1, "ValidName", typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User1.Id, workout.Id)))
+		new([Users.Admin1], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidName", typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.User1], Users.User1, "ValidName", typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidName", typeof(ForbidHttpResult))
 	];
 
-	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType, Action<Workout>? configureWorkout)> DeleteWorkoutData() =>
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, typeof(ForbidHttpResult), null),
-		new(Users.Admin1, Users.Admin1, typeof(NoContent), null),
-		new(Users.Admin1, Users.Admin1, typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
-		new(Users.User1, Users.User1, typeof(NoContent), null),
-		new(Users.User1, Users.User1, typeof(ForbidHttpResult), workout => workout.Users.Add(new UserWorkout(Users.User2.Id, workout.Id))),
-		new(Users.User2, Users.User1, typeof(ForbidHttpResult), null)
+		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, typeof(ForbidHttpResult)),
+		new([Users.User1], Users.User1, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
 	];
 
 	[Test]
@@ -74,12 +79,12 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutData))]
-	public async Task GetWorkout_ReturnsCorrectResponse(IUserInfo workoutOwner, IUserInfo accessor, Type responseType)
+	public async Task GetWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(workoutOwner)
+			.WithAllUsers()
 			.WithUser(accessor)
-			.WithWorkout(out var workout, workoutOwner.GetHttpContext().User)
+			.WithWorkout(out var workout, owners)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -95,21 +100,13 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(EditWorkoutData))]
-	public async Task EditWorkout_ReturnsCorrectResponse(IUserInfo workoutOwner, IUserInfo editor, string workoutName, Type responseType, Action<Workout>? configureWorkout = null)
+	public async Task EditWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.Admin1)
-			.WithUser(Users.User1)
-			.WithUser(Users.User2)
-			.WithWorkout(out var workout, workoutOwner.GetHttpContext().User)
+			.WithAllUsers()
+			.WithWorkout(out var workout, owners)
 			.Build()
 			.ConfigureAwait(false);
-
-		if (configureWorkout is not null)
-		{
-			configureWorkout(workout);
-			await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
-		}
 
 		var result = await EditWorkout.Handler(
 				editor.GetHttpContext(),
@@ -124,21 +121,13 @@ internal sealed class WorkoutTests
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutData))]
-	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo workoutOwner, IUserInfo deleter, Type responseType, Action<Workout>? configureWorkout = null)
+	public async Task DeleteWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(Users.Admin1)
-			.WithUser(Users.User1)
-			.WithUser(Users.User2)
-			.WithWorkout(out var workout, workoutOwner.GetHttpContext().User)
+			.WithAllUsers()
+			.WithWorkout(out var workout, owners)
 			.Build()
 			.ConfigureAwait(false);
-
-		if (configureWorkout is not null)
-		{
-			configureWorkout(workout);
-			await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
-		}
 
 		var result = await DeleteWorkout.Handler(
 				deleter.GetHttpContext(),

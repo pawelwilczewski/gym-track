@@ -1,6 +1,4 @@
-using System.Security.Claims;
 using Domain.Models;
-using Domain.Models.Identity;
 using Domain.Models.Workout;
 
 namespace Api.Tests.Mocks;
@@ -25,19 +23,70 @@ internal static class MockDataContextBuilderExtensions
 		return filePath!;
 	}
 
-	public static MockDataContextBuilder WithWorkout(this MockDataContextBuilder builder, out Workout workout, ClaimsPrincipal? user = null)
+	public static MockDataContextBuilder WithWorkout(this MockDataContextBuilder builder, out Workout workout, IReadOnlyList<IUserInfo> owners)
 	{
-		workout = user is null || user.IsInRole(Role.ADMINISTRATOR) ? Workout.CreateForEveryone(GenerateRandomName()) : Workout.CreateForUser(GenerateRandomName(), user);
+		switch (owners)
+		{
+			case []:
+			case [AdminInfo]:
+			{
+				workout = Workout.CreateForEveryone(GenerateRandomName());
+				break;
+			}
+			default:
+			{
+				if (owners.Any(owner => owner is AdminInfo))
+				{
+					return WithWorkout(builder, out workout, owners.Where(owner => owner is not AdminInfo).ToList());
+				}
+
+				workout = Workout.CreateForUser(GenerateRandomName(), owners[0].GetHttpContext().User);
+				for (var i = 1; i < owners.Count; ++i)
+				{
+					workout.Users.Add(new UserWorkout(owners[i].Id, workout.Id));
+				}
+
+				break;
+			}
+		}
+
 		builder.WithEntity(workout);
 		return builder;
 	}
 
-	public static MockDataContextBuilder WithExerciseInfo(this MockDataContextBuilder builder, out ExerciseInfo exerciseInfo, ExerciseMetricType allowedMetricTypes, ClaimsPrincipal? user = null)
+	public static MockDataContextBuilder WithExerciseInfo(this MockDataContextBuilder builder, out ExerciseInfo exerciseInfo, ExerciseMetricType allowedMetricTypes, IReadOnlyList<IUserInfo> owners)
 	{
-		exerciseInfo = user is null || user.IsInRole(Role.ADMINISTRATOR)
-			? ExerciseInfo.CreateForEveryone(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes)
-			: ExerciseInfo.CreateForUser(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes, user);
+		switch (owners)
+		{
+			case []:
+			case [AdminInfo]:
+			{
+				exerciseInfo = ExerciseInfo.CreateForEveryone(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes);
+				break;
+			}
+			default:
+			{
+				if (owners.Any(owner => owner is AdminInfo))
+				{
+					return WithExerciseInfo(builder, out exerciseInfo, allowedMetricTypes, owners.Where(owner => owner is not AdminInfo).ToList());
+				}
+
+				exerciseInfo = ExerciseInfo.CreateForUser(GenerateRandomName(), GenerateRandomFilePath(), GenerateRandomDescription(), allowedMetricTypes, owners[0].GetHttpContext().User);
+				for (var i = 1; i < owners.Count; ++i)
+				{
+					exerciseInfo.Users.Add(new UserExerciseInfo(owners[i].Id, exerciseInfo.Id));
+				}
+
+				break;
+			}
+		}
+
 		builder.WithEntity(exerciseInfo);
 		return builder;
 	}
+
+	public static MockDataContextBuilder WithAllUsers(this MockDataContextBuilder builder) => builder
+		.WithUser(Users.Admin1)
+		.WithUser(Users.User1)
+		.WithUser(Users.User2);
 }

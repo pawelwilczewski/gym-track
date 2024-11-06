@@ -20,7 +20,8 @@ internal sealed class EditWorkout : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var workoutId = new Id<Workout>(id);
-		var workout = await dataContext.Workouts.Include(workout => workout.Users)
+		var workout = await dataContext.Workouts
+			.Include(workout => workout.Users)
 			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken)
 			.ConfigureAwait(false);
 

@@ -11,8 +11,7 @@ namespace Api.Routes.App.Workouts.Exercises;
 
 internal sealed class EditWorkoutExercise : IEndpoint
 {
-	// NOTE: this is currently useless
-
+	[Obsolete("This is currently useless/not implemented.")]
 	public static async Task<Results<NoContent, NotFound<string>, ValidationProblem, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
