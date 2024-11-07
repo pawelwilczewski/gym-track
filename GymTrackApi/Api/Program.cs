@@ -1,6 +1,8 @@
 using Api.Authorization;
 using Api.Common;
+using Api.Files;
 using Api.Routes;
+using Application.Persistence;
 using Asp.Versioning;
 using Domain.Models.Identity;
 using Infrastructure;
@@ -54,6 +56,8 @@ builder.Services.AddApiVersioning(options =>
 		options.GroupNameFormat = apiVersionGroupNameFormat;
 		options.SubstituteApiVersionInUrl = true;
 	});
+
+builder.Services.AddSingleton<IFileStoragePathProvider, WebRootFileStoragePathProvider>();
 
 builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Configure());
 

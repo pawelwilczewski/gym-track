@@ -18,7 +18,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		[FromForm] ExerciseMetricType allowedMetricTypes,
 		[FromForm] IFormFile thumbnailImage,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		if (!Name.TryCreate(name, out var exerciseInfoName, out var invalidName))
@@ -39,7 +39,8 @@ internal sealed class CreateExerciseInfo : IEndpoint
 			return invalidPath.ToValidationProblem("Thumbnail File Path");
 		}
 
-		var localPath = Path.Combine(environment.WebRootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
+		var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
+		Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
 		await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)

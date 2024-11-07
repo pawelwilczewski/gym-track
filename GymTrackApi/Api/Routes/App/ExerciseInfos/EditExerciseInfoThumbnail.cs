@@ -16,7 +16,7 @@ internal sealed class EditExerciseInfoThumbnail : IEndpoint
 		[FromRoute] Guid id,
 		[FromForm] IFormFile thumbnailImage,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		var exerciseInfoId = new Id<ExerciseInfo>(id);
@@ -28,7 +28,7 @@ internal sealed class EditExerciseInfoThumbnail : IEndpoint
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
-		var localPath = Path.Combine(environment.WebRootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
+		var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
 		await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 		return TypedResults.NoContent();
