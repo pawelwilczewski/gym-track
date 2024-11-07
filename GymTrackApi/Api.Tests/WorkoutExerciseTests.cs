@@ -32,7 +32,7 @@ internal sealed class WorkoutExerciseTests
 	[
 		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
 		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
 		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
 		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
 		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))

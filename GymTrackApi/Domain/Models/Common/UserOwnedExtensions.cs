@@ -10,6 +10,8 @@ public static class UserOwnedExtensions
 		this ClaimsPrincipal user,
 		IReadOnlyList<IUserOwned> users)
 	{
+		if (user.IsInRole(Role.ADMINISTRATOR)) return true;
+
 		switch (users)
 		{
 			// in case there are no user owned items,

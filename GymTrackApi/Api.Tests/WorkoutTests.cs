@@ -41,7 +41,7 @@ internal sealed class WorkoutTests
 	[
 		new([Users.Admin1], Users.User1, "ValidName", typeof(ForbidHttpResult)),
 		new([Users.Admin1], Users.Admin1, "ValidName", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(NoContent)),
 		new([Users.User1], Users.User1, "ValidName", typeof(NoContent)),
 		new([Users.User1, Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
 		new([Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
@@ -52,7 +52,7 @@ internal sealed class WorkoutTests
 	[
 		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
 		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, typeof(ForbidHttpResult)),
+		new([Users.Admin1, Users.User2], Users.Admin1, typeof(NoContent)),
 		new([Users.User1], Users.User1, typeof(NoContent)),
 		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
 		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
