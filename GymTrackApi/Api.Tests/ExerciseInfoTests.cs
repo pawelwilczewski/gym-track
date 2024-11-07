@@ -109,7 +109,7 @@ internal sealed class ExerciseInfoTests
 
 	[Test]
 	[MethodDataSource(nameof(EditExerciseInfoData))]
-	public async Task EditWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string name, string description, ExerciseMetricType allowedMetricTypes, Type responseType)
+	public async Task EditExerciseInfo_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string name, string description, ExerciseMetricType allowedMetricTypes, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
@@ -140,7 +140,7 @@ internal sealed class ExerciseInfoTests
 
 	[Test]
 	[MethodDataSource(nameof(DeleteExerciseInfoData))]
-	public async Task DeleteWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)
+	public async Task DeleteExerciseInfo_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
