@@ -23,9 +23,9 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		IWebHostEnvironment environment,
 		CancellationToken cancellationToken)
 	{
-		if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var invalidDescription))
+		if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var error))
 		{
-			return invalidDescription.ToValidationProblem("Description");
+			return error.ToValidationProblem("Description");
 		}
 
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
@@ -40,9 +40,9 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		if (image is not null)
 		{
 			var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
-			if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
+			if (!FilePath.TryCreate(urlPath, out var successfulPath, out error))
 			{
-				return invalidPath.ToValidationProblem("Image File Path");
+				return error.ToValidationProblem("Image File Path");
 			}
 
 			var localPath = Paths.UrlToLocal(urlPath, environment);

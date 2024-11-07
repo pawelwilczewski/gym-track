@@ -32,7 +32,10 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		var step = exerciseInfo.Steps.SingleOrDefault();
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
-		if (!step.Description.TrySet(request.Description, out var invalid)) return invalid.ToValidationProblem("Description");
+		if (!step.Description.TrySet(request.Description, out var error))
+		{
+			return error.ToValidationProblem("Description");
+		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		return TypedResults.NoContent();

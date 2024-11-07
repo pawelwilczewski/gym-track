@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -20,10 +19,10 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 	public static bool TryCreate(
 		string value,
 		[NotNullWhen(true)] out T? text,
-		[NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
+		out TextValidationError error)
 	{
 		text = CreateTSingleArgument(string.Empty);
-		return text.TrySet(value, out invalid);
+		return text.TrySet(value, out error);
 	}
 
 	private static T CreateTSingleArgument(object argument) => (T)Activator.CreateInstance(
@@ -38,23 +37,15 @@ public abstract record class ValidatedText<T> where T : ValidatedText<T>
 
 	protected ValidatedText(string value = "") => Value = value;
 
-	public bool TrySet(string value, [NotNullWhen(false)] out TextValidationResult.Invalid? invalid)
+	public bool TrySet(string value, out TextValidationError error)
 	{
-		switch (Validator(value))
+		if (Validator(value, out error))
 		{
-			case TextValidationResult.Invalid invalidResult:
-			{
-				invalid = invalidResult;
-				return false;
-			}
-			case TextValidationResult.Success:
-			{
-				Value = value.Trim();
-				invalid = null;
-				return true;
-			}
-			default: throw new UnreachableException();
+			Value = value.Trim();
+			return true;
 		}
+
+		return false;
 	}
 
 	public override string ToString() => Value;

@@ -27,14 +27,14 @@ internal sealed class EditExerciseInfo : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		if (!exerciseInfo.Name.TrySet(request.Name, out var invalidName))
+		if (!exerciseInfo.Name.TrySet(request.Name, out var error))
 		{
-			return invalidName.ToValidationProblem("Name");
+			return error.ToValidationProblem("Name");
 		}
 
-		if (!exerciseInfo.Description.TrySet(request.Description, out var invalidDescription))
+		if (!exerciseInfo.Description.TrySet(request.Description, out error))
 		{
-			return invalidDescription.ToValidationProblem("Description");
+			return error.ToValidationProblem("Description");
 		}
 
 		exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;

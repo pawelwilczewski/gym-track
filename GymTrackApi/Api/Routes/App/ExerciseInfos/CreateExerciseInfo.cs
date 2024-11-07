@@ -21,22 +21,22 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
-		if (!Name.TryCreate(name, out var exerciseInfoName, out var invalidName))
+		if (!Name.TryCreate(name, out var exerciseInfoName, out var error))
 		{
-			return invalidName.ToValidationProblem("Name");
+			return error.ToValidationProblem("Name");
 		}
 
-		if (!Description.TryCreate(description, out var exerciseInfoDescription, out var invalidDescription))
+		if (!Description.TryCreate(description, out var exerciseInfoDescription, out error))
 		{
-			return invalidDescription.ToValidationProblem("Description");
+			return error.ToValidationProblem("Description");
 		}
 
 		var id = Id<ExerciseInfo>.New();
 
 		var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
-		if (!FilePath.TryCreate(urlPath, out var path, out var invalidPath))
+		if (!FilePath.TryCreate(urlPath, out var path, out error))
 		{
-			return invalidPath.ToValidationProblem("Thumbnail File Path");
+			return error.ToValidationProblem("Thumbnail File Path");
 		}
 
 		var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));

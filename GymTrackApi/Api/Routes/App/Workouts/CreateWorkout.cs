@@ -17,9 +17,9 @@ internal sealed class CreateWorkout : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		if (!Name.TryCreate(request.Name, out var name, out var invalid))
+		if (!Name.TryCreate(request.Name, out var name, out var error))
 		{
-			return invalid.ToValidationProblem("Name");
+			return error.ToValidationProblem("Name");
 		}
 
 		var workout = httpContext.User.IsInRole(Role.ADMINISTRATOR)

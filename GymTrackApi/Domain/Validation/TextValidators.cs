@@ -1,66 +1,68 @@
 namespace Domain.Validation;
 
-public delegate TextValidationResult TextValidator(string text);
+public delegate bool TextValidator(string text, out TextValidationError error);
 
 public static class TextValidators
 {
-	private static TextValidationResult NotNull(string? text) => text == null
-		? new TextValidationResult.Invalid("Value required.")
-		: new TextValidationResult.Success();
-
-	private static TextValidationResult NotNullOrWhitespace(string text) => string.IsNullOrWhiteSpace(text)
-		? new TextValidationResult.Invalid("Value cannot be empty.")
-		: new TextValidationResult.Success();
-
-	private static TextValidationResult MinLength(string text, int minLength)
+	private static bool IsNotNull(string? text, out TextValidationError error)
 	{
-		if (minLength < 0) return new TextValidationResult.Invalid("Min length must be greater than or equal to 0 (internal error).");
-
-		return text.Length < minLength
-			? new TextValidationResult.Invalid($"Too short (min {minLength} characters).")
-			: new TextValidationResult.Success();
+		var success = text != null;
+		error = success ? default : new TextValidationError("Value required.");
+		return success;
 	}
 
-	private static TextValidationResult MaxLength(string text, int maxLength)
+	private static bool IsNotNullOrWhitespace(string? text, out TextValidationError error)
 	{
-		if (maxLength < 1) return new TextValidationResult.Invalid("Max length must be greater than 0 (internal error).");
-
-		return text.Length > maxLength
-			? new TextValidationResult.Invalid($"Too long (max {maxLength} characters).")
-			: new TextValidationResult.Success();
+		var success = !string.IsNullOrWhiteSpace(text);
+		error = success ? default : new TextValidationError("Value cannot be empty.");
+		return success;
 	}
 
-	private static TextValidationResult NotJustPunctuation(string text) =>
-		text.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c))
-			? new TextValidationResult.Invalid("Cannot be just punctuation.")
-			: new TextValidationResult.Success();
-
-	// TODO Pawel: fluent chain of responsibility here? the ifs are annoying
-
-	public static TextValidationResult Name(string text)
+	private static bool HasMinLength(string text, int minLength, out TextValidationError error)
 	{
-		if (NotNullOrWhitespace(text) is TextValidationResult.Invalid invalid1) return invalid1;
-		if (MaxLength(text, Models.Name.MAX_LENGTH) is TextValidationResult.Invalid invalid2) return invalid2;
-		if (NotJustPunctuation(text) is TextValidationResult.Invalid invalid3) return invalid3;
+		if (minLength < 0)
+		{
+			error = new TextValidationError("Min length must be greater than or equal to 0 (internal error).");
+			return false;
+		}
 
-		return new TextValidationResult.Success();
+		var success = text.Length >= minLength;
+		error = success ? default : new TextValidationError($"Too short (min {minLength} characters).");
+		return success;
 	}
 
-	public static TextValidationResult Description(string text)
+	private static bool HasMaxLength(string text, int maxLength, out TextValidationError error)
 	{
-		if (NotNull(text) is TextValidationResult.Invalid invalid1) return invalid1;
-		if (MaxLength(text, Models.Description.MAX_LENGTH) is TextValidationResult.Invalid invalid2) return invalid2;
+		if (maxLength < 1)
+		{
+			error = new TextValidationError("Max length must be greater than 0 (internal error).");
+			return false;
+		}
 
-		return new TextValidationResult.Success();
+		var success = text.Length <= maxLength;
+		error = success ? default : new TextValidationError($"Too long (max {maxLength} characters).");
+		return success;
 	}
 
-	public static TextValidationResult FilePath(string text)
+	private static bool IsNotJustPunctuation(string text, out TextValidationError error)
 	{
-		if (NotNullOrWhitespace(text) is TextValidationResult.Invalid invalid1) return invalid1;
-		if (MinLength(text, 1) is TextValidationResult.Invalid invalid2) return invalid2;
-		if (MaxLength(text, Models.FilePath.MAX_LENGTH) is TextValidationResult.Invalid invalid3) return invalid3;
-		if (NotJustPunctuation(text) is TextValidationResult.Invalid invalid4) return invalid4;
-
-		return new TextValidationResult.Success();
+		var success = !text.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c));
+		error = success ? default : new TextValidationError("Cannot be just punctuation.");
+		return success;
 	}
+
+	public static bool Name(string text, out TextValidationError error) =>
+		IsNotNullOrWhitespace(text, out error)
+		&& HasMaxLength(text, Models.Name.MAX_LENGTH, out error)
+		&& IsNotJustPunctuation(text, out error);
+
+	public static bool Description(string text, out TextValidationError error) =>
+		IsNotNull(text, out error)
+		&& HasMaxLength(text, Models.Description.MAX_LENGTH, out error);
+
+	public static bool FilePath(string text, out TextValidationError error) =>
+		IsNotNullOrWhitespace(text, out error)
+		&& HasMinLength(text, 1, out error)
+		&& HasMaxLength(text, Models.FilePath.MAX_LENGTH, out error)
+		&& IsNotJustPunctuation(text, out error);
 }

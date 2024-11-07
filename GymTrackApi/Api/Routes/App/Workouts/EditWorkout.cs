@@ -28,7 +28,10 @@ internal sealed class EditWorkout : IEndpoint
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
-		if (!workout.Name.TrySet(request.Name, out var invalid)) return invalid.ToValidationProblem("Name");
+		if (!workout.Name.TrySet(request.Name, out var error))
+		{
+			return error.ToValidationProblem("Name");
+		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		return TypedResults.NoContent();

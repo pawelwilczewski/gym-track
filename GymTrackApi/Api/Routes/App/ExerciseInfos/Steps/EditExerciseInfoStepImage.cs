@@ -40,9 +40,9 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 			if (exerciseInfoStep.ImageFile.Reduce(null) is null)
 			{
 				var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
-				if (!FilePath.TryCreate(urlPath, out var successfulPath, out var invalidPath))
+				if (!FilePath.TryCreate(urlPath, out var successfulPath, out var error))
 				{
-					return invalidPath.ToValidationProblem("Image File Path");
+					return error.ToValidationProblem("Image File Path");
 				}
 
 				localPath = Paths.UrlToLocal(urlPath, environment);

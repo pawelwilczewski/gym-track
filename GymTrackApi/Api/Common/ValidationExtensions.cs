@@ -6,10 +6,10 @@ namespace Api.Common;
 
 internal static class ValidationExtensions
 {
-	public static ValidationProblem ToValidationProblem(this TextValidationResult.Invalid result, string fieldName) =>
+	public static ValidationProblem ToValidationProblem(this TextValidationError error, string fieldName) =>
 		TypedResults.ValidationProblem(new Dictionary<string, string[]>
 		{
-			{ fieldName, [result.Error] }
+			{ fieldName, [error.Error] }
 		});
 
 	public static ValidationProblem NotAllowedValidationProblem(this ExerciseMetric metric, string fieldName = "Metric") =>

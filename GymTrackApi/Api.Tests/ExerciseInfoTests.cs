@@ -16,7 +16,9 @@ internal sealed class ExerciseInfoTests
 		new(Users.User2, ",.. -", "ValidDescription", ExerciseMetricType.Distance, typeof(ValidationProblem)),
 		new(Users.Admin1, "ValidName", null!, ExerciseMetricType.Distance, typeof(ValidationProblem)),
 		new(Users.Admin1, null!, "ValidDescription", ExerciseMetricType.Distance, typeof(ValidationProblem)),
-		new(Users.Admin1, "", "ValidDescription", ExerciseMetricType.Distance, typeof(ValidationProblem))
+		new(Users.Admin1, "", "ValidDescription", ExerciseMetricType.Distance, typeof(ValidationProblem)),
+		new(Users.Admin1, "12345678901234567890123456789012345678901234567890", "ValidDescription", ExerciseMetricType.Distance, typeof(Created)),
+		new(Users.Admin1, "12345678901234567890123456789012345678901234567890x", "ValidDescription", ExerciseMetricType.Distance, typeof(ValidationProblem))
 	];
 
 	[Test]
