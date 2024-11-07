@@ -16,7 +16,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
@@ -34,7 +34,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 
 		if (exerciseInfoStep.ImageFile.Reduce(null) is not null)
 		{
-			File.Delete(Paths.UrlToLocal(exerciseInfoStep.ImageFile.Reduce(null!).ToString(), environment));
+			File.Delete(exerciseInfoStep.ImageFile.Reduce(null!).ToString().UrlToLocalPath(fileStoragePathProvider));
 		}
 
 		exerciseInfo.Steps.Remove(exerciseInfoStep);

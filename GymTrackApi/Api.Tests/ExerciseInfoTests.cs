@@ -127,4 +127,35 @@ internal sealed class ExerciseInfoTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteExerciseInfoData() =>
+	[
+		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, typeof(NoContent)),
+		new([Users.User1], Users.User1, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(DeleteExerciseInfoData))]
+	public async Task DeleteWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await DeleteExerciseInfo.Handler(
+				deleter.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				dataContext,
+				new TempFileStoragePathProvider(),
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
 }

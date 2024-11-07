@@ -15,7 +15,7 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid id,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		var exerciseInfoId = new Id<ExerciseInfo>(id);
@@ -26,7 +26,11 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		File.Delete(Paths.UrlToLocal(exerciseInfo.ThumbnailImage.ToString(), environment));
+		var thumbnailPath = exerciseInfo.ThumbnailImage.ToString().UrlToLocalPath(fileStoragePathProvider);
+		if (Path.Exists(thumbnailPath))
+		{
+			File.Delete(thumbnailPath);
+		}
 
 		dataContext.ExerciseInfos.Remove(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

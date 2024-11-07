@@ -19,7 +19,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 		[FromRoute] int index,
 		[FromForm] IFormFile? image,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
@@ -45,13 +45,13 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 					return error.ToValidationProblem("Image File Path");
 				}
 
-				localPath = Paths.UrlToLocal(urlPath, environment);
+				localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
 				await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 				exerciseInfoStep.ImageFile = Option<FilePath>.Some(successfulPath);
 			}
 
-			localPath ??= Paths.UrlToLocal(exerciseInfoStep.ImageFile.Reduce(null)!.ToString(), environment);
+			localPath ??= exerciseInfoStep.ImageFile.Reduce(null)!.ToString().UrlToLocalPath(fileStoragePathProvider);
 			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 		}
 		else
@@ -59,7 +59,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 			var url = exerciseInfoStep.ImageFile.Reduce(null);
 			if (url is not null)
 			{
-				File.Delete(Paths.UrlToLocal(url, environment).ToString());
+				File.Delete(url.UrlToLocalPath(fileStoragePathProvider).ToString());
 			}
 
 			exerciseInfoStep.ImageFile = Option<FilePath>.None();

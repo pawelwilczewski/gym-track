@@ -20,7 +20,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		[FromForm] string description,
 		[FromForm] IFormFile? image,
 		[FromServices] IDataContext dataContext,
-		IWebHostEnvironment environment,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var error))
@@ -45,7 +45,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 				return error.ToValidationProblem("Image File Path");
 			}
 
-			var localPath = Paths.UrlToLocal(urlPath, environment);
+			var localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
 			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 			path = Option<FilePath>.Some(successfulPath);
