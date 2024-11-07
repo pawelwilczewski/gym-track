@@ -4,19 +4,17 @@ public delegate bool TextValidator(string text, out TextValidationError error);
 
 public static class TextValidators
 {
-	private static bool IsNotNull(string? text, out TextValidationError error)
+	private static bool ValidateWithError(bool successCondition, string errorMessage, out TextValidationError error)
 	{
-		var success = text != null;
-		error = success ? default : new TextValidationError("Value required.");
-		return success;
+		error = successCondition ? default : new TextValidationError(errorMessage);
+		return successCondition;
 	}
 
-	private static bool IsNotNullOrWhitespace(string? text, out TextValidationError error)
-	{
-		var success = !string.IsNullOrWhiteSpace(text);
-		error = success ? default : new TextValidationError("Value cannot be empty.");
-		return success;
-	}
+	private static bool IsNotNull(string? text, out TextValidationError error) =>
+		ValidateWithError(text is not null, "Value required.", out error);
+
+	private static bool IsNotNullOrWhitespace(string? text, out TextValidationError error) =>
+		ValidateWithError(!string.IsNullOrWhiteSpace(text), "Cannot be empty.", out error);
 
 	private static bool HasMinLength(string text, int minLength, out TextValidationError error)
 	{
@@ -26,9 +24,10 @@ public static class TextValidators
 			return false;
 		}
 
-		var success = text.Length >= minLength;
-		error = success ? default : new TextValidationError($"Too short (min {minLength} characters).");
-		return success;
+		return ValidateWithError(
+			text.Length >= minLength,
+			$"Too short (min {minLength} characters).",
+			out error);
 	}
 
 	private static bool HasMaxLength(string text, int maxLength, out TextValidationError error)
@@ -39,17 +38,16 @@ public static class TextValidators
 			return false;
 		}
 
-		var success = text.Length <= maxLength;
-		error = success ? default : new TextValidationError($"Too long (max {maxLength} characters).");
-		return success;
+		return ValidateWithError(
+			text.Length <= maxLength,
+			$"Too long (max {maxLength} characters).",
+			out error);
 	}
 
-	private static bool IsNotJustPunctuation(string text, out TextValidationError error)
-	{
-		var success = !text.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c));
-		error = success ? default : new TextValidationError("Cannot be just punctuation.");
-		return success;
-	}
+	private static bool IsNotJustPunctuation(string text, out TextValidationError error) => ValidateWithError(
+		!text.All(c => char.IsPunctuation(c) || char.IsWhiteSpace(c)),
+		"Cannot be just punctuation.",
+		out error);
 
 	public static bool Name(string text, out TextValidationError error) =>
 		IsNotNullOrWhitespace(text, out error)
