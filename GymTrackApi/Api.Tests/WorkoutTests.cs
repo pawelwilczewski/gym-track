@@ -28,36 +28,6 @@ internal sealed class WorkoutTests
 		}
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
-	[
-		new([Users.Admin1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User1], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User2], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
-	];
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
-	[
-		new([Users.Admin1], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, "ValidName", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(NoContent)),
-		new([Users.User1], Users.User1, "ValidName", typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidName", typeof(ForbidHttpResult))
-	];
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
-	[
-		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, typeof(NoContent)),
-		new([Users.User1], Users.User1, typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
-	];
-
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutData))]
 	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
@@ -76,6 +46,15 @@ internal sealed class WorkoutTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
+	[
+		new([Users.Admin1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User1], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User2], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
+		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutData))]
@@ -116,6 +95,17 @@ internal sealed class WorkoutTests
 		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
 	}
 
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
+	[
+		new([Users.Admin1], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidName", typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(NoContent)),
+		new([Users.User1], Users.User1, "ValidName", typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidName", typeof(ForbidHttpResult))
+	];
+
 	[Test]
 	[MethodDataSource(nameof(EditWorkoutData))]
 	public async Task EditWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)
@@ -136,6 +126,16 @@ internal sealed class WorkoutTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
+	[
+		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, typeof(NoContent)),
+		new([Users.User1], Users.User1, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutData))]
