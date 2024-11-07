@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
@@ -11,13 +12,15 @@ namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal sealed class GetExerciseInfoStep : IEndpoint
 {
-	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound<string>, ForbidHttpResult>> Handler(
+	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
+		if (index < 0) return ValidationErrors.NegativeIndex();
+
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
 			.Include(exerciseInfo => exerciseInfo.Users)
