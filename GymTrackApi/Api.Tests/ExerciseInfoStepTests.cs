@@ -106,4 +106,46 @@ internal sealed class ExerciseInfoStepTests
 
 		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, Type responseType)> EditExerciseInfoStepData() =>
+	[
+		new([Users.Admin1], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidDescription", typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(ValidationProblem)),
+		new([Users.User1], Users.User1, null!, typeof(ValidationProblem)),
+		new([Users.User1], Users.User1, Placeholders.RandomStringNCharacters(Description.MAX_LENGTH + 1), typeof(ValidationProblem)),
+		new([Users.User1, Users.User2], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidDescription", typeof(ForbidHttpResult))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(EditExerciseInfoStepData))]
+	public async Task EditExerciseInfoStep_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
+
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, Option<FilePath>.None());
+		exerciseInfo.Steps.Add(originalStep);
+		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+		var result = await EditExerciseInfoStep.Handler(
+				editor.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				0,
+				new EditExerciseInfoStepRequest(description),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
 }

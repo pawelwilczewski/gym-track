@@ -1,3 +1,4 @@
+using System.Text;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -22,6 +23,23 @@ internal static class Placeholders
 		var pathProvider = new TempFileStoragePathProvider();
 		FilePath.TryCreate(Path.Combine(pathProvider.RootPath, $"Files/File_{Guid.NewGuid()}"), out var filePath, out _);
 		return filePath!;
+	}
+
+	public static string RandomStringNCharacters(int n = 10)
+	{
+		var builder = new StringBuilder(n);
+		for (var i = 0; i < n; ++i)
+		{
+			builder.Append(RandomCharacter());
+		}
+
+		return builder.ToString();
+
+		char RandomCharacter()
+		{
+			const int length = 'Z' - 'A';
+			return (char)('A' + Random.Shared.Next(length));
+		}
 	}
 
 	public static IFormFile FormFile()
