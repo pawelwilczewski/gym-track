@@ -31,44 +31,6 @@ internal sealed class WorkoutExerciseSetTests
 		];
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int setIndex, int accessedSetIndex, Type responseType)> GetWorkoutExerciseSetData() =>
-	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.Admin1], Users.User1, 0, 1, typeof(NotFound<string>)),
-		new([Users.User1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.User1], Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User1], Users.Admin1, 0, -1, typeof(NotFound<string>)),
-		new([Users.User1], Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>))
-	];
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo editor, ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)> EditWorkoutExerciseSetData()
-	{
-		Amount.TryCreate(120.0, out var amount);
-
-		return
-		[
-			new([], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.Admin1, Users.User2], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.User1, Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Pound), 4, typeof(NoContent)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Pound), 4, typeof(ValidationProblem))
-		];
-	}
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
-	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
-	];
-
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseSetData))]
 	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, int setIndex, Type responseType)
@@ -96,6 +58,17 @@ internal sealed class WorkoutExerciseSetTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int setIndex, int accessedSetIndex, Type responseType)> GetWorkoutExerciseSetData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
+		new([Users.Admin1], Users.User1, 0, 1, typeof(NotFound<string>)),
+		new([Users.User1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
+		new([Users.User1], Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseSetResponse>)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User1], Users.Admin1, 0, -1, typeof(NotFound<string>)),
+		new([Users.User1], Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutExerciseSetData))]
@@ -127,6 +100,23 @@ internal sealed class WorkoutExerciseSetTests
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo editor, ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)> EditWorkoutExerciseSetData()
+	{
+		Amount.TryCreate(120.0, out var amount);
+
+		return
+		[
+			new([], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
+			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
+			new([Users.Admin1, Users.User2], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
+			new([Users.User1, Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
+			new([Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Pound), 4, typeof(NoContent)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Pound), 4, typeof(ValidationProblem))
+		];
 	}
 
 	[Test]
@@ -161,6 +151,16 @@ internal sealed class WorkoutExerciseSetTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutExerciseSetData))]

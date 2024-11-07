@@ -17,27 +17,6 @@ internal sealed class WorkoutExerciseTests
 		new(Users.User2, Users.User1, 0, typeof(ForbidHttpResult))
 	];
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int exerciseIndex, int accessedExerciseIndex, Type responseType)> GetWorkoutExerciseData() =>
-	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
-		new([Users.Admin1], Users.User1, 0, 1, typeof(NotFound<string>)),
-		new([Users.User1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
-		new([Users.User1], Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseResponse>)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User1], Users.Admin1, 0, -1, typeof(NotFound<string>)),
-		new([Users.User1], Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>))
-	];
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseData() =>
-	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
-	];
-
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseData))]
 	public async Task CreateWorkoutExercise_ReturnsCorrectResponse(IUserInfo creator, IUserInfo exerciseInfoOwner, int exerciseIndex, Type responseType)
@@ -59,6 +38,17 @@ internal sealed class WorkoutExerciseTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int exerciseIndex, int accessedExerciseIndex, Type responseType)> GetWorkoutExerciseData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
+		new([Users.Admin1], Users.User1, 0, 1, typeof(NotFound<string>)),
+		new([Users.User1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>)),
+		new([Users.User1], Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseResponse>)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User1], Users.Admin1, 0, -1, typeof(NotFound<string>)),
+		new([Users.User1], Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseResponse>))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutExerciseData))]
@@ -86,6 +76,16 @@ internal sealed class WorkoutExerciseTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutExerciseData))]
