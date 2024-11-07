@@ -7,29 +7,6 @@ namespace Domain.Models.Workout;
 
 public class ExerciseInfo
 {
-	public static ExerciseInfo CreateForEveryone(
-		Name name,
-		FilePath thumbnailImage,
-		Description description,
-		ExerciseMetricType allowedMetricTypes,
-		Id<ExerciseInfo>? id = null) =>
-		new(id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
-
-	public static ExerciseInfo CreateForUser(
-		Name name,
-		FilePath thumbnailImage,
-		Description description,
-		ExerciseMetricType allowedMetricTypes,
-		ClaimsPrincipal user,
-		Id<ExerciseInfo>? id = null)
-	{
-		var exerciseInfo = new ExerciseInfo(
-			id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
-		var userExerciseInfo = new UserExerciseInfo(user.GetUserId(), exerciseInfo.Id);
-		exerciseInfo.Users.Add(userExerciseInfo);
-		return exerciseInfo;
-	}
-
 	public Id<ExerciseInfo> Id { get; } = Id<ExerciseInfo>.New();
 
 	public Name Name { get; private set; }
@@ -59,6 +36,29 @@ public class ExerciseInfo
 		AllowedMetricTypes = allowedMetricTypes;
 	}
 
+	public static ExerciseInfo CreateForEveryone(
+		Name name,
+		FilePath thumbnailImage,
+		Description description,
+		ExerciseMetricType allowedMetricTypes,
+		Id<ExerciseInfo>? id = null) =>
+		new(id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
+
+	public static ExerciseInfo CreateForUser(
+		Name name,
+		FilePath thumbnailImage,
+		Description description,
+		ExerciseMetricType allowedMetricTypes,
+		ClaimsPrincipal user,
+		Id<ExerciseInfo>? id = null)
+	{
+		var exerciseInfo = new ExerciseInfo(
+			id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
+		var userExerciseInfo = new UserExerciseInfo(user.GetUserId(), exerciseInfo.Id);
+		exerciseInfo.Users.Add(userExerciseInfo);
+		return exerciseInfo;
+	}
+
 	public class Step
 	{
 		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
@@ -86,5 +86,6 @@ public enum ExerciseMetricType
 {
 	Weight = 1 << 0,
 	Duration = 1 << 1,
-	Distance = 1 << 2
+	Distance = 1 << 2,
+	All = Weight | Duration | Distance
 }

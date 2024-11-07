@@ -19,6 +19,14 @@ internal sealed class EditExerciseInfo : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
+		if ((request.AllowedMetricTypes & ExerciseMetricType.All) == 0)
+		{
+			return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+			{
+				{ "AllowedMetricTypes", ["At least one metric type must be selected."] }
+			});
+		}
+
 		var exerciseInfoId = new Id<ExerciseInfo>(id);
 		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
