@@ -58,6 +58,17 @@ internal sealed class WorkoutExerciseSetTests
 			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Pound), 4, typeof(ValidationProblem))
 		];
 	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
+	];
+
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseSetData))]
 	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, int setIndex, Type responseType)
@@ -144,6 +155,38 @@ internal sealed class WorkoutExerciseSetTests
 				exerciseIndex.IntValue,
 				setIndex.IntValue,
 				new EditWorkoutExerciseSetRequest(metric, reps),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	[Test]
+	[MethodDataSource(nameof(DeleteWorkoutExerciseSetData))]
+	public async Task DeleteWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int setIndex, int deletedSetIndex, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithWorkout(out var workout, workoutOwners)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwners)
+			.Build()
+			.ConfigureAwait(false);
+
+		if (!Index.TryCreate(0, out var exerciseIndex)) throw new Exception("Invalid test case");
+		if (!Index.TryCreate(setIndex, out var index)) throw new Exception("Invalid test case");
+		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
+
+		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
+		workout.Exercises.Add(exercise);
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, index, new Duration(TimeSpan.FromSeconds(1000.0)), reps));
+		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+
+		var result = await DeleteWorkoutExerciseSet.Handler(
+				deleter.GetHttpContext(),
+				workout.Id.Value,
+				exerciseIndex.IntValue,
+				deletedSetIndex,
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);

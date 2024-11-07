@@ -63,7 +63,7 @@ internal sealed class WorkoutTests
 	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithUser(user)
+			.WithAllUsers()
 			.Build()
 			.ConfigureAwait(false);
 
@@ -83,7 +83,6 @@ internal sealed class WorkoutTests
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithUser(accessor)
 			.WithWorkout(out var workout, owners)
 			.Build()
 			.ConfigureAwait(false);

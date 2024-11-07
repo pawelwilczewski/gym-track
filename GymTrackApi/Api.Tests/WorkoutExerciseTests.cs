@@ -93,7 +93,6 @@ internal sealed class WorkoutExerciseTests
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithUser(deleter)
 			.WithWorkout(out var workout, workoutOwners)
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, workoutOwners)
 			.Build()
