@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Api.Tests.Mocks;
 
-internal static class FakeData
+internal static class Placeholders
 {
 	public static Name RandomName()
 	{

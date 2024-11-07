@@ -2,6 +2,7 @@
 using Api.Routes.App.ExerciseInfos;
 using Api.Tests.Mocks;
 using Domain.Models.Workout;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Tests;
@@ -36,7 +37,7 @@ internal sealed class ExerciseInfoTests
 				name,
 				description,
 				allowedMetricTypes,
-				FakeData.FormFile(),
+				Placeholders.FormFile(),
 				dataContext,
 				new TempFileStoragePathProvider(),
 				CancellationToken.None)
@@ -122,6 +123,40 @@ internal sealed class ExerciseInfoTests
 				exerciseInfo.Id.Value,
 				new EditExerciseInfoRequest(name, description, allowedMetricTypes),
 				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)> EditExerciseInfoThumbnailData() =>
+	[
+		new([Users.Admin1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.User1], Users.User1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(EditExerciseInfoThumbnailData))]
+	public async Task EditExerciseInfoThumbnail_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await EditExerciseInfoThumbnail.Handler(
+				editor.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				thumbnail,
+				dataContext,
+				new TempFileStoragePathProvider(),
 				CancellationToken.None)
 			.ConfigureAwait(false);
 

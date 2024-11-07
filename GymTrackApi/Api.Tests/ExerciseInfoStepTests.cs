@@ -16,9 +16,9 @@ internal sealed class ExerciseInfoStepTests
 	[
 		new(Users.Admin1, 0, "ValidDescription", null, typeof(Created)),
 		new(Users.User1, 1, "ValidDescription", null, typeof(Created)),
-		new(Users.User1, 15, "ValidDescription", FakeData.FormFile(), typeof(Created)),
+		new(Users.User1, 15, "ValidDescription", Placeholders.FormFile(), typeof(Created)),
 		new(Users.User1, -1, "ValidDescription", null, typeof(ValidationProblem)),
-		new(Users.User2, -2, "ValidDescription", FakeData.FormFile(), typeof(ValidationProblem)),
+		new(Users.User2, -2, "ValidDescription", Placeholders.FormFile(), typeof(ValidationProblem)),
 		new(Users.Admin1, 0, null!, null, typeof(ValidationProblem)),
 		new(Users.Admin1, -1, "ValidDescription", null, typeof(ValidationProblem)),
 		new(Users.Admin1, 5, "ValidDescription", null, typeof(Created))

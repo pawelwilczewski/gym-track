@@ -11,7 +11,7 @@ internal static class MockDataContextBuilderExtensions
 			case []:
 			case [AdminInfo]:
 			{
-				workout = Workout.CreateForEveryone(FakeData.RandomName());
+				workout = Workout.CreateForEveryone(Placeholders.RandomName());
 				break;
 			}
 			default:
@@ -21,7 +21,7 @@ internal static class MockDataContextBuilderExtensions
 					return WithWorkout(builder, out workout, owners.Where(owner => owner is not AdminInfo).ToList());
 				}
 
-				workout = Workout.CreateForUser(FakeData.RandomName(), owners[0].GetHttpContext().User);
+				workout = Workout.CreateForUser(Placeholders.RandomName(), owners[0].GetHttpContext().User);
 				for (var i = 1; i < owners.Count; ++i)
 				{
 					workout.Users.Add(new UserWorkout(owners[i].Id, workout.Id));
@@ -42,7 +42,7 @@ internal static class MockDataContextBuilderExtensions
 			case []:
 			case [AdminInfo]:
 			{
-				exerciseInfo = ExerciseInfo.CreateForEveryone(FakeData.RandomName(), FakeData.RandomFilePath(), FakeData.RandomDescription(), allowedMetricTypes);
+				exerciseInfo = ExerciseInfo.CreateForEveryone(Placeholders.RandomName(), Placeholders.RandomFilePath(), Placeholders.RandomDescription(), allowedMetricTypes);
 				break;
 			}
 			default:
@@ -52,7 +52,7 @@ internal static class MockDataContextBuilderExtensions
 					return WithExerciseInfo(builder, out exerciseInfo, allowedMetricTypes, owners.Where(owner => owner is not AdminInfo).ToList());
 				}
 
-				exerciseInfo = ExerciseInfo.CreateForUser(FakeData.RandomName(), FakeData.RandomFilePath(), FakeData.RandomDescription(), allowedMetricTypes, owners[0].GetHttpContext().User);
+				exerciseInfo = ExerciseInfo.CreateForUser(Placeholders.RandomName(), Placeholders.RandomFilePath(), Placeholders.RandomDescription(), allowedMetricTypes, owners[0].GetHttpContext().User);
 				for (var i = 1; i < owners.Count; ++i)
 				{
 					exerciseInfo.Users.Add(new UserExerciseInfo(owners[i].Id, exerciseInfo.Id));
