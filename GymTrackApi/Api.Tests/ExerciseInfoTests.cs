@@ -36,7 +36,7 @@ internal sealed class ExerciseInfoTests
 				name,
 				description,
 				allowedMetricTypes,
-				RandomGenerator.FormFile(),
+				FakeData.FormFile(),
 				dataContext,
 				new TempFileStoragePathProvider(),
 				CancellationToken.None)

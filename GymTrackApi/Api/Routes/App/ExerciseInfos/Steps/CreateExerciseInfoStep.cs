@@ -23,6 +23,8 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
+		if (index < 0) return ValidationErrors.NegativeIndex();
+
 		if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var error))
 		{
 			return error.ToValidationProblem("Description");
@@ -46,6 +48,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 			}
 
 			var localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
+			Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
 			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
 			path = Option<FilePath>.Some(successfulPath);
