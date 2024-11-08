@@ -20,8 +20,11 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
+		if (index < 0) return ValidationErrors.NegativeIndex();
+
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
+		var exerciseInfo = await dataContext.ExerciseInfos
+			.Include(exerciseInfo => exerciseInfo.Users)
 			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 			.ConfigureAwait(false);

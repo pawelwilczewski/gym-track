@@ -112,7 +112,7 @@ internal sealed class ExerciseInfoStepTests
 		new([Users.Admin1], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
 		new([Users.Admin1], Users.Admin1, "ValidDescription", typeof(NoContent)),
 		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(ValidationProblem)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(NoContent)),
 		new([Users.User1], Users.User1, null!, typeof(ValidationProblem)),
 		new([Users.User1], Users.User1, Placeholders.RandomStringNCharacters(Description.MAX_LENGTH + 1), typeof(ValidationProblem)),
 		new([Users.User1, Users.User2], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),

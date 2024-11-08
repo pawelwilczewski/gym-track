@@ -73,8 +73,8 @@ if (app.Environment.IsDevelopment())
 
 if (app.Environment.IsProduction())
 {
-	app.Use404InsteadOf403();
 	app.Strip404Body();
+	app.Use404InsteadOf403();
 	app.UseAntiforgery();
 }
 
