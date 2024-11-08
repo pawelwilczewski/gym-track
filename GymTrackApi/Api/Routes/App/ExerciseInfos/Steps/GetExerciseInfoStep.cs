@@ -33,7 +33,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 		var step = exerciseInfo.Steps.SingleOrDefault();
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
-		return TypedResults.Ok(new GetExerciseInfoStepResponse(step.Index, step.Description.ToString(), step.ImageFile.Reduce(null)?.ToString()));
+		return TypedResults.Ok(new GetExerciseInfoStepResponse(step.Index.IntValue, step.Description.ToString(), step.ImageFile.Reduce(null)?.ToString()));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

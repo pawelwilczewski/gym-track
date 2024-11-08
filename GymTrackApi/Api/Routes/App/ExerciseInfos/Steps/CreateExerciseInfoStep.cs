@@ -8,6 +8,7 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
@@ -23,7 +24,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
-		if (index < 0) return ValidationErrors.NegativeIndex();
+		if (!Index.TryCreate(index, out var setIndex)) return ValidationErrors.NegativeIndex();
 
 		if (!Description.TryCreate(description, out var exerciseInfoStepDescription, out var error))
 		{
@@ -58,7 +59,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 			path = Option<FilePath>.None();
 		}
 
-		var exerciseInfoStep = new ExerciseInfo.Step(id, index, exerciseInfoStepDescription, path);
+		var exerciseInfoStep = new ExerciseInfo.Step(id, setIndex, exerciseInfoStepDescription, path);
 
 		exerciseInfo.Steps.Add(exerciseInfoStep);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

@@ -1,5 +1,4 @@
 ﻿using Api.Dtos;
-using Api.Routes.App.ExerciseInfos;
 using Api.Routes.App.ExerciseInfos.Steps;
 using Api.Tests.Mocks;
 using Domain.Common;
@@ -7,6 +6,7 @@ using Domain.Models;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Index = Domain.Models.Index;
 
 namespace Api.Tests;
 
@@ -73,7 +73,9 @@ internal sealed class ExerciseInfoStepTests
 
 		if (!Description.TryCreate("Test Description", out var description, out _)) throw new Exception("Invalid test case");
 
-		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, stepIndex, description, Option<FilePath>.None()));
+		Index.TryCreate(stepIndex, out var index);
+
+		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, index, description, Option<FilePath>.None()));
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
 		var result = await GetExerciseInfoStep.Handler(
@@ -132,8 +134,9 @@ internal sealed class ExerciseInfoStepTests
 			.ConfigureAwait(false);
 
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
+		if (!Index.TryCreate(0, out var index)) throw new Exception("Invalid test case");
 
-		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, Option<FilePath>.None());
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -143,6 +146,89 @@ internal sealed class ExerciseInfoStepTests
 				0,
 				new EditExerciseInfoStepRequest(description),
 				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)> EditExerciseInfoThumbnailData() =>
+	[
+		new([Users.Admin1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.User1], Users.User1, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.User1, Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(EditExerciseInfoThumbnailData))]
+	public async Task EditExerciseInfoStepImage_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
+		if (!Index.TryCreate(0, out var index)) throw new Exception("Invalid test case");
+
+		var step = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
+		exerciseInfo.Steps.Add(step);
+		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+		var result = await EditExerciseInfoStepImage.Handler(
+				editor.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				index.IntValue,
+				thumbnail,
+				dataContext,
+				new TempFileStoragePathProvider(),
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, int stepIndex, int deletedIndex, Type responseType)> DeleteExerciseInfoData() =>
+	[
+		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
+		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
+		new([Users.User1], Users.User1, 0, 1, typeof(NotFound<string>)),
+		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
+		new([Users.User1, Users.User2], Users.User1, 0, 1, typeof(NotFound<string>)),
+		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(DeleteExerciseInfoData))]
+	public async Task DeleteExerciseInfoStep_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, int stepIndex, int deletedIndex, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
+		if (!Index.TryCreate(stepIndex, out var index)) throw new Exception("Invalid test case");
+
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
+		exerciseInfo.Steps.Add(originalStep);
+		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+		var result = await DeleteExerciseInfoStep.Handler(
+				deleter.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				deletedIndex,
+				dataContext,
+				new TempFileStoragePathProvider(),
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
