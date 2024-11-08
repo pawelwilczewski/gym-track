@@ -13,6 +13,11 @@ namespace Api.Tests.Unit.Mocks;
 
 internal sealed class MockDataContextBuilder
 {
+	private AppDbContext Context { get; init; } = default!;
+	private UserManager<User> UserManager { get; init; } = default!;
+	private RoleManager<Role> RoleManager { get; init; } = default!;
+	private readonly List<Func<Task>> tasks = [];
+
 	public static MockDataContextBuilder CreateEmpty()
 	{
 		var context = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
@@ -62,20 +67,15 @@ internal sealed class MockDataContextBuilder
 
 			return roleManager;
 		}
-	}
 
-	private static async Task AddDefaultRoles(MockDataContextBuilder builder)
-	{
-		if (!await builder.RoleManager.RoleExistsAsync(Role.ADMINISTRATOR).ConfigureAwait(false))
+		static async Task AddDefaultRoles(MockDataContextBuilder builder)
 		{
-			await builder.RoleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
+			if (!await builder.RoleManager.RoleExistsAsync(Role.ADMINISTRATOR).ConfigureAwait(false))
+			{
+				await builder.RoleManager.CreateAsync(new Role(Role.ADMINISTRATOR)).ConfigureAwait(false);
+			}
 		}
 	}
-
-	private AppDbContext Context { get; init; } = default!;
-	private UserManager<User> UserManager { get; init; } = default!;
-	private RoleManager<Role> RoleManager { get; init; } = default!;
-	private readonly List<Func<Task>> tasks = [];
 
 	public MockDataContextBuilder WithUser(IUserInfo userInfo)
 	{
