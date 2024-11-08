@@ -87,3 +87,5 @@ app.MapAllRoutes();
 app.UseStaticFiles();
 
 app.Run();
+
+public partial class Program; // for functional tests

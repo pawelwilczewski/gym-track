@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="Api.Tests.Unit"/>
+        <InternalsVisibleTo Include="Api.Tests.Functional"/>
     </ItemGroup>
 
     <ItemGroup>
