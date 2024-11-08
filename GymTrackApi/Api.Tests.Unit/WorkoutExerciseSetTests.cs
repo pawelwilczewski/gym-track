@@ -1,6 +1,6 @@
 using Api.Dtos;
 using Api.Routes.App.Workouts.Exercises.Sets;
-using Api.Tests.Mocks;
+using Api.Tests.Unit.Mocks;
 using Domain.Models;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -8,7 +8,7 @@ using Index = Domain.Models.Index;
 
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
-namespace Api.Tests;
+namespace Api.Tests.Unit;
 
 internal sealed class WorkoutExerciseSetTests
 {

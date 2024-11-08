@@ -2,7 +2,7 @@ using System.Text;
 using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal static class Placeholders
 {

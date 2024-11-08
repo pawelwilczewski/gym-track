@@ -1,6 +1,6 @@
 using Domain.Models.Workout;
 
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal static class MockDataContextBuilderExtensions
 {

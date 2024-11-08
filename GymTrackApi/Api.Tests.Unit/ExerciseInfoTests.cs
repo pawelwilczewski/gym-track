@@ -1,11 +1,11 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.ExerciseInfos;
-using Api.Tests.Mocks;
+using Api.Tests.Unit.Mocks;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace Api.Tests;
+namespace Api.Tests.Unit;
 
 internal sealed class ExerciseInfoTests
 {

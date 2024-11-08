@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal sealed class MockDataContextBuilder
 {

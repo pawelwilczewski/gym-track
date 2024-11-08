@@ -1,6 +1,6 @@
 using Application.Persistence;
 
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal sealed class TempFileStoragePathProvider : IFileStoragePathProvider
 {

@@ -3,7 +3,7 @@ using System.Security.Claims;
 using Domain.Models.Identity;
 using Microsoft.AspNetCore.Http;
 
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal static class UserInfoExtensions
 {

@@ -1,6 +1,6 @@
-using Api.Tests.Mocks;
+using Api.Tests.Unit.Mocks;
 
-namespace Api.Tests;
+namespace Api.Tests.Unit;
 
 internal static class Users
 {

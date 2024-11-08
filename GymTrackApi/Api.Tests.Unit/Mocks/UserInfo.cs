@@ -1,4 +1,4 @@
-namespace Api.Tests.Mocks;
+namespace Api.Tests.Unit.Mocks;
 
 internal interface IUserInfo
 {

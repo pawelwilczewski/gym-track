@@ -1,9 +1,9 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.Workouts;
-using Api.Tests.Mocks;
+using Api.Tests.Unit.Mocks;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace Api.Tests;
+namespace Api.Tests.Unit;
 
 internal sealed class WorkoutTests
 {

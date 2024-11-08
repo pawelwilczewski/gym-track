@@ -1,6 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.ExerciseInfos.Steps;
-using Api.Tests.Mocks;
+using Api.Tests.Unit.Mocks;
 using Domain.Common;
 using Domain.Models;
 using Domain.Models.Workout;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Index = Domain.Models.Index;
 
-namespace Api.Tests;
+namespace Api.Tests.Unit;
 
 internal sealed class ExerciseInfoStepTests
 {
