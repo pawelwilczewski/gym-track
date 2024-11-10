@@ -11,7 +11,8 @@ public static class DependencyInjection
 {
 	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
-		var connectionString = configuration.GetConnectionString("AppDb");
+		var dbSection = configuration.GetRequiredSection("Database");
+		var connectionString = dbSection["ConnectionString"];
 
 		services
 			.AddDbContext<IDataContext, AppDbContext>(options =>
@@ -19,7 +20,7 @@ public static class DependencyInjection
 				options
 					.UseNpgsql(connectionString);
 
-				if (bool.TryParse(configuration["EnableSensitiveDataLogging"], out var enable) && enable)
+				if (bool.TryParse(dbSection["EnableSensitiveDataLogging"], out var enable) && enable)
 				{
 					options.EnableSensitiveDataLogging();
 				}

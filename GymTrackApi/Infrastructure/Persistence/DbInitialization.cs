@@ -19,7 +19,7 @@ public static class DbInitialization
 
 		if (bool.TryParse(dbSection["TryCreate"], out var create) && create)
 		{
-			await TryCreateDb(configuration.GetConnectionString("AppDb")!, async connection =>
+			await TryCreateDb(dbSection["ConnectionString"]!, async connection =>
 				{
 					await using var setupCommand = new NpgsqlCommand("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";", connection);
 					await setupCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
