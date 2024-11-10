@@ -47,5 +47,13 @@ internal sealed class AuthenticationTests
 
 		response = await httpClient.GetAsync(query).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		await httpClient.PostAsJsonAsync("auth/login", new LoginRequest
+		{
+			Email = email,
+			Password = password
+		});
+
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 	}
 }
