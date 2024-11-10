@@ -9,12 +9,10 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10"/>
-        <PackageReference Include="Testcontainers.PostgreSql" Version="4.0.0"/>
         <PackageReference Include="TUnit" Version="0.2.195"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Api\Api.csproj"/>
     </ItemGroup>
-
 </Project>

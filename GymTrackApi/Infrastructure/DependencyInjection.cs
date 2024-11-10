@@ -11,11 +11,13 @@ public static class DependencyInjection
 {
 	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
+		var connectionString = configuration.GetConnectionString("AppDb");
+
 		services
 			.AddDbContext<IDataContext, AppDbContext>(options =>
 			{
 				options
-					.UseNpgsql(configuration.GetConnectionString("AppDb"));
+					.UseNpgsql(connectionString);
 
 				if (bool.TryParse(configuration["EnableSensitiveDataLogging"], out var enable) && enable)
 				{

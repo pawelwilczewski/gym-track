@@ -30,7 +30,7 @@ if (builder.Environment.IsDevelopment())
 		});
 }
 
-if (builder.Environment.IsProduction())
+if (builder.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 {
 	builder.Services.AddAntiforgery();
 }
@@ -63,15 +63,20 @@ builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Con
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
+
+if (app.Environment.IsDevelopmentOrTest())
 {
 	app.Services.ApplyMigrations();
+}
 
+if (app.Environment.IsDevelopment())
+{
 	app.UseOpenApi();
 	app.UseSwaggerUI();
 }
 
-if (app.Environment.IsProduction())
+if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 {
 	app.Strip404Body();
 	app.Use404InsteadOf403();
@@ -80,7 +85,7 @@ if (app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 
-await app.Services.AddRoles();
+await app.Services.AddRoles().ConfigureAwait(false);
 
 app.MapAllRoutes();
 
