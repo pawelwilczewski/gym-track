@@ -50,7 +50,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Created();
+		return TypedResults.Created($"{httpContext.Request.Path}/{set.Index}");
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

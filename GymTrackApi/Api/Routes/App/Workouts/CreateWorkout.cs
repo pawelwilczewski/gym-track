@@ -29,7 +29,7 @@ internal sealed class CreateWorkout : IEndpoint
 		dataContext.Workouts.Add(workout);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Created();
+		return TypedResults.Created($"{httpContext.Request.Path}/{workout.Id}");
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

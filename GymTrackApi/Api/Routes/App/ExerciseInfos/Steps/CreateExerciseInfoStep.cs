@@ -64,7 +64,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		exerciseInfo.Steps.Add(exerciseInfoStep);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Created();
+		return TypedResults.Created($"{httpContext.Request.Path}/{exerciseInfoStep.Index}");
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

@@ -50,7 +50,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		dataContext.ExerciseInfos.Add(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		return TypedResults.Created();
+		return TypedResults.Created($"{httpContext.Request.Path}/{exerciseInfo.Id}");
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

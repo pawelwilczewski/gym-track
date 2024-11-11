@@ -64,5 +64,8 @@ internal sealed class AuthenticationTests
 
 		response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Nice Workout")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+
+		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(response.Headers.Location!).ConfigureAwait(false);
+		await Assert.That(workout).IsNotNull();
 	}
 }
