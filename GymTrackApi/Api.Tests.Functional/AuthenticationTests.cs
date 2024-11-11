@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using Api.Dtos;
 using Application.Persistence;
 using Domain.Models.Identity;
 using Microsoft.AspNetCore.Authentication.BearerToken;
@@ -18,9 +17,15 @@ internal sealed class AuthenticationTests
 {
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task RegisterAndLogin_ValidUser_ReturnsCorrectResponse(FunctionalTestWebAppFactory factory)
+	public Task RegisterAndLogin_ValidUser_ReturnsCorrectResponse(FunctionalTestWebAppFactory factory) =>
+		factory.CreateLoggedInUserClient();
+}
+
+internal static class FunctionalTestWebApplicationFactoryExtensions
+{
+	internal static async Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory)
 	{
-		const string email = "user@user.com";
+		var email = $"{Guid.NewGuid()}@user.com";
 		const string password = "User!123";
 
 		var httpClient = factory.CreateClient();
@@ -62,10 +67,6 @@ internal sealed class AuthenticationTests
 		var token = await response.Content.ReadFromJsonAsync<AccessTokenResponse>().ConfigureAwait(false);
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!.TokenType, token.AccessToken);
 
-		response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Nice Workout")).ConfigureAwait(false);
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
-
-		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(response.Headers.Location!).ConfigureAwait(false);
-		await Assert.That(workout).IsNotNull();
+		return httpClient;
 	}
 }
