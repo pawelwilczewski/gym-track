@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -10,13 +11,15 @@ public static class DbInitialization
 	{
 		var dbSection = configuration.GetRequiredSection("Database");
 
+		using var scope = serviceProvider.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
 		if (bool.TryParse(dbSection["DeleteExisting"], out var delete) && delete)
 		{
-			using var scope = serviceProvider.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 			await dbContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
 		}
 
+		var created = false;
 		if (bool.TryParse(dbSection["TryCreate"], out var create) && create)
 		{
 			await TryCreateDb(dbSection["ConnectionString"]!, async connection =>
@@ -25,6 +28,14 @@ public static class DbInitialization
 					await setupCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 				})
 				.ConfigureAwait(false);
+
+			created = true;
+		}
+
+		// if just created db, we will always want to apply migrations (it's an empty db anyway)
+		if (created || (bool.TryParse(dbSection["AutoApplyMigrations"], out var applyMigrations) && applyMigrations))
+		{
+			await dbContext.Database.MigrateAsync().ConfigureAwait(false);
 		}
 	}
 

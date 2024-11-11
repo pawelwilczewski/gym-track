@@ -1,8 +1,11 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using Api.Dtos;
 using Application.Persistence;
 using Domain.Models.Identity;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.WebUtilities;
@@ -48,12 +51,18 @@ internal sealed class AuthenticationTests
 		response = await httpClient.GetAsync(query).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
-		await httpClient.PostAsJsonAsync("auth/login", new LoginRequest
+		response = await httpClient.PostAsJsonAsync("auth/login", new LoginRequest
 		{
 			Email = email,
 			Password = password
 		});
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		var token = await response.Content.ReadFromJsonAsync<AccessTokenResponse>().ConfigureAwait(false);
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!.TokenType, token.AccessToken);
+
+		response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Nice Workout")).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 	}
 }

@@ -65,11 +65,6 @@ var app = builder.Build();
 
 await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
 
-if (app.Environment.IsDevelopmentOrTest())
-{
-	app.Services.ApplyMigrations();
-}
-
 if (app.Environment.IsDevelopment())
 {
 	app.UseOpenApi();

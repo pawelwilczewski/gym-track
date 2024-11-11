@@ -4,7 +4,7 @@ using Domain.Models.Workout;
 namespace Api.Dtos;
 
 [DataContract]
-internal sealed record class CreateWorkoutExerciseSetRequest(
+public sealed record class CreateWorkoutExerciseSetRequest(
 	[property: DataMember] int Index,
 	[property: DataMember] ExerciseMetric Metric,
 	[property: DataMember] int Reps);
