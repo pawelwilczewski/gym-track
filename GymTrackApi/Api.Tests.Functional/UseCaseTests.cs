@@ -42,13 +42,9 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateAndEditMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateEditDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
-
-		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Nice Workout")).ConfigureAwait(false);
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
-		var workoutUri = response.Headers.Location!;
 
 		var content = new MultipartFormDataContent();
 
@@ -64,18 +60,34 @@ internal sealed class UseCaseTests
 		imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Image.Jpeg);
 		content.Add(imageContent, "thumbnailImage", "ExampleExerciseInfoThumbnail.jpg");
 
+		const string workoutName = "Nice Workout";
+		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+		var workoutUri = response.Headers.Location!;
+
+		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(workoutUri).ConfigureAwait(false);
+		await Assert.That(workout).IsNotNull();
+		await Assert.That(workout!.Name).IsEqualTo(workoutName);
+
 		response = await httpClient.PostAsync("api/v1/exerciseInfos", content).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
-		var exerciseUri = response.Headers.Location!;
-		var exerciseUriString = exerciseUri.ToString();
-		var lastSlashIndex = exerciseUriString.LastIndexOf('/');
-		var exerciseId = Guid.Parse(exerciseUriString[(lastSlashIndex + 1)..]);
+		var exerciseInfoUri = response.Headers.Location!;
+		var exerciseInfoUriString = exerciseInfoUri.ToString();
+		var lastSlashIndex = exerciseInfoUriString.LastIndexOf('/');
+		var exerciseId = Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
 
-		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises", new CreateWorkoutExerciseRequest(0, exerciseId));
+		const int exerciseIndex = 1;
+		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises", new CreateWorkoutExerciseRequest(exerciseIndex, exerciseId));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+		var exerciseUri = response.Headers.Location!;
 
+		var exercise = await httpClient.GetFromJsonAsync<GetWorkoutExerciseResponse>(exerciseUri).ConfigureAwait(false);
+		await Assert.That(exercise).IsNotNull();
+		await Assert.That(exercise!.Index).IsEqualTo(exerciseIndex);
+
+		const int setIndex = 0;
 		Amount.TryCreate(1000.0, out var distance);
-		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/0/sets", new CreateWorkoutExerciseSetRequest(0, new Distance(distance, Distance.Unit.Metre), 3));
+		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets", new CreateWorkoutExerciseSetRequest(setIndex, new Distance(distance, Distance.Unit.Metre), 3));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var setUri = response.Headers.Location!;
 
@@ -83,12 +95,18 @@ internal sealed class UseCaseTests
 		await Assert.That(set).IsNotNull();
 
 		Amount.TryCreate(30.0, out var weight);
-		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/0/sets/0", new EditWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
+		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new EditWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
 		await Assert.That(set).IsNotNull();
 		await Assert.That(set!.Reps).IsEqualTo(8);
 		await Assert.That(set.Metric is Weight weightMetric && Math.Abs(weightMetric.Value.Value - 30.0) <= 0.0001).IsTrue();
+
+		await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+
+		await Assert.That((await httpClient.GetAsync(setUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+		await Assert.That((await httpClient.GetAsync(exerciseUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+		await Assert.That((await httpClient.GetAsync(workoutUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 	}
 }

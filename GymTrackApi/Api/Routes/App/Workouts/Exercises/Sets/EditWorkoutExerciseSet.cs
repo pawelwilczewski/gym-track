@@ -35,7 +35,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
-		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
+		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
 		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
