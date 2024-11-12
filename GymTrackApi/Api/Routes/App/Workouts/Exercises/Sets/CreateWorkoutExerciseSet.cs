@@ -37,6 +37,8 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
+		// TODO Pawel: check if already exists at this index! Same for i.e. exercise, exerciseInfo step etc.! (add to tests)
+
 		if (!exercise.ExerciseInfo.AllowedMetricTypes.HasFlag(request.Metric.Type))
 		{
 			return TypedResults.ValidationProblem(new Dictionary<string, string[]>
