@@ -11,6 +11,7 @@ using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using NSwag;
+using Scalar.AspNetCore;
 
 var apiVersion = new ApiVersion(1);
 const string apiVersionGroupNameFormat = "'v'V";
@@ -67,8 +68,8 @@ await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseOpenApi();
-	app.UseSwaggerUI();
+	app.UseOpenApi(options => { options.Path = "/openapi/{documentName}.json"; });
+	app.MapScalarApiReference();
 }
 
 if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
