@@ -2,3 +2,6 @@
 GymTrackApi/Api/wwwroot/images/exerciseInfo/thumbnails
 GymTrackApi/Api/wwwroot/images/exerciseInfo/stepInfo
 GymTrackApi/Api/wwwroot/images/exerciseInfo/step
+GymTrackApi/Api/appsettings.Development.json
+GymTrackApi/Api/appsettings.Production.json
+GymTrackApi/Api/appsettings.Test.json
