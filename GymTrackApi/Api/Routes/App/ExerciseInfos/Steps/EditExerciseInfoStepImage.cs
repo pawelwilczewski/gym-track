@@ -1,7 +1,6 @@
 using Api.Common;
 using Api.Files;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -37,7 +36,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 		if (image is not null)
 		{
 			string? localPath = null;
-			if (exerciseInfoStep.ImageFile.Reduce(null) is null)
+			if (exerciseInfoStep.ImageFile is null)
 			{
 				var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
 				if (!FilePath.TryCreate(urlPath, out var successfulPath, out var error))
@@ -48,21 +47,21 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 				localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
 				await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 
-				exerciseInfoStep.ImageFile = Option<FilePath>.Some(successfulPath);
+				exerciseInfoStep.ImageFile = successfulPath;
 			}
 
-			localPath ??= exerciseInfoStep.ImageFile.Reduce(null)!.ToString().UrlToLocalPath(fileStoragePathProvider);
+			localPath ??= exerciseInfoStep.ImageFile.ToString().UrlToLocalPath(fileStoragePathProvider);
 			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
 		}
 		else
 		{
-			var url = exerciseInfoStep.ImageFile.Reduce(null);
+			var url = exerciseInfoStep.ImageFile;
 			if (url is not null)
 			{
 				File.Delete(url.UrlToLocalPath(fileStoragePathProvider).ToString());
 			}
 
-			exerciseInfoStep.ImageFile = Option<FilePath>.None();
+			exerciseInfoStep.ImageFile = null;
 		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

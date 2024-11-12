@@ -22,7 +22,7 @@ internal static class PropertyBuilderExtensions
 
 	public static PropertyBuilder<TProperty> ConfigureOptionalFilePath<TProperty>(this PropertyBuilder<TProperty> builder) =>
 		builder
-			.HasConversion(FilePath.OptionalConverter, FilePath.OptionalComparer)
+			.HasConversion(FilePath.Converter, FilePath.Comparer)
 			.HasMaxLength(FilePath.MAX_LENGTH)
 			.IsRequired(false);
 }

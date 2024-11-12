@@ -1,7 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.ExerciseInfos.Steps;
 using Api.Tests.Unit.Mocks;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http;
@@ -75,7 +74,7 @@ internal sealed class ExerciseInfoStepTests
 
 		Index.TryCreate(stepIndex, out var index);
 
-		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, index, description, Option<FilePath>.None()));
+		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, index, description, null));
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
 		var result = await GetExerciseInfoStep.Handler(
@@ -136,7 +135,7 @@ internal sealed class ExerciseInfoStepTests
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 		if (!Index.TryCreate(0, out var index)) throw new Exception("Invalid test case");
 
-		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, null);
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -177,7 +176,7 @@ internal sealed class ExerciseInfoStepTests
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 		if (!Index.TryCreate(0, out var index)) throw new Exception("Invalid test case");
 
-		var step = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
+		var step = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, null);
 		exerciseInfo.Steps.Add(step);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -219,7 +218,7 @@ internal sealed class ExerciseInfoStepTests
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 		if (!Index.TryCreate(stepIndex, out var index)) throw new Exception("Invalid test case");
 
-		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, Option<FilePath>.None());
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, index, originalDescription, null);
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 

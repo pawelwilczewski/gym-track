@@ -1,7 +1,6 @@
 using Api.Common;
 using Api.Files;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -39,11 +38,11 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		Option<FilePath> path;
+		FilePath? path = null;
 		if (image is not null)
 		{
 			var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
-			if (!FilePath.TryCreate(urlPath, out var successfulPath, out error))
+			if (!FilePath.TryCreate(urlPath, out path, out error))
 			{
 				return error.ToValidationProblem("Image File Path");
 			}
@@ -51,12 +50,6 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 			var localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
 			Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
 			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
-
-			path = Option<FilePath>.Some(successfulPath);
-		}
-		else
-		{
-			path = Option<FilePath>.None();
 		}
 
 		var exerciseInfoStep = new ExerciseInfo.Step(id, setIndex, exerciseInfoStepDescription, path);

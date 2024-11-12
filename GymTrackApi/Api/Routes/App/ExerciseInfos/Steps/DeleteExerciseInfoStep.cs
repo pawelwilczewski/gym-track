@@ -32,9 +32,9 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		var exerciseInfo = exerciseInfoStep.ExerciseInfo;
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		if (exerciseInfoStep.ImageFile.Reduce(null) is not null)
+		if (exerciseInfoStep.ImageFile is not null)
 		{
-			File.Delete(exerciseInfoStep.ImageFile.Reduce(null!).ToString().UrlToLocalPath(fileStoragePathProvider));
+			File.Delete(exerciseInfoStep.ImageFile.ToString().UrlToLocalPath(fileStoragePathProvider));
 		}
 
 		exerciseInfo.Steps.Remove(exerciseInfoStep);

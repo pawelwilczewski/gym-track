@@ -67,11 +67,11 @@ public class ExerciseInfo
 		public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 		public Description Description { get; private set; }
-		public Option<FilePath> ImageFile { get; set; }
+		public FilePath? ImageFile { get; set; }
 
 		private Step() { }
 
-		public Step(Id<ExerciseInfo> exerciseInfoId, Index index, Description description, Option<FilePath> imageFile)
+		public Step(Id<ExerciseInfo> exerciseInfoId, Index index, Description description, FilePath? imageFile)
 		{
 			ExerciseInfoId = exerciseInfoId;
 			Index = index;
