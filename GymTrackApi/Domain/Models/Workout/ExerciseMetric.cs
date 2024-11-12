@@ -1,22 +1,21 @@
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.Workout;
 
-[DataContract]
 [JsonDerivedType(typeof(Weight), nameof(Weight))]
 [JsonDerivedType(typeof(Distance), nameof(Distance))]
 [JsonDerivedType(typeof(Duration), nameof(Duration))]
 public abstract record class ExerciseMetric
 {
+	[JsonIgnore]
 	public abstract ExerciseMetricType Type { get; }
 }
 
-[DataContract]
 public sealed record class Weight(
-	[property: DataMember] Amount Value,
-	[property: DataMember] Weight.Unit Units) : ExerciseMetric
+	Amount Value,
+	Weight.Unit Units) : ExerciseMetric
 {
+	[JsonIgnore]
 	public override ExerciseMetricType Type => ExerciseMetricType.Weight;
 
 	public enum Unit
@@ -26,18 +25,18 @@ public sealed record class Weight(
 	}
 }
 
-[DataContract]
 public sealed record class Duration(
-	[property: DataMember] TimeSpan Time) : ExerciseMetric
+	TimeSpan Time) : ExerciseMetric
 {
+	[JsonIgnore]
 	public override ExerciseMetricType Type => ExerciseMetricType.Duration;
 }
 
-[DataContract]
 public sealed record class Distance(
-	[property: DataMember] Amount Value,
-	[property: DataMember] Distance.Unit Units) : ExerciseMetric
+	Amount Value,
+	Distance.Unit Units) : ExerciseMetric
 {
+	[JsonIgnore]
 	public override ExerciseMetricType Type => ExerciseMetricType.Distance;
 
 	public enum Unit
