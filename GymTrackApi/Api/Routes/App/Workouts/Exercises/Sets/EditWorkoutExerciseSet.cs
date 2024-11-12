@@ -49,6 +49,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		set.Metric = request.Metric;
 		set.Reps = repsCount;
 
+		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		return TypedResults.NoContent();
 	}
 

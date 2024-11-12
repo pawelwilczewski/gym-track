@@ -42,7 +42,7 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateAndEditMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
@@ -54,7 +54,7 @@ internal sealed class UseCaseTests
 
 		content.Add(new StringContent("Nice Exercise"), "name");
 		content.Add(new StringContent("Some exercise description."), "description");
-		content.Add(new StringContent(((int)ExerciseMetricType.Distance).ToString()), "allowedMetricTypes");
+		content.Add(new StringContent(((int)(ExerciseMetricType.Distance | ExerciseMetricType.Weight)).ToString()), "allowedMetricTypes");
 
 		var imageStream = new MemoryStream();
 		var writer = new StreamWriter(imageStream);
@@ -79,9 +79,16 @@ internal sealed class UseCaseTests
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var setUri = response.Headers.Location!;
 
-		response = await httpClient.GetAsync(setUri).ConfigureAwait(false);
-
 		var set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
 		await Assert.That(set).IsNotNull();
+
+		Amount.TryCreate(30.0, out var weight);
+		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/0/sets/0", new EditWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
+		await Assert.That(set).IsNotNull();
+		await Assert.That(set!.Reps).IsEqualTo(8);
+		await Assert.That(set.Metric is Weight weightMetric && Math.Abs(weightMetric.Value.Value - 30.0) <= 0.0001).IsTrue();
 	}
 }
