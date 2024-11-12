@@ -10,8 +10,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
-using NSwag;
-using Scalar.AspNetCore;
+using Microsoft.OpenApi.Models;
 
 var apiVersion = new ApiVersion(1);
 const string apiVersionGroupNameFormat = "'v'V";
@@ -23,12 +22,11 @@ builder.Services
 
 if (builder.Environment.IsDevelopment())
 {
-	builder.Services.AddOpenApiDocument(options =>
-		options.PostProcess = document => document.Info = new OpenApiInfo
-		{
-			Version = apiVersion.ToString(apiVersionGroupNameFormat),
-			Title = "Gym Track API"
-		});
+	builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo
+	{
+		Title = "Gym Track API",
+		Version = apiVersion.ToString(apiVersionGroupNameFormat)
+	}));
 }
 
 if (builder.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
@@ -68,8 +66,8 @@ await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseOpenApi(options => { options.Path = "/openapi/{documentName}.json"; });
-	app.MapScalarApiReference();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?

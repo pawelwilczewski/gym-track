@@ -16,7 +16,7 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		[FromForm] string name,
 		[FromForm] string description,
 		[FromForm] ExerciseMetricType allowedMetricTypes,
-		[FromForm] IFormFile thumbnailImage,
+		IFormFile thumbnailImage,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)

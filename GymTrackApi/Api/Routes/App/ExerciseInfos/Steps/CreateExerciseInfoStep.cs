@@ -19,7 +19,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		[FromRoute] Guid exerciseInfoId,
 		[FromForm] int index,
 		[FromForm] string description,
-		[FromForm] IFormFile? image,
+		IFormFile? image,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)

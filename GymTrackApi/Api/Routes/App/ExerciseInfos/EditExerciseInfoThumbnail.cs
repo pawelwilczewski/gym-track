@@ -14,7 +14,7 @@ internal sealed class EditExerciseInfoThumbnail : IEndpoint
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
-		[FromForm] IFormFile thumbnailImage,
+		IFormFile thumbnailImage,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)

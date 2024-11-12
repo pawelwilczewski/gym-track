@@ -17,7 +17,7 @@ internal sealed class EditExerciseInfoStepImage : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
-		[FromForm] IFormFile? image,
+		IFormFile? image,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
