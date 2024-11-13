@@ -1,3 +1,4 @@
+using System.Text;
 using Api.Authorization;
 using Api.Common;
 using Api.Files;
@@ -10,6 +11,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var apiVersion = new ApiVersion(1);
@@ -34,7 +36,25 @@ if (builder.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 	builder.Services.AddAntiforgery();
 }
 
-builder.Services.AddAuthentication();
+builder.Services
+	.AddAuthentication(IdentityConstants.BearerScheme)
+	.AddJwtBearer(options =>
+	{
+		var jwtSettings = builder.Configuration.GetSection("Jwt");
+		var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = true,
+			ValidateAudience = true, // TODO Pawel: doesn't seem to validate audience correctly!
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			ValidIssuer = jwtSettings["Issuer"],
+			ValidAudience = jwtSettings["Audience"],
+			IssuerSigningKey = new SymmetricSecurityKey(key),
+			ClockSkew = TimeSpan.Zero
+		};
+	});
 builder.Services.AddAuthorizationBuilder()
 	.AddPolicies();
 
