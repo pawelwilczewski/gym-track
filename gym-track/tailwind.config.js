@@ -89,7 +89,10 @@ module.exports = {
         'collapsible-up': 'collapsible-up 0.2s ease-in-out',
       },
       maxWidth: {
-        'content-max': '1100px',
+        'content-default': '1100px',
+      },
+      gridTemplateRows: {
+        'auto-1fr-auto': 'auto 1fr auto',
       },
     },
   },

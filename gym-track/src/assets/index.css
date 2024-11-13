@@ -75,8 +75,8 @@
   body {
     @apply bg-background text-foreground;
   }
-}
 
-.content-grid-layout {
-  grid-template-rows: auto 1fr auto;
+  .maxed-content-width {
+    @apply w-full max-w-content-default;
+  }
 }
