@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/Default.vue';
+import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import { Button } from '@/components/ui/button';
 
 const test = (): void => alert('hello');
