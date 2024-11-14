@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LogIn from './pages/auth/LogIn.vue';
 import Home from './pages/Home.vue';
 import SignUp from './pages/auth/SignUp.vue';
+import ConfirmEmail from './pages/auth/ConfirmEmail.vue';
+import ConfirmedEmail from './pages/auth/ConfirmedEmail.vue';
 
 const routes = [
   {
@@ -18,6 +20,16 @@ const routes = [
     path: '/signUp',
     name: 'Sign Up',
     component: SignUp,
+  },
+  {
+    path: '/confirmEmail',
+    name: 'Confirm Email',
+    component: ConfirmEmail,
+  },
+  {
+    path: '/confirmedEmail',
+    name: 'Confirmed Email',
+    component: ConfirmedEmail,
   },
 ];
 
