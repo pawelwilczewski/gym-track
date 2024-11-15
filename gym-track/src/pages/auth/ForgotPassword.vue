@@ -15,14 +15,9 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import FormDescription from '@/components/ui/form/FormDescription.vue';
 import { Mail } from 'lucide-vue-next';
-import Timer from '@/scripts/Time/Timer';
 
-import { ref } from 'vue';
-const rerenderKey = ref(0);
-
-const forceRerender: () => void = () => {
-  rerenderKey.value += 1;
-};
+import { Ref, ref } from 'vue';
+import Countdown from '@/components/Countdown.vue';
 
 const formSchema = toTypedSchema(
   z.object({
@@ -34,36 +29,25 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
+const resubmitTime: number = 60;
+
+const countdown: Ref<typeof Countdown | null> = ref(null);
+const sendEmailEnabled = ref(true);
+
 const onSubmit = form.handleSubmit((values) => {
-  if (!submitResetEnabled) {
+  if (!sendEmailEnabled) {
     return;
   }
 
   console.log('Resetting password!', values);
 
-  submitResetEnabled = false;
-  forceRerender();
-  timer.start();
+  countdown.value!.start();
+  sendEmailEnabled.value = false;
 });
 
-const resubmitTime: number = 60;
-let resubmitTimeLeft: number = resubmitTime;
-
-let submitResetEnabled: boolean = true;
-
-const timer = new Timer(
-  resubmitTimeLeft,
-  1,
-  (timeLeft: number) => {
-    resubmitTimeLeft = Math.round(timeLeft);
-    forceRerender();
-  },
-  () => {
-    submitResetEnabled = true;
-    forceRerender();
-    resubmitTimeLeft = resubmitTime;
-  }
-);
+const handleCountdownComplete: () => void = () => {
+  sendEmailEnabled.value = true;
+};
 </script>
 
 <template>
@@ -90,11 +74,16 @@ const timer = new Timer(
         </FormField>
 
         <div class="flex gap-2 justify-center mt-4">
-          <Button :disabled="!submitResetEnabled" type="submit"
+          <Button :disabled="!sendEmailEnabled" type="submit"
             ><Mail class="w-4 h-4 mr-2" /> Send Reset Email</Button
           >
-          <div v-show="!submitResetEnabled" :key="rerenderKey" class="my-auto">
-            {{ resubmitTimeLeft }}
+          <div v-show="!sendEmailEnabled" class="my-auto">
+            <Countdown
+              :total-duration-seconds="resubmitTime"
+              :tick-interval-seconds="0.1"
+              @complete="handleCountdownComplete"
+              ref="countdown"
+            ></Countdown>
           </div>
         </div>
       </form>
