@@ -6,9 +6,10 @@ import ConfirmEmail from './pages/auth/ConfirmEmail.vue';
 import ConfirmedEmail from './pages/auth/ConfirmedEmail.vue';
 import ForgotPassword from './pages/auth/ForgotPassword.vue';
 import ConfirmEmailChange from './pages/auth/ConfirmEmailChange.vue';
-import ResetPasswordResult from './pages/auth/ResetPasswordResult.vue';
+import ResetPasswordSuccess from './pages/auth/ResetPasswordSuccess.vue';
 import Lockout from './pages/auth/Lockout.vue';
 import SignUpConfirmation from './pages/auth/SignUpConfirmation.vue';
+import ResetPasswordFailure from './pages/auth/ResetPasswordFailure.vue';
 
 const routes = [
   {
@@ -47,9 +48,14 @@ const routes = [
     component: ForgotPassword,
   },
   {
-    path: '/resetPasswordResult',
-    name: 'Reset Password Result',
-    component: ResetPasswordResult,
+    path: '/resetPasswordSuccess',
+    name: 'Reset Password Success',
+    component: ResetPasswordSuccess,
+  },
+  {
+    path: '/resetPasswordFailure',
+    name: 'Reset Password Failure',
+    component: ResetPasswordFailure,
   },
   {
     path: '/lockout',
