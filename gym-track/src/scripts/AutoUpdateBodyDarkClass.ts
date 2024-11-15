@@ -1,15 +1,23 @@
-if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+const setDark: () => void = () => {
   document.documentElement.classList.add('dark');
-} else {
+};
+
+const setLight: () => void = () => {
   document.documentElement.classList.remove('dark');
+};
+
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  setDark();
+} else {
+  setLight();
 }
 
 window
   .matchMedia('(prefers-color-scheme: dark)')
   .addEventListener('change', (e) => {
     if (e.matches) {
-      document.documentElement.classList.add('dark');
+      setDark();
     } else {
-      document.documentElement.classList.remove('dark');
+      setLight();
     }
   });
