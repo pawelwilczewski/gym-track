@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Timer from '@/scripts/Time/Timer';
 import { ref } from 'vue';
-import '@/scripts/Math/RoundingExtensions';
 
 const props = defineProps<{
   totalDurationSeconds: number;
