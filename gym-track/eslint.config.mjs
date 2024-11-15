@@ -3,6 +3,7 @@ import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
 import vuePlugin from 'eslint-plugin-vue';
 import prettierPlugin from 'eslint-plugin-prettier';
 import vueEslintParser from 'vue-eslint-parser';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   {
@@ -18,6 +19,7 @@ export default [
       '@typescript-eslint': typescriptEslintPlugin,
       vue: vuePlugin,
       prettier: prettierPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       '@typescript-eslint/explicit-function-return-type': ['error'],
@@ -31,6 +33,7 @@ export default [
       curly: ['warn', 'all'],
       quotes: ['warn', 'single', { avoidEscape: true }],
       'prettier/prettier': 'warn',
+      'unused-imports/no-unused-imports': 'error',
     },
   },
 ];
