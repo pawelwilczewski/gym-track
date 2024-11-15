@@ -72,6 +72,8 @@ const onSubmit = form.handleSubmit((values) => {
           >
         </div>
 
+        <!-- TODO Pawel: add Remember Me checkbox -->
+
         <Button class="mx-auto px-8 mt-4" type="submit">Log In</Button>
       </form>
 
