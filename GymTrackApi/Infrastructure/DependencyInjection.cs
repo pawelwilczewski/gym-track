@@ -1,6 +1,8 @@
 using Application.Persistence;
 using Domain.Models.Identity;
+using Infrastructure.Email;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,8 @@ public static class DependencyInjection
 			.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
 			.AddRoles<Role>()
 			.AddEntityFrameworkStores<AppDbContext>();
+
+		services.AddSingleton<IEmailSender<User>, SendGridIdentityEmailSender>();
 
 		return services;
 	}
