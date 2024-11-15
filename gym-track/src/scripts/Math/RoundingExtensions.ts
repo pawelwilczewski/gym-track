@@ -1,3 +1,5 @@
+export {};
+
 declare global {
   interface Number {
     roundToMultiple(multiple: number): number;
