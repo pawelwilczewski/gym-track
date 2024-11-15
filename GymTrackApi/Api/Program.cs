@@ -19,6 +19,17 @@ const string apiVersionGroupNameFormat = "'v'V";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+	options.AddDefaultPolicy(
+		policy =>
+		{
+			policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+				.AllowAnyMethod()
+				.AllowAnyHeader();
+		});
+});
+
 builder.Services
 	.AddEndpointsApiExplorer();
 
@@ -83,6 +94,7 @@ builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Con
 var app = builder.Build();
 
 await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
+await app.Services.AddRoles().ConfigureAwait(false);
 
 if (app.Environment.IsDevelopment())
 {
@@ -98,12 +110,11 @@ if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-await app.Services.AddRoles().ConfigureAwait(false);
+app.UseCors();
 
 app.MapAllRoutes();
-
-app.UseStaticFiles();
 
 app.Run();
 
