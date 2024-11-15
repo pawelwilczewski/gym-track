@@ -5,6 +5,7 @@ import SignUp from './pages/auth/SignUp.vue';
 import ConfirmEmail from './pages/auth/ConfirmEmail.vue';
 import ConfirmedEmail from './pages/auth/ConfirmedEmail.vue';
 import ForgotPassword from './pages/auth/ForgotPassword.vue';
+import ConfirmEmailChange from './pages/auth/ConfirmEmailChange.vue';
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: '/confirmedEmail',
     name: 'Confirmed Email',
     component: ConfirmedEmail,
+  },
+  {
+    path: '/confirmEmailChange',
+    name: 'Confirm Email Change',
+    component: ConfirmEmailChange,
   },
   {
     path: '/forgotPassword',
