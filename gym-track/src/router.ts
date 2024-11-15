@@ -8,6 +8,7 @@ import ForgotPassword from './pages/auth/ForgotPassword.vue';
 import ConfirmEmailChange from './pages/auth/ConfirmEmailChange.vue';
 import ResetPasswordResult from './pages/auth/ResetPasswordResult.vue';
 import Lockout from './pages/auth/Lockout.vue';
+import SignUpConfirmation from './pages/auth/SignUpConfirmation.vue';
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
     path: '/lockout',
     name: 'Lockout',
     component: Lockout,
+  },
+  {
+    path: '/signUpConfirmation',
+    name: 'Sign Up Confirmation',
+    component: SignUpConfirmation,
   },
 ];
 
