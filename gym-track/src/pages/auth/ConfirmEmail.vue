@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue';
 
 <template>
   <DefaultLayout>
-    <h1 class="text-center text-5xl font-bold mb-16">Confirm Email</h1>
+    <h1 class="text-center mb-16">Confirm Email</h1>
     <div class="text-center text-lg mt-16">
       Please confirm your email by clicking on the link sent to your inbox.
     </div>

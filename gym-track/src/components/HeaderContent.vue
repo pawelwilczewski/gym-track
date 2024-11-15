@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 <template>
   <nav class="p-8">
     <div class="flex justify-between gap-24">
-      <h1 class="text-4xl pb-3 px-3">
+      <h1 class="pb-3 px-3">
         <a href="/" class="font-bold">Gym Track</a>
       </h1>
       <div class="flex gap-6 flex-wrap">

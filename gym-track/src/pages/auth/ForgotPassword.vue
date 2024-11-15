@@ -52,7 +52,7 @@ const handleCountdownComplete: () => void = () => {
 
 <template>
   <DefaultLayout>
-    <h1 class="text-center text-5xl font-bold mb-16">Reset Password</h1>
+    <h1 class="text-center mb-16">Reset Password</h1>
 
     <div class="px-8">
       <form

@@ -4,10 +4,10 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 
 <template>
   <DefaultLayout>
-    <h1 class="text-center text-5xl font-bold mb-16">Thank you!</h1>
+    <h1 class="text-center mb-16">Email Confirmed</h1>
     <div class="text-center text-lg mt-16">
-      <div>Your email has been confirmed.</div>
-      <div>You can now leave this page.</div>
+      <p>Your email has been confirmed.</p>
+      <p>You can now leave this page.</p>
     </div>
   </DefaultLayout>
 </template>

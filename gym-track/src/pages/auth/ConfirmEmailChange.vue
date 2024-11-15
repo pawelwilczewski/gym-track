@@ -7,7 +7,7 @@ const message = ref('');
 
 <template>
   <DefaultLayout>
-    <h1 class="text-xl font-bold text-center">Email Change Confirmation</h1>
+    <h1 class="text-center">Email Change Confirmation</h1>
     <div class="text-center">{{ message }}</div>
   </DefaultLayout>
 </template>

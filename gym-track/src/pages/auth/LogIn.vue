@@ -29,11 +29,13 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
   console.log('Logging in!', values);
 });
+
+// TODO Pawel: use card https://www.shadcn-vue.com/docs/components/card.html (same for register)
 </script>
 
 <template>
   <DefaultLayout>
-    <h1 class="text-center text-5xl font-bold mb-16">Welcome back!</h1>
+    <h1 class="text-center mb-16">Welcome back!</h1>
 
     <div class="px-8">
       <form
