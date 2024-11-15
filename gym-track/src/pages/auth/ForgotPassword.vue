@@ -80,7 +80,7 @@ const handleCountdownComplete: () => void = () => {
           <div v-show="!sendEmailEnabled" class="my-auto">
             <Countdown
               :total-duration-seconds="resubmitTime"
-              :tick-interval-seconds="0.1"
+              :tick-interval-seconds="1"
               @complete="handleCountdownComplete"
               ref="countdown"
             ></Countdown>
