@@ -23,6 +23,10 @@ const formSchema = toTypedSchema(
   z.object({
     email: z.string().email(),
     password: z.string().min(2, 'Password must contain at least 2 characters'),
+    rememberMe: z
+      .string()
+      .optional()
+      .transform(value => value === 'on'),
   })
 );
 
@@ -30,23 +34,29 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = form.handleSubmit(async (values) => {
+const onSubmit = form.handleSubmit(async values => {
   await apiClient
-    .post('/auth/login', { email: values.email, password: values.password })
-    .then((response) => {
+    .post(
+      `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
+      {
+        email: values.email,
+        password: values.password,
+      }
+    )
+    .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
-          console.log('Success!');
+          console.log('Success! Response:', response);
           router.push('/');
         })
         .with({ type: 'empty' }, () =>
           console.log('Unknown error encountered.')
         )
-        .with({ type: 'message', message: P.select() }, (message) =>
+        .with({ type: 'message', message: P.select() }, message =>
           console.log(message)
         )
-        .with({ type: 'validation', errors: P.select() }, (errors) => {
-          errors.forEach((error) => {
+        .with({ type: 'validation', errors: P.select() }, errors => {
+          errors.forEach(error => {
             console.log(error);
           });
         })
@@ -64,37 +74,41 @@ const onSubmit = form.handleSubmit(async (values) => {
         class="mx-auto border border-border rounded-xl max-w-sm flex flex-col gap-6 p-8"
         @submit="onSubmit"
       >
-        <FormField v-slot="{ componentField }" name="email">
+        <FormField v-slot="{ field }" name="email">
           <FormItem>
             <FormLabel class="text-lg !text-current">Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="Email" v-bind="componentField" />
+              <Input type="email" placeholder="Email" v-bind="field" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="password">
+        <FormField v-slot="{ field }" name="password">
           <FormItem>
             <FormLabel class="text-lg !text-current">Password</FormLabel>
             <FormControl>
-              <Input
-                type="password"
-                placeholder="Password"
-                v-bind="componentField"
-              />
+              <Input type="password" placeholder="Password" v-bind="field" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <div class="flex justify-between flex-wrap gap-2">
+        <div class="flex flex-wrap justify-between gap-2">
+          <FormField v-slot="{ field }" name="rememberMe">
+            <FormItem>
+              <FormLabel class="text-lg !text-current">Remember Me</FormLabel>
+              <FormControl>
+                <Input type="checkbox" v-bind="field" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
           <a href="/forgotPassword" class="text-sm hover:underline"
             >Forgot Password?</a
           >
         </div>
-
-        <!-- TODO Pawel: add Remember Me checkbox -->
 
         <Button class="mx-auto px-8 mt-4" type="submit">Log In</Button>
       </form>
