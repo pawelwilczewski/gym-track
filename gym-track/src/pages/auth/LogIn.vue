@@ -14,6 +14,10 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
+import { apiClient } from '@/scripts/Http/Clients';
+import { match, P } from 'ts-pattern';
+import { toResult } from '@/scripts/ErrorHandling/ResponseResult';
+import router from '@/router';
 
 const formSchema = toTypedSchema(
   z.object({
@@ -26,11 +30,29 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = form.handleSubmit((values) => {
-  console.log('Logging in!', values);
+const onSubmit = form.handleSubmit(async (values) => {
+  await apiClient
+    .post('/auth/login', { email: values.email, password: values.password })
+    .then((response) => {
+      match(toResult(response))
+        .with({ type: 'success' }, () => {
+          console.log('Success!');
+          router.push('/');
+        })
+        .with({ type: 'empty' }, () =>
+          console.log('Unknown error encountered.')
+        )
+        .with({ type: 'message', message: P.select() }, (message) =>
+          console.log(message)
+        )
+        .with({ type: 'validation', errors: P.select() }, (errors) => {
+          errors.forEach((error) => {
+            console.log(error);
+          });
+        })
+        .exhaustive();
+    });
 });
-
-// TODO Pawel: use card https://www.shadcn-vue.com/docs/components/card.html (same for register)
 </script>
 
 <template>
