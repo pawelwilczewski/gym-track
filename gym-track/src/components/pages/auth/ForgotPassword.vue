@@ -34,7 +34,7 @@ const resubmitTime: number = 60;
 const countdown: Ref<typeof Countdown | null> = ref(null);
 const sendEmailEnabled = ref(true);
 
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(values => {
   if (!sendEmailEnabled) {
     return;
   }

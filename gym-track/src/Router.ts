@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LogIn from './pages/auth/LogIn.vue';
-import Home from './pages/Home.vue';
-import SignUp from './pages/auth/SignUp.vue';
-import ConfirmEmail from './pages/auth/ConfirmEmail.vue';
-import ConfirmedEmail from './pages/auth/ConfirmedEmail.vue';
-import ForgotPassword from './pages/auth/ForgotPassword.vue';
-import ConfirmEmailChange from './pages/auth/ConfirmEmailChange.vue';
-import ResetPasswordSuccess from './pages/auth/ResetPasswordSuccess.vue';
-import Lockout from './pages/auth/Lockout.vue';
-import SignUpConfirmation from './pages/auth/SignUpConfirmation.vue';
-import ResetPasswordFailure from './pages/auth/ResetPasswordFailure.vue';
+import LogIn from './components/pages/auth/LogIn.vue';
+import Home from './components/pages/Home.vue';
+import SignUp from './components/pages/auth/SignUp.vue';
+import ConfirmEmail from './components/pages/auth/ConfirmEmail.vue';
+import ConfirmedEmail from './components/pages/auth/ConfirmedEmail.vue';
+import ForgotPassword from './components/pages/auth/ForgotPassword.vue';
+import ConfirmEmailChange from './components/pages/auth/ConfirmEmailChange.vue';
+import ResetPasswordSuccess from './components/pages/auth/ResetPasswordSuccess.vue';
+import Lockout from './components/pages/auth/Lockout.vue';
+import SignUpConfirmation from './components/pages/auth/SignUpConfirmation.vue';
+import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
 
 const routes = [
   {
