@@ -1,5 +1,7 @@
 export {};
 
+// TODO Pawel: maybe not the best idea to use 'extension' methods really
+
 declare global {
   interface Number {
     roundToMultiple(multiple: number): number;
