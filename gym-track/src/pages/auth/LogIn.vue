@@ -18,15 +18,13 @@ import { apiClient } from '@/scripts/Http/Clients';
 import { match, P } from 'ts-pattern';
 import { toResult } from '@/scripts/ErrorHandling/ResponseResult';
 import router from '@/router';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = toTypedSchema(
   z.object({
     email: z.string().email(),
     password: z.string().min(2, 'Password must contain at least 2 characters'),
-    rememberMe: z
-      .string()
-      .optional()
-      .transform(value => value === 'on'),
+    rememberMe: z.boolean().default(true).optional(),
   })
 );
 
@@ -35,6 +33,7 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
+  console.log(values.rememberMe);
   await apiClient
     .post(
       `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
@@ -95,12 +94,18 @@ const onSubmit = form.handleSubmit(async values => {
         </FormField>
 
         <div class="flex flex-wrap justify-between gap-2">
-          <FormField v-slot="{ field }" name="rememberMe">
-            <FormItem>
-              <FormLabel class="text-lg !text-current">Remember Me</FormLabel>
+          <FormField
+            v-slot="{ value, handleChange }"
+            type="checkbox"
+            name="rememberMe"
+          >
+            <FormItem class="flex gap-2 items-center">
               <FormControl>
-                <Input type="checkbox" v-bind="field" />
+                <Checkbox :checked="value" @update:checked="handleChange" />
               </FormControl>
+              <FormLabel class="!text-current !mt-0 !mb-0"
+                >Remember Me</FormLabel
+              >
               <FormMessage />
             </FormItem>
           </FormField>
