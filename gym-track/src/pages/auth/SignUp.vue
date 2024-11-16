@@ -17,7 +17,7 @@ import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
-import router from '@/router';
+import router from '@/Router';
 
 const formSchema = toTypedSchema(
   z

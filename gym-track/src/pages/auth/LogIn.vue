@@ -17,7 +17,7 @@ import Label from '@/components/ui/label/Label.vue';
 import { apiClient } from '@/scripts/http/Clients';
 import { match, P } from 'ts-pattern';
 import { toResult } from '@/scripts/errors/ResponseResult';
-import router from '@/router';
+import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = toTypedSchema(
