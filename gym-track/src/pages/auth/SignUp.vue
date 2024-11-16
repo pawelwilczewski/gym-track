@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import { apiClient } from '@/scripts/Http/Clients';
+import { apiClient } from '@/scripts/http/Clients';
 
 import {
   FormControl,
@@ -15,7 +15,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { toResult } from '@/scripts/ErrorHandling/ResponseResult';
+import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
 import router from '@/router';
 
@@ -45,10 +45,10 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
-const onSubmit = form.handleSubmit(async (values) => {
+const onSubmit = form.handleSubmit(async values => {
   await apiClient
     .post('/auth/register', { email: values.email, password: values.password })
-    .then((response) => {
+    .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
           console.log('Success!');
@@ -57,11 +57,11 @@ const onSubmit = form.handleSubmit(async (values) => {
         .with({ type: 'empty' }, () =>
           console.log('Unknown error encountered.')
         )
-        .with({ type: 'message', message: P.select() }, (message) =>
+        .with({ type: 'message', message: P.select() }, message =>
           console.log(message)
         )
-        .with({ type: 'validation', errors: P.select() }, (errors) => {
-          errors.forEach((error) => {
+        .with({ type: 'validation', errors: P.select() }, errors => {
+          errors.forEach(error => {
             console.log(error);
           });
         })

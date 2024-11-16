@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Timer from '@/scripts/Time/Timer';
+import Timer from '@/scripts/time/Timer';
 import { ref } from 'vue';
 
 const props = defineProps<{

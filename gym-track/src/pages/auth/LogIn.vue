@@ -14,9 +14,9 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { apiClient } from '@/scripts/Http/Clients';
+import { apiClient } from '@/scripts/http/Clients';
 import { match, P } from 'ts-pattern';
-import { toResult } from '@/scripts/ErrorHandling/ResponseResult';
+import { toResult } from '@/scripts/errors/ResponseResult';
 import router from '@/router';
 import { Checkbox } from '@/components/ui/checkbox';
 
