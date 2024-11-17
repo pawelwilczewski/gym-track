@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 	options.AddDefaultPolicy(
 		policy =>
 		{
-			policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+			policy.WithOrigins("https://localhost:7173", "https://localhost:7050")
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 				.AllowCredentials();
@@ -112,8 +112,9 @@ if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseCors();
+app.UseRouting();
+app.UseAuthorization();
 
 app.MapAllRoutes();
 

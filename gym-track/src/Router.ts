@@ -10,6 +10,7 @@ import ResetPasswordSuccess from './components/pages/auth/ResetPasswordSuccess.v
 import Lockout from './components/pages/auth/Lockout.vue';
 import SignUpConfirmation from './components/pages/auth/SignUpConfirmation.vue';
 import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
+import LogOut from './components/pages/auth/LogOut.vue';
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
     path: '/logIn',
     name: 'Log In',
     component: LogIn,
+  },
+  {
+    path: '/logOut',
+    name: 'Log Out',
+    component: LogOut,
   },
   {
     path: '/signUp',

@@ -6,7 +6,10 @@ import HeaderContent from '../HeaderContent.vue';
 <template>
   <div class="min-h-screen grid grid-cols-1 grid-rows-auto-1fr-auto">
     <header class="maxed-content-width mx-auto">
-      <HeaderContent />
+      <Suspense>
+        <HeaderContent />
+        <!--TODO Pawel: Skeleton for loading header (using <template #fallback>)-->
+      </Suspense>
     </header>
     <main class="mt-16">
       <slot />

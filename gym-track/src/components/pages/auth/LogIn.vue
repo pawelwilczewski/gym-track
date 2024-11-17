@@ -33,7 +33,6 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  console.log(values.rememberMe);
   await apiClient
     .post(
       `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
@@ -45,7 +44,6 @@ const onSubmit = form.handleSubmit(async values => {
     .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
-          console.log('Success! Response:', response);
           router.push('/');
         })
         .with({ type: 'empty' }, () =>

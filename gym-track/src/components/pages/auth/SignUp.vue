@@ -51,7 +51,6 @@ const onSubmit = form.handleSubmit(async values => {
     .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
-          console.log('Success!');
           router.push('/confirmEmail');
         })
         .with({ type: 'empty' }, () =>
