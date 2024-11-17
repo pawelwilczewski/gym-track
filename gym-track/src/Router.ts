@@ -11,6 +11,19 @@ import Lockout from './components/pages/auth/Lockout.vue';
 import SignUpConfirmation from './components/pages/auth/SignUpConfirmation.vue';
 import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
 import LogOut from './components/pages/auth/LogOut.vue';
+import { getCurrentUser } from './scripts/auth/Auth';
+import Workouts from './components/pages/app/Workouts.vue';
+
+declare module 'vue-router' {
+  enum UserRole {
+    User,
+    Admin,
+  }
+
+  interface IRouteMeta {
+    requiresAuth?: boolean;
+  }
+}
 
 const routes = [
   {
@@ -37,16 +50,19 @@ const routes = [
     path: '/confirmEmail',
     name: 'Confirm Email',
     component: ConfirmEmail,
+    meta: { requiresAuth: true },
   },
   {
     path: '/confirmedEmail',
     name: 'Confirmed Email',
     component: ConfirmedEmail,
+    meta: { requiresAuth: true },
   },
   {
     path: '/confirmEmailChange',
     name: 'Confirm Email Change',
     component: ConfirmEmailChange,
+    meta: { requiresAuth: true },
   },
   {
     path: '/forgotPassword',
@@ -72,12 +88,44 @@ const routes = [
     path: '/signUpConfirmation',
     name: 'Sign Up Confirmation',
     component: SignUpConfirmation,
+    meta: { requiresAuth: true }, // TODO Pawel: make sure this should be authenticated
+  },
+  {
+    path: '/workouts',
+    name: 'Workouts',
+    component: Workouts,
+    meta: { requiresAuth: true },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory('/'),
   routes,
+});
+
+router.beforeEach(async to => {
+  if (!to.meta.requiresAuth) {
+    return;
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath },
+    };
+  }
+
+  if (!user.isEmailConfirmed) {
+    return {
+      path: '/confirmEmail',
+    };
+  } else if (to.fullPath === '/confirmEmail') {
+    return {
+      path: '/',
+    };
+  }
 });
 
 export default router;
