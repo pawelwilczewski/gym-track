@@ -11,7 +11,7 @@ internal sealed class Info : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("/info", async Task<Results<Ok<InfoResponse>, ValidationProblem, NotFound>> (
+		builder.MapGet("/info", async Task<Results<Ok<InfoResponse>, NotFound>> (
 			ClaimsPrincipal claimsPrincipal,
 			[FromServices] UserManager<User> userManager) =>
 		{
