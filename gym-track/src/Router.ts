@@ -13,6 +13,7 @@ import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.v
 import LogOut from './components/pages/auth/LogOut.vue';
 import { getCurrentUser } from './scripts/auth/Auth';
 import Workouts from './components/pages/app/Workouts.vue';
+import NotFound from './components/pages/NotFound.vue';
 
 declare module 'vue-router' {
   enum UserRole {
@@ -96,6 +97,11 @@ const routes = [
     component: Workouts,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/:catchAll(.*)',
+    name: 'Not Found',
+    component: NotFound,
+  },
 ];
 
 const router = createRouter({
@@ -112,18 +118,18 @@ router.beforeEach(async to => {
 
   if (!user) {
     return {
-      path: '/login',
+      name: 'Log In',
       query: { redirect: to.fullPath },
     };
   }
 
   if (!user.isEmailConfirmed) {
     return {
-      path: '/confirmEmail',
+      name: 'Confirm Email',
     };
-  } else if (to.fullPath === '/confirmEmail') {
+  } else if (to.name === 'Confirm Email') {
     return {
-      path: '/',
+      name: 'Home',
     };
   }
 });
