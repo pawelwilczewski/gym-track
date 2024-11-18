@@ -113,6 +113,29 @@ const router = createRouter({
   routes,
 });
 
+let redirectResolved = false;
+
+router.beforeEach((to, from) => {
+  // TODO Pawel: resolve the case where we are stuck on login page until we log in when url is i.e. /logIn?redirect=/workouts
+  //  this happens because it tries to redirect to workouts but we aren't authenticated so redirects back to logIn
+  if (redirectResolved) {
+    return;
+  }
+
+  redirectResolved = true;
+
+  if (!from.query.redirect) {
+    return;
+  }
+
+  const redirectPath = from.query.redirect.toString();
+  if (to.fullPath === redirectPath) {
+    return;
+  }
+
+  return { path: redirectPath };
+});
+
 router.beforeEach(async to => {
   if (!to.meta.requiresAuth) {
     return;
@@ -128,14 +151,14 @@ router.beforeEach(async to => {
   }
 
   if (!user.isEmailConfirmed) {
-    return {
-      name: 'Confirm Email',
-    };
+    return { name: 'Confirm Email' };
   } else if (to.name === 'Confirm Email') {
-    return {
-      name: 'Home',
-    };
+    return { name: 'Home' };
   }
+});
+
+router.afterEach(() => {
+  redirectResolved = false;
 });
 
 export default router;

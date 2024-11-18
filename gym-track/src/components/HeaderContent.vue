@@ -9,29 +9,29 @@ const loggedIn = await isLoggedIn();
   <nav class="p-8">
     <div class="flex justify-between gap-24">
       <h1 class="pb-3 px-3">
-        <a href="/" class="font-bold">Gym Track</a>
+        <RouterLink to="/" class="font-bold">Gym Track</RouterLink>
       </h1>
       <div class="flex gap-6 flex-wrap">
         <div v-if="loggedIn" class="flex gap-2">
           <Button :variant="false ? 'ghost' : 'secondary'" asChild>
-            <a href="/tracking">My Progress</a>
+            <RouterLink to="/tracking">My Progress</RouterLink>
           </Button>
           <Button asChild variant="ghost">
-            <a href="/workouts">Workouts</a>
+            <RouterLink to="/workouts">Workouts</RouterLink>
           </Button>
           <Button asChild variant="ghost">
-            <a href="/exercises">Exercises</a>
+            <RouterLink to="/exercises">Exercises</RouterLink>
           </Button>
         </div>
         <div class="flex gap-2">
           <Button asChild>
-            <a v-if="!loggedIn" href="/logIn">Log In</a>
+            <RouterLink v-if="!loggedIn" to="/logIn">Log In</RouterLink>
           </Button>
           <Button v-if="!loggedIn" asChild variant="outline">
-            <a href="/signUp">Sign Up</a>
+            <RouterLink to="/signUp">Sign Up</RouterLink>
           </Button>
           <Button v-if="loggedIn" asChild variant="outline">
-            <a href="/logOut">Log Out</a>
+            <RouterLink to="/logOut">Log Out</RouterLink>
           </Button>
         </div>
       </div>

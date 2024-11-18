@@ -124,7 +124,9 @@ const onSubmit = form.handleSubmit(async values => {
       <Label class="block text-center text-lg mt-16 font-bold"
         >Already have an Account?</Label
       >
-      <a href="/logIn" class="block text-center hover:underline">Log In</a>
+      <RouterLink to="/logIn" class="block text-center hover:underline"
+        >Log In</RouterLink
+      >
     </div>
   </DefaultLayout>
 </template>
