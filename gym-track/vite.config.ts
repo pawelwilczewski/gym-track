@@ -26,4 +26,7 @@ export default defineConfig({
       cert: fs.readFileSync('certs/localhost.pem'),
     },
   },
+  build: {
+    sourcemap: true,
+  },
 });
