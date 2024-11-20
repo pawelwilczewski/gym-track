@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  Router,
+  RouteRecordNormalized,
+} from 'vue-router';
 import LogIn from './components/pages/auth/LogIn.vue';
 import Home from './components/pages/Home.vue';
 import SignUp from './components/pages/auth/SignUp.vue';
@@ -11,7 +16,7 @@ import Lockout from './components/pages/auth/Lockout.vue';
 import SignUpConfirmation from './components/pages/auth/SignUpConfirmation.vue';
 import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
 import LogOut from './components/pages/auth/LogOut.vue';
-import { getCurrentUser } from './scripts/auth/Auth';
+import { getCurrentUser, IUserInfo } from './scripts/auth/Auth';
 import Workouts from './components/pages/app/Workouts.vue';
 import NotFound from './components/pages/NotFound.vue';
 
@@ -113,40 +118,65 @@ const router = createRouter({
   routes,
 });
 
-let redirectResolved = false;
+function getRouteByFullPath(
+  router: Router,
+  path: string
+): RouteRecordNormalized | undefined {
+  const pathNormalized = path.split('?')[0];
+  const routesMatching = router
+    .getRoutes()
+    .filter(route => route.path === pathNormalized);
 
-router.beforeEach((to, from) => {
-  // TODO Pawel: resolve the case where we are stuck on login page until we log in when url is i.e. /logIn?redirect=/workouts
-  //  this happens because it tries to redirect to workouts but we aren't authenticated so redirects back to logIn
-  if (redirectResolved) {
-    return;
+  if (routesMatching.length <= 0) {
+    console.error(`Invalid route: ${path}`);
+    return undefined;
   }
 
-  redirectResolved = true;
-
-  if (!from.query.redirect) {
-    return;
+  if (routesMatching.length > 1) {
+    // TODO Pawel: router probably checks for duplicates automatically, this may be redundant
+    console.error(`Duplicate route (proceeding with first match): ${path}`);
   }
 
-  const redirectPath = from.query.redirect.toString();
-  if (to.fullPath === redirectPath) {
+  return routesMatching[0];
+}
+
+let resolvedAuthAndRedirect = false;
+
+router.beforeEach(async (to, from) => {
+  if (resolvedAuthAndRedirect) {
     return;
   }
+  resolvedAuthAndRedirect = true;
 
-  return { path: redirectPath };
-});
+  let user: IUserInfo | undefined;
+  if (from.query.redirect) {
+    const redirectRoute = getRouteByFullPath(
+      router,
+      from.query.redirect.toString()
+    );
 
-router.beforeEach(async to => {
+    if (redirectRoute) {
+      if (redirectRoute.meta.requiresAuth) {
+        user = await getCurrentUser();
+        if (user) {
+          return { path: from.query.redirect.toString() };
+        }
+      } else {
+        return { path: from.query.redirect.toString() };
+      }
+    }
+  }
+
   if (!to.meta.requiresAuth) {
     return;
   }
 
-  const user = await getCurrentUser();
+  user ??= await getCurrentUser();
 
   if (!user) {
     return {
       name: 'Log In',
-      query: { redirect: to.fullPath },
+      query: { redirect: to.path },
     };
   }
 
@@ -158,7 +188,7 @@ router.beforeEach(async to => {
 });
 
 router.afterEach(() => {
-  redirectResolved = false;
+  resolvedAuthAndRedirect = false;
 });
 
 export default router;
