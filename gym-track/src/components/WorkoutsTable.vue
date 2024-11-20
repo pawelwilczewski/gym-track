@@ -6,23 +6,31 @@ import { GetWorkoutResponse } from '@/scripts/schema/Schema';
 import { match, P } from 'ts-pattern';
 import { Ref, ref } from 'vue';
 
-const response = await apiClient.get('/api/v1/workouts');
 const workouts: Ref<GetWorkoutResponse[] | undefined> = ref(undefined);
 
-match(toResult(response))
-  .with({ type: 'success' }, () => {
-    workouts.value = response.data;
-  })
-  .with({ type: 'empty' }, () => console.log('Unknown error encountered.'))
-  .with({ type: 'message', message: P.select() }, message =>
-    console.log(message)
-  )
-  .with({ type: 'validation', errors: P.select() }, errors => {
-    errors.forEach(error => {
-      console.log(error);
-    });
-  })
-  .exhaustive();
+const update: () => Promise<void> = async () => {
+  const response = await apiClient.get('/api/v1/workouts');
+  match(toResult(response))
+    .with({ type: 'success' }, () => {
+      workouts.value = response.data;
+    })
+    .with({ type: 'empty' }, () => console.log('Unknown error encountered.'))
+    .with({ type: 'message', message: P.select() }, message =>
+      console.log(message)
+    )
+    .with({ type: 'validation', errors: P.select() }, errors => {
+      errors.forEach(error => {
+        console.log(error);
+      });
+    })
+    .exhaustive();
+};
+
+defineExpose({
+  update,
+});
+
+await update();
 </script>
 
 <template>

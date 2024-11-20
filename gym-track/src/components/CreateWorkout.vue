@@ -25,6 +25,10 @@ const form = useForm({
   validationSchema: formSchema,
 });
 
+const emit = defineEmits<{
+  created: [];
+}>();
+
 const onSubmit = form.handleSubmit(async values => {
   await apiClient
     .post('/api/v1/workouts', {
@@ -33,6 +37,7 @@ const onSubmit = form.handleSubmit(async values => {
     .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
+          emit('created');
           console.log('Success creating new workout');
         })
         .with({ type: 'empty' }, () =>
