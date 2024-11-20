@@ -37,6 +37,7 @@ public static class UserOwnedExtensions
 		return true;
 	}
 
+	// TODO Pawel: much needed: use concept of ownership (specific user/admins if none) and visibility public/private
 	public static bool CanAccess(
 		this ClaimsPrincipal user,
 		IReadOnlyList<IUserOwned> users)

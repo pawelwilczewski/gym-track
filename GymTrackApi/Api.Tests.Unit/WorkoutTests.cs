@@ -76,6 +76,42 @@ internal sealed class WorkoutTests
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
 
+	public static IEnumerable<(IReadOnlyList<IReadOnlyList<IUserInfo>> workoutsOwners, IUserInfo accessor, int returnedCount)> GetWorkoutsData() =>
+	[
+		new([[Users.Admin1], [Users.User1]], Users.User1, 2),
+		new([[Users.User1], [Users.User2], [Users.Admin1]], Users.User1, 2),
+		new([[Users.User2], [Users.User2], [Users.User2]], Users.User1, 0),
+		new([], Users.User1, 0),
+		new([[Users.Admin1], [Users.Admin1], [Users.User2]], Users.User2, 3)
+	];
+
+	[Test]
+	[MethodDataSource(nameof(GetWorkoutsData))]
+	public async Task GetWorkouts_ReturnsCorrectCount(IReadOnlyList<IReadOnlyList<IUserInfo>> workoutsOwners, IUserInfo accessor, int returnedCount)
+	{
+		var builder = MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers();
+
+		foreach (var owners in workoutsOwners)
+		{
+			builder.WithWorkout(out _, owners);
+		}
+
+		using var dataContext = await builder
+			.Build()
+			.ConfigureAwait(false);
+
+		var result = await GetWorkouts.Handler(
+				accessor.GetHttpContext(),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(typeof(Ok<List<GetWorkoutResponse>>));
+
+		await Assert.That(((Ok<List<GetWorkoutResponse>>)result.Result).Value?.Count).IsEqualTo(returnedCount);
+	}
+
 	[Test]
 	public async Task GetWorkout_InvalidId_ReturnsNotFound()
 	{
