@@ -17,6 +17,8 @@ import {
   handleAuthAndRedirect as handleAuthAndRedirectBefore,
   handleAuthAndRedirectAfter,
 } from './scripts/middleware/AuthAndRedirect';
+import Dashboard from './components/pages/app/Dashboard.vue';
+import Exercises from './components/pages/app/Exercises.vue';
 
 declare module 'vue-router' {
   enum UserRole {
@@ -96,12 +98,23 @@ const routes = [
     path: '/signUpConfirmation',
     name: 'Sign Up Confirmation',
     component: SignUpConfirmation,
-    meta: { requiresAuth: true }, // TODO Pawel: make sure this should be authenticated
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: { requiresAuth: true },
   },
   {
     path: '/workouts',
     name: 'Workouts',
     component: Workouts,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/exercises',
+    name: 'Exercises',
+    component: Exercises,
     meta: { requiresAuth: true },
   },
   {

@@ -14,7 +14,7 @@ const loggedIn = await isLoggedIn();
       </h1>
       <div class="flex gap-6 flex-wrap">
         <div v-if="loggedIn" class="flex gap-2">
-          <TabButton path="/tracking" name="My Progress"></TabButton>
+          <TabButton path="/dashboard" name="Dashboard"></TabButton>
           <TabButton path="/workouts" name="Workouts"></TabButton>
           <TabButton path="/exercises" name="Exercises"></TabButton>
         </div>
