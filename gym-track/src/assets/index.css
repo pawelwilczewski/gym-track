@@ -80,10 +80,6 @@
     @apply w-full max-w-content-default;
   }
 
-  a {
-    @apply hover:underline font-medium;
-  }
-
   h1 {
     @apply text-5xl font-bold;
   }

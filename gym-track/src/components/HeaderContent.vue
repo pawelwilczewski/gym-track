@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { isLoggedIn } from '@/scripts/auth/Auth';
+import TabButton from './TabButton.vue';
 
 const loggedIn = await isLoggedIn();
 </script>
@@ -13,15 +14,9 @@ const loggedIn = await isLoggedIn();
       </h1>
       <div class="flex gap-6 flex-wrap">
         <div v-if="loggedIn" class="flex gap-2">
-          <Button :variant="false ? 'ghost' : 'secondary'" asChild>
-            <RouterLink to="/tracking">My Progress</RouterLink>
-          </Button>
-          <Button asChild variant="ghost">
-            <RouterLink to="/workouts">Workouts</RouterLink>
-          </Button>
-          <Button asChild variant="ghost">
-            <RouterLink to="/exercises">Exercises</RouterLink>
-          </Button>
+          <TabButton path="/tracking" name="My Progress"></TabButton>
+          <TabButton path="/workouts" name="Workouts"></TabButton>
+          <TabButton path="/exercises" name="Exercises"></TabButton>
         </div>
         <div class="flex gap-2">
           <Button asChild>
