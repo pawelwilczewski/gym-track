@@ -1,19 +1,5 @@
-export {};
-
-// TODO Pawel: maybe not the best idea to use 'extension' methods really
-
-declare global {
-  interface Number {
-    roundToMultiple(multiple: number): number;
-  }
+export function roundToMultiple(x: number, multiple: number): number {
+  const whole = Math.floor(x / multiple);
+  const mod = x % multiple;
+  return mod >= multiple * 0.5 ? whole * multiple + multiple : whole * multiple;
 }
-
-Object.defineProperty(Number.prototype, 'roundToMultiple', {
-  value: function roundToMultiple(multiple: number): number {
-    const whole = Math.floor(this / multiple);
-    const mod = this % multiple;
-    return mod >= multiple * 0.5
-      ? whole * multiple + multiple
-      : whole * multiple;
-  },
-});

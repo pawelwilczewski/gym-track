@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { roundToMultiple } from '@/scripts/math/RoundingExtensions';
 import Timer from '@/scripts/time/Timer';
 import { ref } from 'vue';
 
@@ -17,7 +18,7 @@ const timer: Timer = new Timer(
   props.totalDurationSeconds,
   props.tickIntervalSeconds,
   (timeLeftRaw: number) => {
-    timeLeft.value = timeLeftRaw.roundToMultiple(props.tickIntervalSeconds);
+    timeLeft.value = roundToMultiple(timeLeftRaw, props.tickIntervalSeconds);
   },
   () => {
     timeLeft.value = props.totalDurationSeconds;
