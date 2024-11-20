@@ -6,7 +6,7 @@ import { Ref, ref } from 'vue';
 
 const workoutsTable: Ref<typeof WorkoutsTable | undefined> = ref(undefined);
 const handleWorkoutCreated: () => Promise<void> = async () => {
-  await workoutsTable.value!.update();
+  await workoutsTable.value?.update();
 };
 </script>
 
