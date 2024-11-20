@@ -8,7 +8,6 @@ import ForgotPassword from './components/pages/auth/ForgotPassword.vue';
 import ConfirmEmailChange from './components/pages/auth/ConfirmEmailChange.vue';
 import ResetPasswordSuccess from './components/pages/auth/ResetPasswordSuccess.vue';
 import Lockout from './components/pages/auth/Lockout.vue';
-import SignUpConfirmation from './components/pages/auth/SignUpConfirmation.vue';
 import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
 import LogOut from './components/pages/auth/LogOut.vue';
 import Workouts from './components/pages/app/Workouts.vue';
@@ -60,13 +59,11 @@ const routes = [
     path: '/confirmEmail',
     name: 'Confirm Email',
     component: ConfirmEmail,
-    meta: { requiresAuth: true },
   },
   {
     path: '/confirmedEmail',
     name: 'Confirmed Email',
     component: ConfirmedEmail,
-    meta: { requiresAuth: true },
   },
   {
     path: '/confirmEmailChange',
@@ -93,11 +90,6 @@ const routes = [
     path: '/lockout',
     name: 'Lockout',
     component: Lockout,
-  },
-  {
-    path: '/signUpConfirmation',
-    name: 'Sign Up Confirmation',
-    component: SignUpConfirmation,
   },
   {
     path: '/dashboard',

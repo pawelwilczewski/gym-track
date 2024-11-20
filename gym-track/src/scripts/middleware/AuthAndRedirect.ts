@@ -51,9 +51,10 @@ export async function handleAuthAndRedirect(
   }
 
   if (!user.isEmailConfirmed) {
-    return { name: 'Confirm Email' };
-  } else if (to.name === 'Confirm Email') {
-    return { name: 'Home' };
+    return {
+      name: 'Confirm Email',
+      query: { email: user.email, redirect: to.path },
+    };
   }
 }
 

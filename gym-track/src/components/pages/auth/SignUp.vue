@@ -46,12 +46,17 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
+  await apiClient.post('/auth/login', {
+    email: values.email,
+    password: values.password,
+  });
+
   await apiClient
     .post('/auth/register', { email: values.email, password: values.password })
     .then(response => {
       match(toResult(response))
         .with({ type: 'success' }, () => {
-          router.push('/confirmEmail');
+          router.push(`/confirmEmail?email=${values.email}`);
         })
         .with({ type: 'empty' }, () =>
           console.log('Unknown error encountered.')
