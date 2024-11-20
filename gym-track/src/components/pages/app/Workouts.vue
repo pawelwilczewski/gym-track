@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 </script>
 
 <template>
-  <DefaultLayout>
-    <h1>Hello world! Workouts here</h1>
-  </DefaultLayout>
+  <OneColumnLayout>
+    <div class="">
+      <h1>Your Workouts</h1>
+    </div>
+  </OneColumnLayout>
 </template>
