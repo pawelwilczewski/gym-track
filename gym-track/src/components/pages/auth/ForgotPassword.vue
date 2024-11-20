@@ -31,7 +31,7 @@ const form = useForm({
 
 const resubmitTime: number = 60;
 
-const countdown: Ref<typeof Countdown | null> = ref(null);
+const countdown: Ref<typeof Countdown | undefined> = ref(undefined);
 const sendEmailEnabled = ref(true);
 
 const onSubmit = form.handleSubmit(values => {
