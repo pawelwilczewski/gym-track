@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
 import { apiClient } from '@/scripts/http/Clients';
-
 import {
   FormControl,
   FormField,
@@ -18,31 +15,10 @@ import Label from '@/components/ui/label/Label.vue';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
 import router from '@/Router';
-
-const formSchema = toTypedSchema(
-  z
-    .object({
-      email: z.string().email(),
-      password: z
-        .string()
-        .min(2, 'Password must contain at least 2 characters'),
-      confirmPassword: z
-        .string()
-        .min(2, 'Password must contain at least 2 characters'),
-    })
-    .superRefine(({ confirmPassword, password }, ctx) => {
-      if (confirmPassword !== password) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'The passwords do not match',
-          path: ['confirmPassword'],
-        });
-      }
-    })
-);
+import { signUpSchema } from '@/scripts/schema/Schema';
 
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: signUpSchema,
 });
 
 const onSubmit = form.handleSubmit(async values => {

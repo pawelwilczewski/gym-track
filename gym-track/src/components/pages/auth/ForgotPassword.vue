@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
 
 import {
   FormControl,
@@ -18,15 +16,10 @@ import { Mail } from 'lucide-vue-next';
 
 import { Ref, ref } from 'vue';
 import Countdown from '@/components/Countdown.vue';
-
-const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email(),
-  })
-);
+import { forgotPasswordSchema } from '@/scripts/schema/Schema';
 
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: forgotPasswordSchema,
 });
 
 const resubmitTime: number = 60;

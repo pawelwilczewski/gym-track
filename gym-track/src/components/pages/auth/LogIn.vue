@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
-
 import {
   FormControl,
   FormField,
@@ -19,17 +16,10 @@ import { match, P } from 'ts-pattern';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email(),
-    password: z.string().min(2, 'Password must contain at least 2 characters'),
-    rememberMe: z.boolean().default(true).optional(),
-  })
-);
+import { logInRequestSchema } from '@/scripts/schema/Schema';
 
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: logInRequestSchema,
 });
 
 const onSubmit = form.handleSubmit(async values => {

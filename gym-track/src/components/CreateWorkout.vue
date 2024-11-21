@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
 import { apiClient } from '@/scripts/http/Clients';
 import {
   FormControl,
@@ -14,15 +12,10 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
-
-const formSchema = toTypedSchema(
-  z.object({
-    name: z.string().trim().min(1),
-  })
-);
+import { createWorkoutSchema } from '@/scripts/schema/Schema';
 
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: createWorkoutSchema,
 });
 
 const emit = defineEmits<{
@@ -71,7 +64,6 @@ const onSubmit = form.handleSubmit(async values => {
         <FormMessage />
       </FormItem>
     </FormField>
-
     <Button class="mx-auto px-8 mt-4" type="submit">Create</Button>
   </form>
 </template>
