@@ -4,7 +4,7 @@ import { match, P } from 'ts-pattern';
 import { FormContext, Path } from 'vee-validate';
 import { AxiosResponse } from 'axios';
 
-export function handleError(
+export function handleResponse(
   response: AxiosResponse,
   onSuccess: () => void,
   form: FormContext | undefined = undefined

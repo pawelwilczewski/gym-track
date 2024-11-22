@@ -14,27 +14,25 @@ import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import router from '@/Router';
 import { signUpSchema } from '@/scripts/schema/Schemas';
-import { handleError } from '@/scripts/errors/Handlers';
+import { handleResponse } from '@/scripts/errors/Handlers';
+import { toResult } from '@/scripts/errors/ResponseResult';
+import { match } from 'ts-pattern';
 
 const form = useForm({
   validationSchema: signUpSchema,
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  await apiClient.post('/auth/login', {
+  const response = await apiClient.post('/auth/register', {
     email: values.email,
     password: values.password,
   });
 
-  await apiClient
-    .post('/auth/register', { email: values.email, password: values.password })
-    .then(response =>
-      handleError(
-        response,
-        () => router.push(`/confirmEmail?email=${values.email}`),
-        form
-      )
-    );
+  handleResponse(
+    response,
+    () => router.push(`/confirmEmail?email=${values.email}`),
+    form
+  );
 });
 </script>
 
