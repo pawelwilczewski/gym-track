@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GetWorkoutResponse } from '@/scripts/schema/Schema';
+import { GetWorkoutResponse } from '@/scripts/schema/Types';
 
 defineProps<{
   workout: GetWorkoutResponse;
@@ -12,10 +12,10 @@ defineProps<{
   >
     <h3>{{ workout.name }}</h3>
     <ol>
-      <div v-for="exercise in workout.exercises">
+      <li v-for="exercise in workout.exercises">
         {{ exercise.index }}
         {{ exercise.workoutId }}
-      </div>
+      </li>
     </ol>
   </div>
 </template>

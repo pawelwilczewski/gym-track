@@ -16,7 +16,7 @@ import { match, P } from 'ts-pattern';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
-import { logInRequestSchema } from '@/scripts/schema/Schema';
+import { logInRequestSchema } from '@/scripts/schema/Schemas';
 
 const form = useForm({
   validationSchema: logInRequestSchema,
@@ -61,21 +61,25 @@ const onSubmit = form.handleSubmit(async values => {
         class="mx-auto border border-border rounded-xl max-w-sm flex flex-col gap-6 p-8"
         @submit="onSubmit"
       >
-        <FormField v-slot="{ field }" name="email">
+        <FormField v-slot="{ componentField }" name="email">
           <FormItem>
             <FormLabel class="text-lg !text-current">Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="Email" v-bind="field" />
+              <Input type="email" placeholder="Email" v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ field }" name="password">
+        <FormField v-slot="{ componentField }" name="password">
           <FormItem>
             <FormLabel class="text-lg !text-current">Password</FormLabel>
             <FormControl>
-              <Input type="password" placeholder="Password" v-bind="field" />
+              <Input
+                type="password"
+                placeholder="Password"
+                v-bind="componentField"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -1,16 +1,7 @@
 import { toTypedSchema } from '@vee-validate/zod';
-import { UUID } from 'crypto';
 import { z } from 'zod';
-
-export type GetWorkoutResponse = {
-  name: string;
-  exercises: WorkoutExerciseKey[];
-};
-
-export type WorkoutExerciseKey = {
-  workoutId: UUID;
-  index: number;
-};
+import { ExerciseMetricType } from './Types';
+import { zodEnumFlagsSchema } from './ZodUtils';
 
 export const createWorkoutSchema = toTypedSchema(
   z.object({
@@ -18,9 +9,18 @@ export const createWorkoutSchema = toTypedSchema(
   })
 );
 
-export const createExerciseSchema = toTypedSchema(
+export const createExerciseInfoSchema = toTypedSchema(
   z.object({
     name: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    allowedMetricTypes: zodEnumFlagsSchema(ExerciseMetricType),
+    thumbnailImage: z
+      .instanceof(File, { message: 'Thumbnail is required.' })
+      .refine(file => file.size > 0)
+      .refine(
+        file => ['image/jpeg', 'image/png', 'image/gif'].includes(file.type),
+        'Thumbnail must be a valid image file.'
+      ),
   })
 );
 

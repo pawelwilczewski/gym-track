@@ -10,6 +10,7 @@ internal static class ExerciseInfoRoutes
 			.RequireAuthorization()
 			.WithTags("ExerciseInfo")
 			.Map(new CreateExerciseInfo())
+			.Map(new GetExerciseInfos())
 			.Map(new GetExerciseInfo())
 			.Map(new EditExerciseInfo())
 			.Map(new DeleteExerciseInfo())

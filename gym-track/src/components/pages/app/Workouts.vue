@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CreateWorkout from '@/components/CreateWorkout.vue';
+import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
-import WorkoutsTable from '@/components/WorkoutsTable.vue';
+import WorkoutsTable from '@/components/app/workout/WorkoutsTable.vue';
 import { Ref, ref } from 'vue';
 
 const workoutsTable: Ref<typeof WorkoutsTable | undefined> = ref(undefined);

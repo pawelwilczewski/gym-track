@@ -9,7 +9,7 @@ import router from '@/Router';
 
 let resolvedAuthAndRedirect = false;
 
-export async function handleAuthAndRedirect(
+export async function handleAuthAndRedirectBefore(
   to: RouteLocationNormalizedGeneric,
   from: RouteLocationNormalizedGeneric
 ): Promise<NavigationGuardReturn> {

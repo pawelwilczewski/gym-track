@@ -12,7 +12,7 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
-import { createWorkoutSchema } from '@/scripts/schema/Schema';
+import { createWorkoutSchema } from '@/scripts/schema/Schemas';
 
 const form = useForm({
   validationSchema: createWorkoutSchema,
@@ -55,11 +55,11 @@ const onSubmit = form.handleSubmit(async values => {
     @submit="onSubmit"
   >
     <h2>New Workout</h2>
-    <FormField v-slot="{ field }" name="name">
+    <FormField v-slot="{ componentField }" name="name">
       <FormItem>
         <FormLabel class="text-lg !text-current">Name</FormLabel>
         <FormControl>
-          <Input placeholder="Name" v-bind="field" />
+          <Input placeholder="Name" v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>

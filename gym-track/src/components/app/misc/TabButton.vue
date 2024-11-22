@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/Router';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 
 const props = defineProps<{
   path: string;

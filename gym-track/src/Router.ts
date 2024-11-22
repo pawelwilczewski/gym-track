@@ -13,11 +13,11 @@ import LogOut from './components/pages/auth/LogOut.vue';
 import Workouts from './components/pages/app/Workouts.vue';
 import NotFound from './components/pages/NotFound.vue';
 import {
-  handleAuthAndRedirect as handleAuthAndRedirectBefore,
+  handleAuthAndRedirectBefore,
   handleAuthAndRedirectAfter,
 } from './scripts/middleware/AuthAndRedirect';
 import Dashboard from './components/pages/app/Dashboard.vue';
-import Exercises from './components/pages/app/Exercises.vue';
+import ExerciseInfos from './components/pages/app/ExerciseInfos.vue';
 
 declare module 'vue-router' {
   enum UserRole {
@@ -105,8 +105,8 @@ const routes = [
   },
   {
     path: '/exercises',
-    name: 'Exercises',
-    component: Exercises,
+    name: 'Exercise Infos',
+    component: ExerciseInfos,
     meta: { requiresAuth: true },
   },
   {

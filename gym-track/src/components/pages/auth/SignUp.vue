@@ -15,7 +15,7 @@ import Label from '@/components/ui/label/Label.vue';
 import { toResult } from '@/scripts/errors/ResponseResult';
 import { match, P } from 'ts-pattern';
 import router from '@/Router';
-import { signUpSchema } from '@/scripts/schema/Schema';
+import { signUpSchema } from '@/scripts/schema/Schemas';
 
 const form = useForm({
   validationSchema: signUpSchema,
