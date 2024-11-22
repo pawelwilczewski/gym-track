@@ -30,12 +30,12 @@ export function handleError(
         if (form) {
           form.setFieldError(
             error.field as Path<typeof form.values>,
-            error.errors
+            error.error
           );
         } else {
           toast({
             title: `Validation Error for '${error.field}'`,
-            description: error.errors.join('\n'),
+            description: error.error,
             variant: 'destructive',
           });
         }

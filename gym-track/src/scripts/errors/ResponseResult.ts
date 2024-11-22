@@ -16,7 +16,7 @@ interface IErrorWithMessage {
 
 interface IInvalidField {
   field: string;
-  errors: string[];
+  error: string;
 }
 
 interface IValidationError {
@@ -43,7 +43,7 @@ export function toResult(
         return { type: 'message', message: 'Bad request submitted.' };
       }
 
-      const validationErrors: Map<string, string[]> = new Map();
+      const validationErrors: Map<string, string> = new Map();
       for (const errorProperty in response.data.errors) {
         const fieldName = match(errorProperty)
           // workaround for how ASP.NET returns validation errors for passwords
@@ -51,20 +51,19 @@ export function toResult(
           .with(P.string.startsWith('Password'), () => 'password')
           .otherwise(() => 'errorProperty');
 
-        const fieldErrors = validationErrors.get(fieldName);
+        const fieldErrors = validationErrors.get(fieldName) ?? '';
         const errorsToAdd = response.data.errors[errorProperty];
-        if (!fieldErrors) {
-          validationErrors.set(fieldName, errorsToAdd);
-        } else {
-          validationErrors.set(fieldName, fieldErrors.concat(errorsToAdd));
-        }
+        validationErrors.set(
+          fieldName,
+          `${fieldErrors}\n${errorsToAdd.join('\n')}`
+        );
       }
 
       return {
         type: 'validation',
-        errors: Array.from(validationErrors, ([field, errors]) => ({
+        errors: Array.from(validationErrors, ([field, error]) => ({
           field,
-          errors,
+          error,
         })),
       };
     }
