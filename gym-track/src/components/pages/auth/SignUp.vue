@@ -12,10 +12,9 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { toResult } from '@/scripts/errors/ResponseResult';
-import { match, P } from 'ts-pattern';
 import router from '@/Router';
 import { signUpSchema } from '@/scripts/schema/Schemas';
+import { handleError } from '@/scripts/errors/Handlers';
 
 const form = useForm({
   validationSchema: signUpSchema,
@@ -29,24 +28,13 @@ const onSubmit = form.handleSubmit(async values => {
 
   await apiClient
     .post('/auth/register', { email: values.email, password: values.password })
-    .then(response => {
-      match(toResult(response))
-        .with({ type: 'success' }, () => {
-          router.push(`/confirmEmail?email=${values.email}`);
-        })
-        .with({ type: 'empty' }, () =>
-          console.log('Unknown error encountered.')
-        )
-        .with({ type: 'message', message: P.select() }, message =>
-          console.log(message)
-        )
-        .with({ type: 'validation', errors: P.select() }, errors => {
-          errors.forEach(error => {
-            console.log(error);
-          });
-        })
-        .exhaustive();
-    });
+    .then(response =>
+      handleError(
+        response,
+        () => router.push(`/confirmEmail?email=${values.email}`),
+        form
+      )
+    );
 });
 </script>
 
