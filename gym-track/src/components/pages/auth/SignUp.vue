@@ -13,11 +13,9 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { signUpSchema } from '@/scripts/schema/Schemas';
-import {
-  formErrorHandler,
-  ResultErrorHandler,
-  toastErrorHandler,
-} from '@/scripts/errors/Handlers';
+import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import router from '@/Router';
 
 const form = useForm({
   validationSchema: signUpSchema,
@@ -29,10 +27,16 @@ const onSubmit = form.handleSubmit(async values => {
     password: values.password,
   });
 
-  ResultErrorHandler.fromResponse(response)
-    .then(formErrorHandler, form)
-    .then(toastErrorHandler)
-    .handle();
+  if (
+    !ErrorHandler.forResponse(response)
+      .with(formErrorHandler, form)
+      .with(toastErrorHandler)
+      .handle()
+  ) {
+    return;
+  }
+
+  router.push(`/confirmEmail?email=${values.email}`);
 });
 </script>
 

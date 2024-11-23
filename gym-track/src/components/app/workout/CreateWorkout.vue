@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/form';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
-import { toResult } from '@/scripts/errors/ResponseResult';
-import { match, P } from 'ts-pattern';
 import { createWorkoutSchema } from '@/scripts/schema/Schemas';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
 
 const form = useForm({
   validationSchema: createWorkoutSchema,
@@ -23,29 +23,20 @@ const emit = defineEmits<{
 }>();
 
 const onSubmit = form.handleSubmit(async values => {
-  await apiClient
-    .post('/api/v1/workouts', {
-      name: values.name,
-    })
-    .then(response => {
-      match(toResult(response))
-        .with({ type: 'success' }, () => {
-          emit('created');
-          console.log('Success creating new workout');
-        })
-        .with({ type: 'empty' }, () =>
-          console.log('Unknown error encountered.')
-        )
-        .with({ type: 'message', message: P.select() }, message =>
-          console.log(message)
-        )
-        .with({ type: 'validation', errors: P.select() }, errors => {
-          errors.forEach(error => {
-            console.log(error);
-          });
-        })
-        .exhaustive();
-    });
+  const response = await apiClient.post('/api/v1/workouts', {
+    name: values.name,
+  });
+
+  if (
+    !ErrorHandler.forResponse(response)
+      .with(formErrorHandler, form)
+      .with(toastErrorHandler)
+      .handle()
+  ) {
+    return;
+  }
+
+  emit('created');
 });
 </script>
 

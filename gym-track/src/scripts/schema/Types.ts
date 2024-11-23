@@ -1,5 +1,10 @@
 import { UUID } from 'crypto';
 
+export type UserInfo = {
+  email: string;
+  isEmailConfirmed: boolean;
+};
+
 export enum ExerciseMetricType {
   Weight = 1 << 0,
   Duration = 1 << 1,

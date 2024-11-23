@@ -12,43 +12,35 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { apiClient } from '@/scripts/http/Clients';
-import { match, P } from 'ts-pattern';
-import { toResult } from '@/scripts/errors/ResponseResult';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
 import { logInRequestSchema } from '@/scripts/schema/Schemas';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
 
 const form = useForm({
   validationSchema: logInRequestSchema,
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  await apiClient
-    .post(
-      `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
-      {
-        email: values.email,
-        password: values.password,
-      }
-    )
-    .then(response => {
-      match(toResult(response))
-        .with({ type: 'success' }, () => {
-          router.push('/');
-        })
-        .with({ type: 'empty' }, () =>
-          console.log('Unknown error encountered.')
-        )
-        .with({ type: 'message', message: P.select() }, message =>
-          console.log(message)
-        )
-        .with({ type: 'validation', errors: P.select() }, errors => {
-          errors.forEach(error => {
-            console.log(error);
-          });
-        })
-        .exhaustive();
-    });
+  const response = await apiClient.post(
+    `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
+    {
+      email: values.email,
+      password: values.password,
+    }
+  );
+
+  if (
+    !ErrorHandler.forResponse(response)
+      .with(formErrorHandler, form)
+      .with(toastErrorHandler)
+      .handle()
+  ) {
+    return;
+  }
+
+  router.push('/');
 });
 </script>
 

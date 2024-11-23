@@ -1,29 +1,21 @@
 <script setup lang="ts">
 import Workout from '@/components/app/workout/Workout.vue';
-import { toResult } from '@/scripts/errors/ResponseResult';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
-import { match, P } from 'ts-pattern';
 import { Ref, ref } from 'vue';
 
 const workouts: Ref<GetWorkoutResponse[] | undefined> = ref(undefined);
 
 const update: () => Promise<void> = async () => {
   const response = await apiClient.get('/api/v1/workouts');
-  match(toResult(response))
-    .with({ type: 'success' }, () => {
-      workouts.value = response.data;
-    })
-    .with({ type: 'empty' }, () => console.log('Unknown error encountered.'))
-    .with({ type: 'message', message: P.select() }, message =>
-      console.log(message)
-    )
-    .with({ type: 'validation', errors: P.select() }, errors => {
-      errors.forEach(error => {
-        console.log(error);
-      });
-    })
-    .exhaustive();
+
+  if (!ErrorHandler.forResponse(response).with(toastErrorHandler).handle()) {
+    return;
+  }
+
+  workouts.value = response.data;
 };
 
 defineExpose({

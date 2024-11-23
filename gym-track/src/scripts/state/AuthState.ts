@@ -1,5 +1,5 @@
 import { computed, ref, Ref } from 'vue';
-import { IUserInfo } from '../auth/Auth';
+import { UserInfo } from '@/scripts/schema/Types';
 
-export const currentUser: Ref<IUserInfo | undefined> = ref(undefined);
+export const currentUser: Ref<UserInfo | undefined> = ref(undefined);
 export const isLoggedIn = computed(() => currentUser.value !== undefined);

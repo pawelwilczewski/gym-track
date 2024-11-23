@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/form';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
-import { toResult } from '@/scripts/errors/ResponseResult';
-import { match, P } from 'ts-pattern';
 import { createExerciseInfoSchema } from '@/scripts/schema/Schemas';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
+import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 
 const form = useForm({
   validationSchema: createExerciseInfoSchema,
@@ -30,23 +30,17 @@ const onSubmit = form.handleSubmit(async values => {
   formData.append('allowedMetricTypes', values.allowedMetricTypes.toString());
   formData.append('thumbnailImage', values.thumbnailImage);
 
-  await apiClient.post('/api/v1/exerciseInfos', formData).then(response => {
-    match(toResult(response))
-      .with({ type: 'success' }, () => {
-        emit('created');
-        console.log('Success creating new workout');
-      })
-      .with({ type: 'empty' }, () => console.log('Unknown error encountered.'))
-      .with({ type: 'message', message: P.select() }, message =>
-        console.log(message)
-      )
-      .with({ type: 'validation', errors: P.select() }, errors => {
-        errors.forEach(error => {
-          console.log(error);
-        });
-      })
-      .exhaustive();
-  });
+  const response = await apiClient.post('/api/v1/exerciseInfos', formData);
+  if (
+    !ErrorHandler.forResponse(response)
+      .with(formErrorHandler, form)
+      .with(toastErrorHandler)
+      .handle()
+  ) {
+    return;
+  }
+
+  emit('created');
 });
 // TODO Pawel: antiforgery tokens! here and everywhere else in forms!
 </script>
