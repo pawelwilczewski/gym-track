@@ -12,11 +12,12 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import router from '@/Router';
 import { signUpSchema } from '@/scripts/schema/Schemas';
-import { handleResponse } from '@/scripts/errors/Handlers';
-import { toResult } from '@/scripts/errors/ResponseResult';
-import { match } from 'ts-pattern';
+import {
+  formErrorHandler,
+  ResultErrorHandler,
+  toastErrorHandler,
+} from '@/scripts/errors/Handlers';
 
 const form = useForm({
   validationSchema: signUpSchema,
@@ -28,11 +29,10 @@ const onSubmit = form.handleSubmit(async values => {
     password: values.password,
   });
 
-  handleResponse(
-    response,
-    () => router.push(`/confirmEmail?email=${values.email}`),
-    form
-  );
+  ResultErrorHandler.fromResponse(response)
+    .then(formErrorHandler, form)
+    .then(toastErrorHandler)
+    .handle();
 });
 </script>
 

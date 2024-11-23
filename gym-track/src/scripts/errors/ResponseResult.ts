@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { match, P } from 'ts-pattern';
+import { uncapitalize } from '../utils/StringUtils';
 
 interface ISuccess {
   type: 'success';
@@ -24,9 +25,13 @@ interface IValidationError {
   errors: IInvalidField[];
 }
 
-export function toResult(
-  response: AxiosResponse
-): ISuccess | IEmptyError | IErrorWithMessage | IValidationError {
+export type ResponseResult =
+  | ISuccess
+  | IEmptyError
+  | IErrorWithMessage
+  | IValidationError;
+
+export function toResult(response: AxiosResponse): ResponseResult {
   if (response.status >= 200 && response.status < 300) {
     return { type: 'success' };
   }
@@ -46,16 +51,17 @@ export function toResult(
       const validationErrors: Map<string, string> = new Map();
       for (const errorProperty in response.data.errors) {
         const fieldName = match(errorProperty)
-          // workaround for how ASP.NET returns validation errors for passwords
+          // handling some common ASP.NET rule violations so they display correctly for forms
           // (i.e. 'PasswordRequiresDigit': '...', 'PasswordTooShort': '...')
           .with(P.string.startsWith('Password'), () => 'password')
-          .otherwise(() => 'errorProperty');
+          .with('DuplicateUserName', () => 'email')
+          .otherwise(() => uncapitalize(errorProperty));
 
         const fieldErrors = validationErrors.get(fieldName) ?? '';
         const errorsToAdd = response.data.errors[errorProperty];
         validationErrors.set(
           fieldName,
-          `${fieldErrors}\n${errorsToAdd.join('\n')}`
+          `${fieldErrors}\n${errorsToAdd.join('\n')}`.trim()
         );
       }
 
