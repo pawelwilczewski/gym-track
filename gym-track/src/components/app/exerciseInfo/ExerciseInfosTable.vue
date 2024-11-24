@@ -11,7 +11,9 @@ const exerciseInfos: Ref<GetExerciseInfoResponse[] | undefined> =
 
 const update: () => Promise<void> = async () => {
   const response = await apiClient.get('/api/v1/exerciseInfos');
-  if (!ErrorHandler.forResponse(response).with(toastErrorHandler).handle()) {
+  if (
+    !ErrorHandler.forResponse(response).withFull(toastErrorHandler).handle()
+  ) {
     return;
   }
 

@@ -29,8 +29,8 @@ const onSubmit = form.handleSubmit(async values => {
 
   if (
     !ErrorHandler.forResponse(response)
-      .with(formErrorHandler, form)
-      .with(toastErrorHandler)
+      .withPartial(formErrorHandler, form)
+      .withFull(toastErrorHandler)
       .handle()
   ) {
     return;

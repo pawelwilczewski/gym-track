@@ -33,8 +33,8 @@ const onSubmit = form.handleSubmit(async values => {
   const response = await apiClient.post('/api/v1/exerciseInfos', formData);
   if (
     !ErrorHandler.forResponse(response)
-      .with(formErrorHandler, form)
-      .with(toastErrorHandler)
+      .withPartial(formErrorHandler, form)
+      .withFull(toastErrorHandler)
       .handle()
   ) {
     return;

@@ -2,8 +2,15 @@ import { toast } from '@/components/ui/toast';
 import { ResponseResult } from './ResponseResult';
 import { match, P } from 'ts-pattern';
 import { FormContext, Path } from 'vee-validate';
+import {
+  FullyHandledErrorInfo,
+  HandlerType,
+  PartiallyHandledErrorInfo,
+} from './ErrorHandler';
 
-export function toastErrorHandler(result: ResponseResult): boolean {
+export function toastErrorHandler(
+  result: ResponseResult
+): FullyHandledErrorInfo {
   match(result)
     .with({ type: 'success' }, () => {})
     .with({ type: 'empty' }, () =>
@@ -31,13 +38,13 @@ export function toastErrorHandler(result: ResponseResult): boolean {
     })
     .exhaustive();
 
-  return true;
+  return { type: HandlerType.Full };
 }
 
 export function formErrorHandler(
   result: ResponseResult,
   form: FormContext
-): boolean {
+): PartiallyHandledErrorInfo {
   let handled: boolean = false;
 
   match(result)
@@ -54,5 +61,8 @@ export function formErrorHandler(
       handled = true;
     });
 
-  return handled;
+  return {
+    type: HandlerType.Partial,
+    wasHandled: handled,
+  };
 }

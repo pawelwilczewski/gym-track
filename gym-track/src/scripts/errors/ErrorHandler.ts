@@ -2,15 +2,20 @@ import { AxiosResponse } from 'axios';
 import { ResponseResult } from './ResponseResult';
 import { responseToResult } from './Converters';
 
-export class ErrorHandler {
+export class ErrorHandler
+  implements IPartiallyHandledErrorHandler, IFullyHandledErrorHandler
+{
   private result: ResponseResult;
-  private handlers: [ErrorHandlerDelegate<any>, any][] = [];
+  private handlers: [
+    PartialErrorHandlerDelegate<any> | FullErrorHandlerDelegate<any>,
+    any,
+  ][] = [];
 
-  static forResult(result: ResponseResult): ErrorHandler {
+  static forResult(result: ResponseResult): IPartiallyHandledErrorHandler {
     return new ErrorHandler(result);
   }
 
-  static forResponse(response: AxiosResponse): ErrorHandler {
+  static forResponse(response: AxiosResponse): IPartiallyHandledErrorHandler {
     return new ErrorHandler(responseToResult(response));
   }
 
@@ -18,33 +23,72 @@ export class ErrorHandler {
     this.result = result;
   }
 
-  public with<TData = void>(
-    handler: ErrorHandlerDelegate<TData>,
+  public withPartial<TData = void>(
+    handler: PartialErrorHandlerDelegate<TData>,
     data?: TData
-  ): ErrorHandler {
+  ): IPartiallyHandledErrorHandler {
     this.handlers.push([handler, data]);
     return this;
   }
 
-  /**
-   * @returns Whether result was success.
-   * @throws `Error` if response result was not handled (adjust handlers to cover all cases).
-   */
+  public withFull<TData = void>(
+    handler: FullErrorHandlerDelegate<TData>,
+    data?: TData
+  ): IFullyHandledErrorHandler {
+    this.handlers.push([handler, data]);
+    return this;
+  }
+
   public handle(): boolean {
-    const wasHandled = this.handlers.some(handlerWithData =>
-      handlerWithData[0](this.result, handlerWithData[1])
-    );
+    const wasHandled = this.handlers.some(([handler, data]) => {
+      const result = handler(this.result, data);
+      return result.type == HandlerType.Full || result.wasHandled;
+    });
 
     if (!wasHandled) {
-      throw new UnhandledError('Unhandled response result error.');
+      throw new UnhandledResultError('Unhandled response result error.');
     }
 
     return this.result.type === 'success';
   }
 }
 
-export type ErrorHandlerDelegate<TData = void> = TData extends void
-  ? (result: ResponseResult) => boolean
-  : (result: ResponseResult, data: TData) => boolean;
+export interface IPartiallyHandledErrorHandler {
+  withPartial<TData = void>(
+    handler: PartialErrorHandlerDelegate<TData>,
+    data?: TData
+  ): IPartiallyHandledErrorHandler;
 
-export class UnhandledError extends Error {}
+  withFull<TData = void>(
+    handler: FullErrorHandlerDelegate<TData>,
+    data?: TData
+  ): IFullyHandledErrorHandler;
+}
+
+export interface IFullyHandledErrorHandler {
+  handle(): boolean;
+}
+
+export enum HandlerType {
+  Partial,
+  Full,
+}
+
+export type PartiallyHandledErrorInfo = {
+  type: HandlerType.Partial;
+  wasHandled: boolean;
+};
+
+export type FullyHandledErrorInfo = {
+  type: HandlerType.Full;
+};
+
+export type PartialErrorHandlerDelegate<TData = void> = TData extends void
+  ? (result: ResponseResult) => PartiallyHandledErrorInfo
+  : (result: ResponseResult, data: TData) => PartiallyHandledErrorInfo;
+
+export type FullErrorHandlerDelegate<TData = void> = TData extends void
+  ? (result: ResponseResult) => FullyHandledErrorInfo
+  : (result: ResponseResult, data: TData) => FullyHandledErrorInfo;
+
+export class UnhandledResultError extends Error {}
