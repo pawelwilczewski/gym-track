@@ -6,10 +6,7 @@ export class ErrorHandler
   implements IPartiallyHandledErrorHandler, IFullyHandledErrorHandler
 {
   private result: ResponseResult;
-  private handlers: [
-    PartialErrorHandlerDelegate<any> | FullErrorHandlerDelegate<any>,
-    any,
-  ][] = [];
+  private errorHandled = false;
 
   static forResult(result: ResponseResult): IPartiallyHandledErrorHandler {
     return new ErrorHandler(result);
@@ -23,50 +20,56 @@ export class ErrorHandler
     this.result = result;
   }
 
-  public withPartial<TData = void>(
+  public handlePartially<TData = void>(
     handler: PartialErrorHandlerDelegate<TData>,
     data?: TData
   ): IPartiallyHandledErrorHandler {
-    this.handlers.push([handler, data]);
+    if (this.errorHandled) {
+      return this;
+    }
+
+    const result = handler(this.result, data!);
+    this.errorHandled = result.wasHandled;
     return this;
   }
 
-  public withFull<TData = void>(
+  public handleFully<TData = void>(
     handler: FullErrorHandlerDelegate<TData>,
     data?: TData
   ): IFullyHandledErrorHandler {
-    this.handlers.push([handler, data]);
+    if (this.errorHandled) {
+      return this;
+    }
+
+    handler(this.result, data!);
+    this.errorHandled = true;
     return this;
   }
 
-  public handle(): boolean {
-    const wasHandled = this.handlers.some(([handler, data]) => {
-      const result = handler(this.result, data);
-      return result.type == HandlerType.Full || result.wasHandled;
-    });
-
-    if (!wasHandled) {
-      throw new UnhandledResultError('Unhandled response result error.');
-    }
-
+  public wasSuccess(): boolean {
     return this.result.type === 'success';
+  }
+
+  public wasError(): boolean {
+    return !this.wasSuccess();
   }
 }
 
 export interface IPartiallyHandledErrorHandler {
-  withPartial<TData = void>(
+  handlePartially<TData = void>(
     handler: PartialErrorHandlerDelegate<TData>,
     data?: TData
   ): IPartiallyHandledErrorHandler;
 
-  withFull<TData = void>(
+  handleFully<TData = void>(
     handler: FullErrorHandlerDelegate<TData>,
     data?: TData
   ): IFullyHandledErrorHandler;
 }
 
 export interface IFullyHandledErrorHandler {
-  handle(): boolean;
+  wasSuccess(): boolean;
+  wasError(): boolean;
 }
 
 export enum HandlerType {

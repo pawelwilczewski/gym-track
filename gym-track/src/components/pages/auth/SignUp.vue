@@ -28,10 +28,10 @@ const onSubmit = form.handleSubmit(async values => {
   });
 
   if (
-    !ErrorHandler.forResponse(response)
-      .withPartial(formErrorHandler, form)
-      .withFull(toastErrorHandler)
-      .handle()
+    ErrorHandler.forResponse(response)
+      .handlePartially(formErrorHandler, form)
+      .handleFully(toastErrorHandler)
+      .wasError()
   ) {
     return;
   }

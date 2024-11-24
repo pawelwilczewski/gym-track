@@ -36,6 +36,13 @@ export function toastErrorHandler(
         });
       });
     })
+    .with({ type: 'auth' }, () => {
+      toast({
+        title: 'Unauthenticated',
+        description: 'Log in before proceeding.',
+        variant: 'destructive',
+      });
+    })
     .exhaustive();
 
   return { type: HandlerType.Full };
@@ -64,5 +71,26 @@ export function formErrorHandler(
   return {
     type: HandlerType.Partial,
     wasHandled: handled,
+  };
+}
+
+export function invalidCredentialsErrorHandler(
+  result: ResponseResult
+): PartiallyHandledErrorInfo {
+  if (result.type === 'auth') {
+    toast({
+      title: 'Error',
+      description: 'Invalid username or password.',
+      variant: 'destructive',
+    });
+    return {
+      type: HandlerType.Partial,
+      wasHandled: true,
+    };
+  }
+
+  return {
+    type: HandlerType.Partial,
+    wasHandled: false,
   };
 }

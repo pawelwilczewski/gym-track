@@ -16,7 +16,10 @@ import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
 import { logInRequestSchema } from '@/scripts/schema/Schemas';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
+import {
+  invalidCredentialsErrorHandler,
+  toastErrorHandler,
+} from '@/scripts/errors/Handlers';
 
 const form = useForm({
   validationSchema: logInRequestSchema,
@@ -32,10 +35,10 @@ const onSubmit = form.handleSubmit(async values => {
   );
 
   if (
-    !ErrorHandler.forResponse(response)
-      .withPartial(formErrorHandler, form)
-      .withFull(toastErrorHandler)
-      .handle()
+    ErrorHandler.forResponse(response)
+      .handlePartially(invalidCredentialsErrorHandler)
+      .handleFully(toastErrorHandler)
+      .wasError()
   ) {
     return;
   }

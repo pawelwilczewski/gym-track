@@ -9,12 +9,6 @@ export function responseToResult(response: AxiosResponse): ResponseResult {
   }
 
   switch (response.status) {
-    case 404: {
-      return { type: 'message', message: 'Asset not found.' };
-    }
-    case 500: {
-      return { type: 'message', message: 'Error processing request.' };
-    }
     case 400: {
       if (!response.data.errors) {
         return { type: 'message', message: 'Bad request submitted.' };
@@ -44,6 +38,15 @@ export function responseToResult(response: AxiosResponse): ResponseResult {
           error,
         })),
       };
+    }
+    case 401: {
+      return { type: 'auth' };
+    }
+    case 404: {
+      return { type: 'message', message: 'Asset not found.' };
+    }
+    case 500: {
+      return { type: 'message', message: 'Error processing request.' };
     }
   }
 

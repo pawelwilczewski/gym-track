@@ -2,7 +2,8 @@ export type ResponseResult =
   | ISuccess
   | IEmptyError
   | IErrorWithMessage
-  | IValidationError;
+  | IValidationError
+  | IAuthError;
 
 export interface ISuccess {
   type: 'success';
@@ -25,4 +26,8 @@ export interface IInvalidField {
 export interface IValidationError {
   type: 'validation';
   errors: IInvalidField[];
+}
+
+export interface IAuthError {
+  type: 'auth';
 }
