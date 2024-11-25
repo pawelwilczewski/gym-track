@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
-import WorkoutsTable from '@/components/app/workout/WorkoutsTable.vue';
+import WorkoutsList from '@/components/app/workout/WorkoutsList.vue';
 import { Ref, ref } from 'vue';
 
-const workoutsTable: Ref<typeof WorkoutsTable | undefined> = ref(undefined);
+const workoutsList: Ref<typeof WorkoutsList | undefined> = ref(undefined);
 const handleWorkoutCreated: () => Promise<void> = async () => {
-  await workoutsTable.value?.update();
+  await workoutsList.value?.update();
 };
 </script>
 
@@ -16,7 +16,7 @@ const handleWorkoutCreated: () => Promise<void> = async () => {
       <section>
         <h1 class="mb-6">Your Workouts</h1>
         <Suspense>
-          <WorkoutsTable ref="workoutsTable" />
+          <WorkoutsList ref="workoutsList" />
         </Suspense>
       </section>
     </div>

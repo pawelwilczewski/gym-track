@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import CreateExerciseInfo from '@/components/app/exerciseInfo/CreateExerciseInfo.vue';
-import ExerciseInfosTable from '@/components/app/exerciseInfo/ExerciseInfosTable.vue';
+import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import { ref, Ref } from 'vue';
 
-const exercisesTable: Ref<typeof ExerciseInfosTable | undefined> =
+const exerciseInfosList: Ref<typeof ExerciseInfosList | undefined> =
   ref(undefined);
 const handleExerciseInfosCreated: () => Promise<void> = async () => {
-  await exercisesTable.value?.update();
+  await exerciseInfosList.value?.update();
 };
 </script>
 
@@ -17,7 +17,7 @@ const handleExerciseInfosCreated: () => Promise<void> = async () => {
       <section>
         <h1 class="mb-6">Your Exercises</h1>
         <Suspense>
-          <ExerciseInfosTable ref="exercisesTable" />
+          <ExerciseInfosList ref="exerciseInfosList" />
         </Suspense>
       </section>
     </div>
