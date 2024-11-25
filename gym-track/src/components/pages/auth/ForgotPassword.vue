@@ -14,7 +14,7 @@ import Input from '@/components/ui/input/Input.vue';
 import FormDescription from '@/components/ui/form/FormDescription.vue';
 import { Mail } from 'lucide-vue-next';
 import { Ref, ref } from 'vue';
-import Countdown from '@/components/Countdown.vue';
+import Countdown from '@/components/app/misc/Countdown.vue';
 import { forgotPasswordSchema } from '@/scripts/schema/Schemas';
 
 const form = useForm({
