@@ -21,6 +21,7 @@ internal sealed class GetWorkouts : IEndpoint
 			.Where(workout => workout.Users.Count <= 0 || isAdmin || workout.Users.Any(user => user.UserId == userId))
 			.AsNoTracking();
 		var workoutsResponse = workouts.Select(workout => new GetWorkoutResponse(
+			workout.Id.Value,
 			workout.Name.ToString(),
 			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index.IntValue)).ToList()));
 		return TypedResults.Ok(await workoutsResponse

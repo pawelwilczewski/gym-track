@@ -27,6 +27,7 @@ internal sealed class GetWorkout : IEndpoint
 		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
 
 		return TypedResults.Ok(new GetWorkoutResponse(
+			workout.Id.Value,
 			workout.Name.ToString(),
 			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workoutId.Value, exercise.Index.IntValue))
 				.ToList()));

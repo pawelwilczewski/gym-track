@@ -55,6 +55,7 @@ public sealed record class GetWorkoutExerciseSetResponse(
 	int Reps);
 
 public sealed record class GetWorkoutResponse(
+	Guid Id,
 	string Name,
 	List<WorkoutExerciseKey> Exercises);
 

@@ -81,6 +81,7 @@ export type GetWorkoutExerciseSetResponse = {
 };
 
 export type GetWorkoutResponse = {
+  id: UUID;
   name: string;
   exercises: WorkoutExerciseKey[];
 };
