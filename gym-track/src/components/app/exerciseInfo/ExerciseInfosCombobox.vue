@@ -36,12 +36,12 @@ function decodeSearchValue(value: string): { id: UUID; name: string } {
 }
 
 function filter(items: any[], searchPhrase: string): string[] {
+  const searchPhraseLower = searchPhrase.toLowerCase();
   return items.filter(item => {
-    console.log('filtering');
     const itemValue = decodeSearchValue(item);
     return (
-      itemValue.id === searchPhrase ||
-      itemValue.name.toLowerCase().includes(searchPhrase.toLowerCase())
+      itemValue.id.toLowerCase() === searchPhraseLower ||
+      itemValue.name.toLowerCase().includes(searchPhraseLower)
     );
   });
 }
