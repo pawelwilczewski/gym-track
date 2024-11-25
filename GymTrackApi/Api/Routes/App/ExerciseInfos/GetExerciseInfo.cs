@@ -27,6 +27,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		return TypedResults.Ok(new GetExerciseInfoResponse(
+			exerciseInfo.Id.Value,
 			exerciseInfo.Name.ToString(),
 			exerciseInfo.Description.ToString(),
 			exerciseInfo.AllowedMetricTypes,

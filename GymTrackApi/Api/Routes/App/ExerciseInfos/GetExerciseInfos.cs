@@ -21,6 +21,7 @@ internal sealed class GetExerciseInfos : IEndpoint
 			.Where(exerciseInfo => exerciseInfo.Users.Count <= 0 || isAdmin || exerciseInfo.Users.Any(user => user.UserId == userId))
 			.AsNoTracking();
 		var exerciseInfosResponse = exerciseInfos.Select(exerciseInfo => new GetExerciseInfoResponse(
+			exerciseInfo.Id.Value,
 			exerciseInfo.Name.ToString(),
 			exerciseInfo.Description.ToString(),
 			exerciseInfo.AllowedMetricTypes,

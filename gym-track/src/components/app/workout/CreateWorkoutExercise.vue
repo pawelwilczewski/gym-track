@@ -14,6 +14,7 @@ import { createWorkoutExerciseSchema } from '@/scripts/schema/Schemas';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
+import ExerciseInfosDropdown from '../exerciseInfo/ExerciseInfosCombobox.vue';
 
 const props = defineProps<{
   workout: GetWorkoutResponse;
@@ -59,6 +60,7 @@ const onSubmit = form.handleSubmit(async values => {
     @submit="onSubmit"
   >
     <h2>New Workout</h2>
+    <ExerciseInfosDropdown />
     <FormField v-slot="{ componentField }" name="exerciseInfoId">
       <FormItem>
         <FormLabel class="text-lg !text-current">Exercise Info</FormLabel>

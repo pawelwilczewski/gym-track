@@ -56,6 +56,7 @@ export type ExerciseInfoStepKey = {
 };
 
 export type GetExerciseInfoResponse = {
+  id: UUID;
   name: string;
   description: string;
   allowedMetricTypes: ExerciseMetricType;

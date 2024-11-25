@@ -34,6 +34,7 @@ public sealed record class ExerciseInfoStepKey(
 	int Index);
 
 public sealed record class GetExerciseInfoResponse(
+	Guid Id,
 	string Name,
 	string Description,
 	ExerciseMetricType AllowedMetricTypes,
