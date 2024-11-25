@@ -6,6 +6,10 @@ import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import { Ref, ref } from 'vue';
 import WorkoutExercises from './WorkoutExercises.vue';
+import Dialog from '@/components/ui/dialog/Dialog.vue';
+import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
+import DialogContent from '@/components/ui/dialog/DialogContent.vue';
+import CreateWorkoutExercise from './CreateWorkoutExercise.vue';
 
 const props = defineProps<{
   workout: GetWorkoutResponse;
@@ -38,5 +42,13 @@ const workout: Ref<GetWorkoutResponse | undefined> = ref(props.workout);
     <Button @click="deleteWorkout">Delete</Button>
     <h4>Exercises</h4>
     <WorkoutExercises :workout="workout" />
+    <Dialog>
+      <DialogTrigger>
+        <Button variant="outline">Add Exercise</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <CreateWorkoutExercise :workout="workout" />
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

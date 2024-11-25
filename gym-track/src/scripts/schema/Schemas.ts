@@ -9,6 +9,12 @@ export const createWorkoutSchema = toTypedSchema(
   })
 );
 
+export const createWorkoutExerciseSchema = toTypedSchema(
+  z.object({
+    exerciseInfoId: z.string().uuid(),
+  })
+);
+
 export const createExerciseInfoSchema = toTypedSchema(
   z.object({
     name: z.string().trim().min(1),
