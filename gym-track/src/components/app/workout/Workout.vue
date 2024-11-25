@@ -10,6 +10,7 @@ import Dialog from '@/components/ui/dialog/Dialog.vue';
 import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
 import DialogContent from '@/components/ui/dialog/DialogContent.vue';
 import CreateWorkoutExercise from './CreateWorkoutExercise.vue';
+import { DialogTitle } from 'radix-vue';
 
 const props = defineProps<{
   workout: GetWorkoutResponse;
@@ -47,6 +48,7 @@ const workout: Ref<GetWorkoutResponse | undefined> = ref(props.workout);
         <Button variant="outline">Add Exercise</Button>
       </DialogTrigger>
       <DialogContent>
+        <DialogTitle>Create Workout Exercise</DialogTitle>
         <CreateWorkoutExercise :workout="workout" />
       </DialogContent>
     </Dialog>

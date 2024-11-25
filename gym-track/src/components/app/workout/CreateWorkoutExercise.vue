@@ -55,11 +55,7 @@ const onSubmit = form.handleSubmit(async values => {
 </script>
 
 <template>
-  <form
-    class="mx-auto border border-border rounded-xl max-w-sm flex flex-col gap-6 p-8"
-    @submit="onSubmit"
-  >
-    <h2>New Workout</h2>
+  <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
     <ExerciseInfosDropdown />
     <FormField v-slot="{ componentField }" name="exerciseInfoId">
       <FormItem>
@@ -70,6 +66,6 @@ const onSubmit = form.handleSubmit(async values => {
         <FormMessage />
       </FormItem>
     </FormField>
-    <Button class="mx-auto px-8 mt-4" type="submit">Create</Button>
+    <Button class="mx-auto mt-4" type="submit">Create</Button>
   </form>
 </template>
