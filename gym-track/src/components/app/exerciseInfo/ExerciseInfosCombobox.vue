@@ -7,7 +7,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-
 import {
   Popover,
   PopoverContent,
@@ -18,11 +17,21 @@ import { cn } from '@/lib/utils';
 import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
 import { UUID } from 'crypto';
 import { Check, ChevronsUpDown } from 'lucide-vue-next';
-import { Ref, ref } from 'vue';
+import { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem';
+import { AcceptableValue } from 'node_modules/radix-vue/dist/shared/types';
+import { computed, ref } from 'vue';
 
 const emit = defineEmits<{
   selected: [UUID];
 }>();
+
+const isOpen = ref(false);
+const selectedValueRaw = ref('');
+const selectedValue = computed(() =>
+  selectedValueRaw.value.length > 0
+    ? decodeSearchValue(selectedValueRaw.value).id
+    : undefined
+);
 
 const { exerciseInfos, update } = useExerciseInfos();
 
@@ -46,9 +55,13 @@ function filter(items: any[], searchPhrase: string): string[] {
   });
 }
 
-const open = ref(false);
-const selectedValueRaw = ref('');
-const selectedValue: Ref<UUID | undefined> = ref(undefined);
+function handleSelected(event: SelectEvent<AcceptableValue>): void {
+  if (typeof event.detail.value === 'string') {
+    selectedValueRaw.value = event.detail.value;
+    emit('selected', selectedValue.value!);
+  }
+  isOpen.value = false;
+}
 
 defineExpose({
   selectedValue,
@@ -58,12 +71,12 @@ await update();
 </script>
 
 <template>
-  <Popover v-model:open="open" v-if="exerciseInfos">
+  <Popover v-model:open="isOpen" v-if="exerciseInfos">
     <PopoverTrigger as-child>
       <Button
         variant="outline"
         role="combobox"
-        :aria-expanded="open"
+        :aria-expanded="isOpen"
         class="w-[200px] justify-between"
       >
         {{
@@ -86,16 +99,7 @@ await update();
             v-for="exerciseInfo in exerciseInfos"
             :key="exerciseInfo.id"
             :value="encodeSearchValue(exerciseInfo)"
-            @select="
-              event => {
-                if (typeof event.detail.value === 'string') {
-                  selectedValueRaw = event.detail.value;
-                  selectedValue = decodeSearchValue(selectedValueRaw).id;
-                  emit('selected', selectedValue);
-                }
-                open = false;
-              }
-            "
+            @select="handleSelected"
           >
             {{ exerciseInfo.name }}
             <Check
