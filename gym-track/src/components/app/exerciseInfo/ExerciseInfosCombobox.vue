@@ -83,11 +83,8 @@ await updateEntries();
         class="w-[200px] justify-between"
       >
         {{
-          selectedValueRaw
-            ? exerciseInfos.find(
-                exerciseInfo =>
-                  encodeSearchValue(exerciseInfo) === selectedValueRaw
-              )?.name
+          selectedValueRaw.length > 0
+            ? decodeSearchValue(selectedValueRaw).name
             : 'Select exercise...'
         }}
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
