@@ -21,7 +21,7 @@ import { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem';
 import { AcceptableValue } from 'node_modules/radix-vue/dist/shared/types';
 import { ref } from 'vue';
 
-const model = defineModel();
+const model = defineModel<UUID | undefined>();
 
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
