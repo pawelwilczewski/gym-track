@@ -31,25 +31,25 @@ const isOpen = ref(false);
 const selectedValueRaw = ref('');
 const selectedValue = computed(() =>
   selectedValueRaw.value.length > 0
-    ? decodeSearchValue(selectedValueRaw.value).id
+    ? decodeSelectedValue(selectedValueRaw.value).id
     : undefined
 );
 
 const { exerciseInfos, update: updateEntries } = useExerciseInfos();
 
-function encodeSearchValue(value: GetExerciseInfoResponse): string {
+function encodeSelectedValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
 }
 
-function decodeSearchValue(value: string): { id: UUID; name: string } {
+function decodeSelectedValue(value: string): { id: UUID; name: string } {
   const split = value.split('|', 2);
   return { id: split[0] as UUID, name: split[1] };
 }
 
-function filter(items: any[], searchPhrase: string): string[] {
+function filterEntriesShown(entries: any[], searchPhrase: string): string[] {
   const searchPhraseLower = searchPhrase.toLowerCase();
-  return items.filter(item => {
-    const itemValue = decodeSearchValue(item);
+  return entries.filter(entry => {
+    const itemValue = decodeSelectedValue(entry);
     return (
       itemValue.id.toLowerCase() === searchPhraseLower ||
       itemValue.name.toLowerCase().includes(searchPhraseLower)
@@ -84,21 +84,21 @@ await updateEntries();
       >
         {{
           selectedValueRaw.length > 0
-            ? decodeSearchValue(selectedValueRaw).name
+            ? decodeSelectedValue(selectedValueRaw).name
             : 'Select exercise...'
         }}
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-[200px] p-0">
-      <Command :filterFunction="filter">
+      <Command :filterFunction="filterEntriesShown">
         <CommandInput class="h-9" placeholder="Search exercises..." />
         <CommandEmpty>No exercises found.</CommandEmpty>
         <CommandList>
           <CommandItem
             v-for="exerciseInfo in exerciseInfos"
             :key="exerciseInfo.id"
-            :value="encodeSearchValue(exerciseInfo)"
+            :value="encodeSelectedValue(exerciseInfo)"
             @select="handleSelected"
           >
             {{ exerciseInfo.name }}
@@ -106,7 +106,7 @@ await updateEntries();
               :class="
                 cn(
                   'ml-auto h-4 w-4',
-                  selectedValueRaw === encodeSearchValue(exerciseInfo)
+                  selectedValueRaw === encodeSelectedValue(exerciseInfo)
                     ? 'opacity-100'
                     : 'opacity-0'
                 )
