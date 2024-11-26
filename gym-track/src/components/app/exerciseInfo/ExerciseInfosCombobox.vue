@@ -19,22 +19,12 @@ import { UUID } from 'crypto';
 import { Check, ChevronsUpDown } from 'lucide-vue-next';
 import { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem';
 import { AcceptableValue } from 'node_modules/radix-vue/dist/shared/types';
-import { computed, ref } from 'vue';
-
-const emit = defineEmits<{
-  selected: [UUID];
-}>();
+import { ref } from 'vue';
 
 const model = defineModel();
 
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
-const selectedValue = computed(() =>
-  selectedValueRaw.value.length > 0
-    ? decodeSelectedValue(selectedValueRaw.value).id
-    : undefined
-);
-
 const { exerciseInfos, update: updateEntries } = useExerciseInfos();
 
 function encodeSelectedValue(value: GetExerciseInfoResponse): string {
@@ -44,6 +34,13 @@ function encodeSelectedValue(value: GetExerciseInfoResponse): string {
 function decodeSelectedValue(value: string): { id: UUID; name: string } {
   const split = value.split('|', 2);
   return { id: split[0] as UUID, name: split[1] };
+}
+
+function decodeSelectedValueOrDefault<TAlternative>(
+  value: string,
+  alternative: TAlternative
+): { id: UUID; name: string } | TAlternative {
+  return value.length > 0 ? decodeSelectedValue(value) : alternative;
 }
 
 function filterEntriesShown(entries: any[], searchPhrase: string): string[] {
@@ -60,15 +57,13 @@ function filterEntriesShown(entries: any[], searchPhrase: string): string[] {
 function handleSelected(event: SelectEvent<AcceptableValue>): void {
   if (typeof event.detail.value === 'string') {
     selectedValueRaw.value = event.detail.value;
-    model.value = selectedValue.value;
-    emit('selected', selectedValue.value!);
+    model.value = decodeSelectedValueOrDefault(
+      selectedValueRaw.value,
+      undefined
+    )?.id;
   }
   isOpen.value = false;
 }
-
-defineExpose({
-  selectedValue,
-});
 
 await updateEntries();
 </script>
