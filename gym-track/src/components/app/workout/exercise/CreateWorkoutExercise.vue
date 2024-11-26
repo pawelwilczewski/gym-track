@@ -28,10 +28,7 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const index =
-    props.workout.exercises.length > 0
-      ? Math.max(...props.workout.exercises.map(key => key.index)) + 1
-      : 0;
+  const index = getNextExerciseIndex();
   const response = await apiClient.post(
     `/api/v1/workouts/${props.workout.id}/exercises`,
     {
@@ -51,6 +48,12 @@ const onSubmit = form.handleSubmit(async values => {
 
   emit('created');
 });
+
+function getNextExerciseIndex(): number {
+  return props.workout.exercises.length > 0
+    ? Math.max(...props.workout.exercises.map(key => key.index)) + 1
+    : 0;
+}
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { z } from 'zod';
 import { ExerciseMetricType } from './Types';
-import { zodEnumFlagsSchema } from './ZodUtils';
+import { zodEnumFlagsAsStringArray } from './ZodUtils';
 
 export const createWorkoutSchema = toTypedSchema(
   z.object({
@@ -19,7 +19,7 @@ export const createExerciseInfoSchema = toTypedSchema(
   z.object({
     name: z.string().trim().min(1),
     description: z.string().trim().min(1),
-    allowedMetricTypes: zodEnumFlagsSchema(ExerciseMetricType),
+    allowedMetricTypes: zodEnumFlagsAsStringArray(ExerciseMetricType),
     thumbnailImage: z
       .instanceof(File, { message: 'Thumbnail is required.' })
       .refine(file => file.size > 0)

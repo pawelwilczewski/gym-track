@@ -14,6 +14,7 @@ import { createExerciseInfoSchema } from '@/scripts/schema/Schemas';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 
 const form = useForm({
   validationSchema: createExerciseInfoSchema,
@@ -75,7 +76,7 @@ const onSubmit = form.handleSubmit(async values => {
           >Allowed Metric Types</FormLabel
         >
         <FormControl>
-          <Input v-bind="componentField" type="number" />
+          <ExerciseMetricTypeToggleGroup v-bind="componentField" />
         </FormControl>
         <FormMessage />
       </FormItem>
