@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
-import WorkoutExercise from './WorkoutExercise.vue';
+import WorkoutExercise from '@/components/app/workout/exercise/WorkoutExercise.vue';
 
 const props = defineProps<{
   workout: GetWorkoutResponse;

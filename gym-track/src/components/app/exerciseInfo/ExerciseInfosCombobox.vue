@@ -25,6 +25,8 @@ const emit = defineEmits<{
   selected: [UUID];
 }>();
 
+const model = defineModel();
+
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
 const selectedValue = computed(() =>
@@ -33,7 +35,7 @@ const selectedValue = computed(() =>
     : undefined
 );
 
-const { exerciseInfos, update } = useExerciseInfos();
+const { exerciseInfos, update: updateEntries } = useExerciseInfos();
 
 function encodeSearchValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
@@ -58,6 +60,7 @@ function filter(items: any[], searchPhrase: string): string[] {
 function handleSelected(event: SelectEvent<AcceptableValue>): void {
   if (typeof event.detail.value === 'string') {
     selectedValueRaw.value = event.detail.value;
+    model.value = selectedValue.value;
     emit('selected', selectedValue.value!);
   }
   isOpen.value = false;
@@ -67,7 +70,7 @@ defineExpose({
   selectedValue,
 });
 
-await update();
+await updateEntries();
 </script>
 
 <template>

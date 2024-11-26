@@ -5,11 +5,11 @@ import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import { Ref, ref } from 'vue';
-import WorkoutExercises from './WorkoutExercises.vue';
+import WorkoutExercises from '@/components/app/workout/exercise/WorkoutExercises.vue';
 import Dialog from '@/components/ui/dialog/Dialog.vue';
 import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
 import DialogContent from '@/components/ui/dialog/DialogContent.vue';
-import CreateWorkoutExercise from './CreateWorkoutExercise.vue';
+import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import { DialogTitle } from 'radix-vue';
 
 const props = defineProps<{
