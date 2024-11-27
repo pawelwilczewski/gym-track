@@ -11,14 +11,15 @@ import DialogContent from '@/components/ui/dialog/DialogContent.vue';
 import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import { DialogTitle } from 'radix-vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
-import { UUID } from 'crypto';
 
 const props = defineProps<{
-  workoutId: UUID;
+  initialWorkout: GetWorkoutResponse;
 }>();
 
 async function update(): Promise<void> {
-  const response = await apiClient.get(`/api/v1/workouts/${props.workoutId}`);
+  const response = await apiClient.get(
+    `/api/v1/workouts/${props.initialWorkout.id}`
+  );
 
   if (
     ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
@@ -35,7 +36,7 @@ async function remove(): Promise<void> {
     return;
   }
   const response = await apiClient.delete(
-    `/api/v1/workouts/${props.workoutId}`
+    `/api/v1/workouts/${props.initialWorkout.id}`
   );
   if (
     ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
@@ -50,11 +51,9 @@ async function handleWorkoutExerciseCreated(): Promise<void> {
   update();
 }
 
-const workout = ref<GetWorkoutResponse | undefined>(undefined);
+const workout = ref<GetWorkoutResponse | undefined>(props.initialWorkout);
 const createExerciseDialogOpen = ref<boolean>(false);
 const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
-
-update();
 </script>
 
 <template>

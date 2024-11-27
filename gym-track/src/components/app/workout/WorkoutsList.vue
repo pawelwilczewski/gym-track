@@ -32,7 +32,7 @@ update();
     <Workout
       v-for="workout in workouts"
       :key="workout.id"
-      :workoutId="workout.id"
+      :initialWorkout="workout"
     />
   </div>
 </template>
