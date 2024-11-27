@@ -5,7 +5,6 @@ import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import { ref } from 'vue';
-import Dialog from '@/components/ui/dialog/Dialog.vue';
 import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '../misc/ButtonDialog.vue';
@@ -63,23 +62,21 @@ const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
     class="mx-auto border border-border rounded-xl w-80 flex flex-col gap-6 p-8"
   >
     <h3>{{ workout.name }}</h3>
-    <Button @click="handleDelete">Delete</Button>
     <h4>Exercises</h4>
     <WorkoutExercisesList
       :getExerciseKeys="() => workout?.exercises ?? []"
       ref="exercisesList"
     />
-    <Dialog v-model:open="createExerciseDialogOpen">
-      <ButtonDialog
-        buttonText="Add Exercise"
-        dialogTitle="Create Workout Exercise"
-        v-model:open="createExerciseDialogOpen"
-      >
-        <CreateWorkoutExercise
-          :workout="workout"
-          @created="handleWorkoutExerciseCreated"
-        />
-      </ButtonDialog>
-    </Dialog>
+    <ButtonDialog
+      buttonText="Add Exercise"
+      dialogTitle="Create Workout Exercise"
+      v-model:open="createExerciseDialogOpen"
+    >
+      <CreateWorkoutExercise
+        :workout="workout"
+        @created="handleWorkoutExerciseCreated"
+      />
+    </ButtonDialog>
+    <Button @click="handleDelete">Delete</Button>
   </div>
 </template>
