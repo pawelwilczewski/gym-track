@@ -15,9 +15,11 @@ const props = defineProps<{
 }>();
 
 async function update(): Promise<void> {
-  const response = await apiClient.get(
-    `/api/v1/workouts/${props.initialWorkout.id}`
-  );
+  if (!workout.value) {
+    return;
+  }
+
+  const response = await apiClient.get(`/api/v1/workouts/${workout.value.id}`);
 
   if (
     ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
@@ -29,12 +31,13 @@ async function update(): Promise<void> {
   exercisesList.value?.update();
 }
 
-async function remove(): Promise<void> {
-  if (!workout) {
+async function handleDelete(): Promise<void> {
+  if (!workout.value) {
     return;
   }
+
   const response = await apiClient.delete(
-    `/api/v1/workouts/${props.initialWorkout.id}`
+    `/api/v1/workouts/${workout.value.id}`
   );
   if (
     ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
@@ -60,7 +63,7 @@ const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
     class="mx-auto border border-border rounded-xl w-80 flex flex-col gap-6 p-8"
   >
     <h3>{{ workout.name }}</h3>
-    <Button @click="remove">Delete</Button>
+    <Button @click="handleDelete">Delete</Button>
     <h4>Exercises</h4>
     <WorkoutExercisesList
       :getExerciseKeys="() => workout?.exercises ?? []"
