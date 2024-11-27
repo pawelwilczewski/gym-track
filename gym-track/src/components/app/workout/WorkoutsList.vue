@@ -4,11 +4,11 @@ import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse } from '@/scripts/schema/Types';
-import { Ref, ref } from 'vue';
+import { ref } from 'vue';
 
-const workouts: Ref<GetWorkoutResponse[] | undefined> = ref(undefined);
+const workouts = ref<GetWorkoutResponse[]>([]);
 
-const update: () => Promise<void> = async () => {
+async function update(): Promise<void> {
   const response = await apiClient.get('/api/v1/workouts');
 
   if (
@@ -18,17 +18,21 @@ const update: () => Promise<void> = async () => {
   }
 
   workouts.value = response.data;
-};
+}
 
 defineExpose({
   update,
 });
 
-await update();
+update();
 </script>
 
 <template>
-  <div v-if="workouts" class="flex flex-col gap-4">
-    <Workout v-for="workout in workouts" :key="workout.id" :workout="workout" />
+  <div class="flex flex-col gap-4">
+    <Workout
+      v-for="workout in workouts"
+      :key="workout.id"
+      :workoutId="workout.id"
+    />
   </div>
 </template>

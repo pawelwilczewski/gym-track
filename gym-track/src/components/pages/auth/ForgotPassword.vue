@@ -13,7 +13,7 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import FormDescription from '@/components/ui/form/FormDescription.vue';
 import { Mail } from 'lucide-vue-next';
-import { Ref, ref } from 'vue';
+import { ref } from 'vue';
 import Countdown from '@/components/app/misc/Countdown.vue';
 import { forgotPasswordSchema } from '@/scripts/schema/Schemas';
 
@@ -23,7 +23,7 @@ const form = useForm({
 
 const resubmitTime: number = 60;
 
-const countdown: Ref<typeof Countdown | undefined> = ref(undefined);
+const countdown = ref<typeof Countdown | undefined>(undefined);
 const sendEmailEnabled = ref(true);
 
 const onSubmit = form.handleSubmit(values => {

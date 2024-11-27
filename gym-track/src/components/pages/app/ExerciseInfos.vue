@@ -2,10 +2,9 @@
 import CreateExerciseInfo from '@/components/app/exerciseInfo/CreateExerciseInfo.vue';
 import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 
-const exerciseInfosList: Ref<typeof ExerciseInfosList | undefined> =
-  ref(undefined);
+const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
 const handleExerciseInfosCreated: () => Promise<void> = async () => {
   await exerciseInfosList.value?.update();
 };
@@ -16,9 +15,7 @@ const handleExerciseInfosCreated: () => Promise<void> = async () => {
     <div>
       <section>
         <h1 class="mb-6">Your Exercises</h1>
-        <Suspense>
-          <ExerciseInfosList ref="exerciseInfosList" />
-        </Suspense>
+        <ExerciseInfosList ref="exerciseInfosList" />
       </section>
     </div>
     <div class="mt-10">

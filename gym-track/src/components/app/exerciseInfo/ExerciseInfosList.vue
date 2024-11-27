@@ -3,7 +3,7 @@ import ExerciseInfo from './ExerciseInfo.vue';
 import { useExerciseInfos } from '@/composables/UseExerciseInfos';
 
 const { exerciseInfos, update } = useExerciseInfos();
-await update();
+update();
 </script>
 
 <template>

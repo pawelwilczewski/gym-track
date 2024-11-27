@@ -5,16 +5,13 @@ import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 
 export function useExerciseInfos(): {
-  exerciseInfos: Ref<GetExerciseInfoResponse[] | undefined>;
+  exerciseInfos: Ref<GetExerciseInfoResponse[]>;
   update: () => Promise<void>;
 } {
-  const exerciseInfos: Ref<GetExerciseInfoResponse[] | undefined> =
-    ref(undefined);
+  const exerciseInfos = ref<GetExerciseInfoResponse[]>([]);
 
   async function update(): Promise<void> {
-    const response = await apiClient.get<GetExerciseInfoResponse[]>(
-      '/api/v1/exerciseInfos'
-    );
+    const response = await apiClient.get('/api/v1/exerciseInfos');
 
     if (
       ErrorHandler.forResponse(response)
