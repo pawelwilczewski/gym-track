@@ -20,7 +20,7 @@ function handleWorkoutCreated(): void {
       dialogTitle="Create New Workout"
       v-model:open="createWorkoutDialogOpen"
     >
-      <CreateWorkout v-on:created="handleWorkoutCreated" />
+      <CreateWorkout @created="handleWorkoutCreated" />
     </ButtonDialog>
     <section>
       <h1 class="mt-10 mb-6">Your Workouts</h1>

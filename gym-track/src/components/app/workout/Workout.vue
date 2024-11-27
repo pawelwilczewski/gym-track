@@ -74,7 +74,7 @@ const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
       >
         <CreateWorkoutExercise
           :workout="workout"
-          v-on:created="handleWorkoutExerciseCreated"
+          @created="handleWorkoutExerciseCreated"
         />
       </ButtonDialog>
     </Dialog>

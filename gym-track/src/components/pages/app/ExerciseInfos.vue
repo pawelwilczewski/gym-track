@@ -20,7 +20,7 @@ const handleExerciseInfoCreated: () => Promise<void> = async () => {
       dialogTitle="Create New Exercise"
       v-model:open="createExerciseInfoDialogOpen"
     >
-      <CreateExerciseInfo v-on:created="handleExerciseInfoCreated" />
+      <CreateExerciseInfo @created="handleExerciseInfoCreated" />
     </ButtonDialog>
     <section>
       <h1 class="mb-6">Your Exercises</h1>
