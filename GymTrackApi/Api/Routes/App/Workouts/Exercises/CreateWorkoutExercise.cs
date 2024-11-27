@@ -24,10 +24,21 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 
 		var workoutIdTyped = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
+			.Include(workout => workout.Exercises)
 			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
+
+		if (workout.Exercises.FirstOrDefault(exercise => exercise.Index == index) is not null)
+		{
+			return TypedResults.ValidationProblem(
+				new Dictionary<string, string[]>
+				{
+					{ nameof(Workout.Exercise.Index), ["Duplicate workout exercise index."] }
+				});
+		}
+
 		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
 		var exerciseInfoId = new Id<ExerciseInfo>(request.ExerciseInfoId);

@@ -29,6 +29,6 @@ await update();
 
 <template>
   <div v-if="workouts" class="flex flex-col gap-4">
-    <Workout v-for="workout in workouts" :workout="workout" />
+    <Workout v-for="workout in workouts" :key="workout.id" :workout="workout" />
   </div>
 </template>
