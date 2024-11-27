@@ -1,25 +1,30 @@
 <script setup lang="ts">
 import CreateExerciseInfo from '@/components/app/exerciseInfo/CreateExerciseInfo.vue';
 import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.vue';
+import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import { ref } from 'vue';
 
 const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
-const handleExerciseInfosCreated: () => Promise<void> = async () => {
-  await exerciseInfosList.value?.update();
+const createExerciseInfoDialogOpen = ref(false);
+const handleExerciseInfoCreated: () => Promise<void> = async () => {
+  createExerciseInfoDialogOpen.value = false;
+  exerciseInfosList.value?.update();
 };
 </script>
 
 <template>
   <OneColumnLayout>
-    <div>
-      <section>
-        <h1 class="mb-6">Your Exercises</h1>
-        <ExerciseInfosList ref="exerciseInfosList" />
-      </section>
-    </div>
-    <div class="mt-10">
-      <CreateExerciseInfo v-on:created="handleExerciseInfosCreated" />
-    </div>
+    <ButtonDialog
+      buttonText="Create Exercise"
+      dialogTitle="Create New Exercise"
+      v-model:open="createExerciseInfoDialogOpen"
+    >
+      <CreateExerciseInfo v-on:created="handleExerciseInfoCreated" />
+    </ButtonDialog>
+    <section>
+      <h1 class="mb-6">Your Exercises</h1>
+      <ExerciseInfosList ref="exerciseInfosList" />
+    </section>
   </OneColumnLayout>
 </template>
