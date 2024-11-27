@@ -70,12 +70,12 @@ update();
 
 <template>
   <Popover v-model:open="isOpen" v-if="exerciseInfos">
-    <PopoverTrigger as-child>
+    <PopoverTrigger asChild>
       <Button
         variant="outline"
         role="combobox"
         :aria-expanded="isOpen"
-        class="w-[200px] justify-between"
+        class="w-full justify-between"
       >
         {{
           selectedValueRaw.length > 0
