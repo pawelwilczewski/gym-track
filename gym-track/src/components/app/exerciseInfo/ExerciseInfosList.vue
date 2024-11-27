@@ -4,13 +4,17 @@ import { useExerciseInfos } from '@/composables/UseExerciseInfos';
 
 const { exerciseInfos, update } = useExerciseInfos();
 update();
+
+defineExpose({
+  update,
+});
 </script>
 
 <template>
   <div v-if="exerciseInfos" class="flex flex-col gap-4">
     <ExerciseInfo
       v-for="exerciseInfo in exerciseInfos"
-      :exerciseInfo="exerciseInfo"
+      :initialExerciseInfo="exerciseInfo"
     />
   </div>
 </template>

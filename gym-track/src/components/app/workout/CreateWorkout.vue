@@ -41,11 +41,7 @@ const onSubmit = form.handleSubmit(async values => {
 </script>
 
 <template>
-  <form
-    class="mx-auto border border-border rounded-xl max-w-sm flex flex-col gap-6 p-8"
-    @submit="onSubmit"
-  >
-    <h2>New Workout</h2>
+  <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
     <FormField v-slot="{ componentField }" name="name">
       <FormItem>
         <FormLabel class="text-lg !text-current">Name</FormLabel>

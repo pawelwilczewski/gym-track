@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import WorkoutsList from '@/components/app/workout/WorkoutsList.vue';
 import { ref } from 'vue';
+import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
+import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
 
 const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
+const createWorkoutDialogOpen = ref(false);
 function handleWorkoutCreated(): void {
+  createWorkoutDialogOpen.value = false;
   workoutsList.value?.update();
 }
 </script>
 
 <template>
   <OneColumnLayout>
-    <div>
-      <section>
-        <h1 class="mb-6">Your Workouts</h1>
-        <WorkoutsList ref="workoutsList" />
-      </section>
-    </div>
-    <div class="mt-10">
+    <ButtonDialog
+      buttonText="Create Workout"
+      dialogTitle="Create New Workout"
+      v-model:open="createWorkoutDialogOpen"
+    >
       <CreateWorkout v-on:created="handleWorkoutCreated" />
-    </div>
+    </ButtonDialog>
+    <section>
+      <h1 class="mt-10 mb-6">Your Workouts</h1>
+      <WorkoutsList ref="workoutsList" />
+    </section>
   </OneColumnLayout>
 </template>
