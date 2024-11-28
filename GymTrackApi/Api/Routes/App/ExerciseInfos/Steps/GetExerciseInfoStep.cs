@@ -7,6 +7,7 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
@@ -19,12 +20,12 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		if (index < 0) return ValidationErrors.NegativeIndex();
+		if (!Index.TryCreate(index, out var indexTyped)) return ValidationErrors.NegativeIndex();
 
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
 			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
+			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == indexTyped))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");

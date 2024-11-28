@@ -3,11 +3,13 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ExerciseMetricType } from '@/scripts/schema/Types';
 import { Weight, Clock, Route } from 'lucide-vue-next';
 
+const { disabled = false } = defineProps<{ disabled?: boolean }>();
+
 const model = defineModel<string[]>();
 </script>
 
 <template>
-  <ToggleGroup type="multiple" v-model="model">
+  <ToggleGroup type="multiple" v-model="model" :disabled="disabled">
     <ToggleGroupItem
       :value="ExerciseMetricType.Weight.toString()"
       aria-label="Toggle reps"

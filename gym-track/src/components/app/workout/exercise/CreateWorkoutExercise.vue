@@ -60,7 +60,7 @@ function getNextExerciseIndex(): number {
   <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
     <FormField v-slot="{ componentField }" name="exerciseInfoId">
       <FormItem>
-        <FormLabel class="text-lg !text-current">Exercise Info</FormLabel>
+        <FormLabel class="text-lg !text-current">Exercise</FormLabel>
         <FormControl>
           <ExerciseInfosDropdown v-bind="componentField" />
         </FormControl>

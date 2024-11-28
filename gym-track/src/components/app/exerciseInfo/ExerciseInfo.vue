@@ -5,6 +5,11 @@ import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
 import { ref } from 'vue';
+import ExerciseInfoStep from './step/ExerciseInfoStep.vue';
+import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
+import { enumFlagsValueToStringArray } from '@/scripts/schema/ZodUtils';
+import ButtonDialog from '../misc/ButtonDialog.vue';
+import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -49,6 +54,13 @@ const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
   props.initialExerciseInfo
 );
 
+const createStepDialogOpen = ref(false);
+
+function handleStepCreated(): void {
+  createStepDialogOpen.value = false;
+  update();
+}
+
 defineExpose({
   update,
 });
@@ -57,21 +69,43 @@ defineExpose({
 <template>
   <div
     v-if="exerciseInfo"
-    class="mx-auto border border-border rounded-xl w-80 flex flex-col gap-6 p-8"
+    class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
   >
     <h3>{{ exerciseInfo.name }}</h3>
     <p>{{ exerciseInfo.description }}</p>
-    <div>{{ exerciseInfo.allowedMetricTypes }}</div>
-    <picture>
-      <source :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`" />
-      <img />
-    </picture>
-    <ul>
-      <li v-for="step in exerciseInfo.steps">
-        {{ step.exerciseInfoId }}
-        {{ step.index }}
-      </li>
-    </ul>
+    <div>
+      <h4 class="">Allowed Metric Types</h4>
+      <ExerciseMetricTypeToggleGroup
+        :model-value="
+          enumFlagsValueToStringArray(exerciseInfo.allowedMetricTypes)
+        "
+        :disabled="true"
+      />
+
+      <picture>
+        <source
+          :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`"
+        />
+        <img />
+      </picture>
+    </div>
+    <div>
+      <h4>Steps</h4>
+      <ul>
+        <ExerciseInfoStep v-for="step in exerciseInfo.steps" :step-key="step" />
+      </ul>
+    </div>
+    <ButtonDialog
+      buttonText="Add Step"
+      dialogTitle="Add Exercise Step"
+      v-model:open="createStepDialogOpen"
+    >
+      <CreateExerciseInfoStep
+        :exerciseInfoId="exerciseInfo.id"
+        @created="handleStepCreated"
+      />
+    </ButtonDialog>
+
     <Button @click="handleDelete">Delete</Button>
   </div>
 </template>

@@ -73,3 +73,22 @@ function calculateBitSumFromStringArray(
     }, 0);
   return bitSum;
 }
+
+function enumFlagsValueToBitValuesArray(value: number): number[] {
+  const result: number[] = [];
+  let currentBit = 1;
+
+  while (value > 0) {
+    if (value & 1) {
+      result.push(currentBit);
+    }
+    value >>= 1;
+    currentBit <<= 1;
+  }
+
+  return result;
+}
+
+export function enumFlagsValueToStringArray(value: number): string[] {
+  return enumFlagsValueToBitValuesArray(value).map(val => val.toString());
+}

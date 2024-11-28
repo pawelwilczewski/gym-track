@@ -26,14 +26,15 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
+		dataContext.ExerciseInfos.Remove(exerciseInfo);
+		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
 		var thumbnailPath = exerciseInfo.ThumbnailImage.ToString().UrlToLocalPath(fileStoragePathProvider);
 		if (Path.Exists(thumbnailPath))
 		{
 			File.Delete(thumbnailPath);
 		}
 
-		dataContext.ExerciseInfos.Remove(exerciseInfo);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		return TypedResults.NoContent();
 	}
 
