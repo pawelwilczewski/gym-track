@@ -72,29 +72,31 @@ defineExpose({
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
   >
     <h3>{{ exerciseInfo.name }}</h3>
+
+    <picture v-if="exerciseInfo.thumbnailUrl">
+      <source :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`" />
+      <img />
+    </picture>
+
     <p>{{ exerciseInfo.description }}</p>
+
     <div>
-      <h4 class="">Allowed Metric Types</h4>
+      <h4 class="mb-2">Allowed Metric Types</h4>
       <ExerciseMetricTypeToggleGroup
         :model-value="
           enumFlagsValueToStringArray(exerciseInfo.allowedMetricTypes)
         "
         :disabled="true"
       />
-
-      <picture v-if="exerciseInfo.thumbnailUrl">
-        <source
-          :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`"
-        />
-        <img />
-      </picture>
     </div>
+
     <div>
       <h4>Steps</h4>
       <ul>
         <ExerciseInfoStep v-for="step in exerciseInfo.steps" :step-key="step" />
       </ul>
     </div>
+
     <ButtonDialog
       buttonText="Add Step"
       dialogTitle="Add Exercise Step"
