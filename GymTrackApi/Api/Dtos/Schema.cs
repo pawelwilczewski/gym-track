@@ -38,7 +38,7 @@ public sealed record class GetExerciseInfoResponse(
 	string Name,
 	string Description,
 	ExerciseMetricType AllowedMetricTypes,
-	string ThumbnailUrl,
+	string? ThumbnailUrl,
 	List<ExerciseInfoStepKey> Steps);
 
 public sealed record class GetExerciseInfoStepResponse(

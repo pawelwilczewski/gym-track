@@ -60,7 +60,7 @@ export type GetExerciseInfoResponse = {
   name: string;
   description: string;
   allowedMetricTypes: ExerciseMetricType;
-  thumbnailUrl: string;
+  thumbnailUrl?: string | null;
   steps: ExerciseInfoStepKey[];
 };
 

@@ -29,7 +29,9 @@ const onSubmit = form.handleSubmit(async values => {
   formData.append('name', values.name);
   formData.append('description', values.description);
   formData.append('allowedMetricTypes', values.allowedMetricTypes.toString());
-  formData.append('thumbnailImage', values.thumbnailImage);
+  if (values.thumbnailImage) {
+    formData.append('thumbnailImage', values.thumbnailImage);
+  }
 
   const response = await apiClient.post('/api/v1/exerciseInfos', formData);
   if (

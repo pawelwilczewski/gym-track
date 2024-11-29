@@ -82,7 +82,7 @@ defineExpose({
         :disabled="true"
       />
 
-      <picture>
+      <picture v-if="exerciseInfo.thumbnailUrl">
         <source
           :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`"
         />

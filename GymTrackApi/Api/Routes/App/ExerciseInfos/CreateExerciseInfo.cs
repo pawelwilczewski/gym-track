@@ -16,32 +16,36 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		[FromForm] string name,
 		[FromForm] string description,
 		[FromForm] ExerciseMetricType allowedMetricTypes,
-		IFormFile thumbnailImage,
+		IFormFile? thumbnailImage,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		if (!Name.TryCreate(name, out var exerciseInfoName, out var error))
 		{
-			return error.ToValidationProblem("Name");
+			return error.ToValidationProblem(nameof(name));
 		}
 
 		if (!Description.TryCreate(description, out var exerciseInfoDescription, out error))
 		{
-			return error.ToValidationProblem("Description");
+			return error.ToValidationProblem(nameof(description));
 		}
 
 		var id = Id<ExerciseInfo>.New();
 
-		var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
-		if (!FilePath.TryCreate(urlPath, out var path, out error))
+		FilePath? path = null;
+		if (thumbnailImage is not null)
 		{
-			return error.ToValidationProblem("Thumbnail File Path");
-		}
+			var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
+			if (!FilePath.TryCreate(urlPath, out path, out error))
+			{
+				return error.ToValidationProblem(nameof(thumbnailImage));
+			}
 
-		var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
-		Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
-		await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
+			var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
+			Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
+			await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
+		}
 
 		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
 			? ExerciseInfo.CreateForEveryone(exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, id)

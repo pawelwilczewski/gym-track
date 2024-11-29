@@ -25,7 +25,7 @@ internal sealed class GetExerciseInfos : IEndpoint
 			exerciseInfo.Name.ToString(),
 			exerciseInfo.Description.ToString(),
 			exerciseInfo.AllowedMetricTypes,
-			exerciseInfo.ThumbnailImage.ToString(),
+			exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.ToString() : null,
 			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index.IntValue)).ToList()));
 		return TypedResults.Ok(await exerciseInfosResponse
 			.ToListAsync(cancellationToken)

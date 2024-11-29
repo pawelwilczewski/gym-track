@@ -11,7 +11,7 @@ public class ExerciseInfo
 
 	public Name Name { get; private set; }
 
-	public FilePath ThumbnailImage { get; private set; }
+	public FilePath? ThumbnailImage { get; private set; }
 	public Description Description { get; private set; }
 
 	public ExerciseMetricType AllowedMetricTypes { get; set; }
@@ -25,7 +25,7 @@ public class ExerciseInfo
 	private ExerciseInfo(
 		Id<ExerciseInfo> id,
 		Name name,
-		FilePath thumbnailImage,
+		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes)
 	{
@@ -38,7 +38,7 @@ public class ExerciseInfo
 
 	public static ExerciseInfo CreateForEveryone(
 		Name name,
-		FilePath thumbnailImage,
+		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
 		Id<ExerciseInfo>? id = null) =>
@@ -46,7 +46,7 @@ public class ExerciseInfo
 
 	public static ExerciseInfo CreateForUser(
 		Name name,
-		FilePath thumbnailImage,
+		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
 		ClaimsPrincipal user,

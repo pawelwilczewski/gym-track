@@ -26,7 +26,8 @@ export const createExerciseInfoSchema = toTypedSchema(
       .refine(
         file => ['image/jpeg', 'image/png', 'image/gif'].includes(file.type),
         'Thumbnail must be a valid image file.'
-      ),
+      )
+      .optional(),
   })
 );
 

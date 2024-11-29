@@ -31,7 +31,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 			exerciseInfo.Name.ToString(),
 			exerciseInfo.Description.ToString(),
 			exerciseInfo.AllowedMetricTypes,
-			exerciseInfo.ThumbnailImage.ToString(),
+			exerciseInfo.ThumbnailImage?.ToString(),
 			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfoId.Value, step.Index.IntValue)).ToList()));
 	}
 
