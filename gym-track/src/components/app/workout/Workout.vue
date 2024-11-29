@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Button from '@/components/ui/button/Button.vue';
+import Entity from '../Entity.vue';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
@@ -57,26 +57,27 @@ const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
 </script>
 
 <template>
-  <div
+  <Entity
     v-if="workout"
     class="mx-auto border border-border rounded-xl w-80 flex flex-col gap-6 p-8"
+    @delete="handleDelete"
   >
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
     <WorkoutExercisesList
-      :getExerciseKeys="() => workout?.exercises ?? []"
+      :getExerciseKeys="() => workout!.exercises ?? []"
       ref="exercisesList"
     />
     <ButtonDialog
-      buttonText="Add Exercise"
       dialogTitle="Create Workout Exercise"
       v-model:open="createExerciseDialogOpen"
     >
-      <CreateWorkoutExercise
-        :workout="workout"
-        @created="handleWorkoutExerciseCreated"
-      />
+      <template #button>Add Exercise</template>
+      <template #dialog
+        ><CreateWorkoutExercise
+          :workout="workout"
+          @created="handleWorkoutExerciseCreated"
+      /></template>
     </ButtonDialog>
-    <Button @click="handleDelete">Delete</Button>
-  </div>
+  </Entity>
 </template>

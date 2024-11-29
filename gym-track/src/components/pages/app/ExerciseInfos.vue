@@ -16,11 +16,13 @@ const handleExerciseInfoCreated: () => Promise<void> = async () => {
 <template>
   <OneColumnLayout>
     <ButtonDialog
-      buttonText="Create Exercise"
       dialogTitle="Create New Exercise"
       v-model:open="createExerciseInfoDialogOpen"
     >
-      <CreateExerciseInfo @created="handleExerciseInfoCreated" />
+      <template #button>Create Exercise</template>
+      <template #dialog
+        ><CreateExerciseInfo @created="handleExerciseInfoCreated"
+      /></template>
     </ButtonDialog>
     <section>
       <h1 class="mb-6">Your Exercises</h1>

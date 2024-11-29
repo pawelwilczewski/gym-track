@@ -16,11 +16,13 @@ function handleWorkoutCreated(): void {
 <template>
   <OneColumnLayout>
     <ButtonDialog
-      buttonText="Create Workout"
       dialogTitle="Create New Workout"
       v-model:open="createWorkoutDialogOpen"
     >
-      <CreateWorkout @created="handleWorkoutCreated" />
+      <template #button>Create Workout</template>
+      <template #dialog
+        ><CreateWorkout @created="handleWorkoutCreated"
+      /></template>
     </ButtonDialog>
     <section>
       <h1 class="mt-10 mb-6">Your Workouts</h1>

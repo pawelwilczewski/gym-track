@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
@@ -10,6 +9,7 @@ import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/scripts/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
+import Entity from '../Entity.vue';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -67,9 +67,10 @@ defineExpose({
 </script>
 
 <template>
-  <div
+  <Entity
     v-if="exerciseInfo"
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
+    @delete="handleDelete"
   >
     <h3>{{ exerciseInfo.name }}</h3>
 
@@ -98,16 +99,16 @@ defineExpose({
     </div>
 
     <ButtonDialog
-      buttonText="Add Step"
       dialogTitle="Add Exercise Step"
       v-model:open="createStepDialogOpen"
     >
-      <CreateExerciseInfoStep
-        :exerciseInfoId="exerciseInfo.id"
-        @created="handleStepCreated"
-      />
+      <template #button>Add Step</template>
+      <template #dialog>
+        <CreateExerciseInfoStep
+          :exerciseInfoId="exerciseInfo.id"
+          @created="handleStepCreated"
+        />
+      </template>
     </ButtonDialog>
-
-    <Button @click="handleDelete">Delete</Button>
-  </div>
+  </Entity>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Entity from '../../Entity.vue';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
@@ -6,7 +7,6 @@ import {
   ExerciseInfoStepKey,
   GetExerciseInfoStepResponse,
 } from '@/scripts/schema/Types';
-import { Button } from '@/components/ui/button';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -50,12 +50,11 @@ update();
 </script>
 
 <template>
-  <li v-if="step" class="my-4">
+  <Entity v-if="step" is="li" class="my-4" @delete="handleDelete">
     <p class="mb-2">{{ step.description }}</p>
     <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
       <img />
     </picture>
-    <Button @click="handleDelete">Delete</Button>
-  </li>
+  </Entity>
 </template>

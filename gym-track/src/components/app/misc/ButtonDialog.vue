@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
+import { Button, ButtonVariants } from '@/components/ui/button';
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog';
+import DialogDescription from '@/components/ui/dialog/DialogDescription.vue';
 const open = defineModel<boolean>();
-defineProps<{
-  buttonText: string;
+const { variant = 'outline' } = defineProps<{
   dialogTitle: string;
+  variant?: ButtonVariants['variant'];
 }>();
 </script>
 
 <template>
   <Dialog v-model:open="open">
     <DialogTrigger>
-      <Button variant="outline">{{ buttonText }}</Button>
+      <Button :variant="variant"><slot name="button" /></Button>
     </DialogTrigger>
     <DialogContent>
+      <DialogDescription></DialogDescription>
       <DialogTitle>{{ dialogTitle }}</DialogTitle>
-      <slot />
+      <slot name="dialog" />
     </DialogContent>
   </Dialog>
 </template>

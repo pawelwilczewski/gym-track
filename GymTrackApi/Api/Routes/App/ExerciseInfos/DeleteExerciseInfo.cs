@@ -29,10 +29,13 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		dataContext.ExerciseInfos.Remove(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		var thumbnailPath = exerciseInfo.ThumbnailImage.ToString().UrlToLocalPath(fileStoragePathProvider);
-		if (Path.Exists(thumbnailPath))
+		if (exerciseInfo.ThumbnailImage is not null)
 		{
-			File.Delete(thumbnailPath);
+			var thumbnailPath = exerciseInfo.ThumbnailImage.ToString().UrlToLocalPath(fileStoragePathProvider);
+			if (Path.Exists(thumbnailPath))
+			{
+				File.Delete(thumbnailPath);
+			}
 		}
 
 		return TypedResults.NoContent();
