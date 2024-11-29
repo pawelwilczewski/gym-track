@@ -6,6 +6,7 @@ import {
   ExerciseInfoStepKey,
   GetExerciseInfoStepResponse,
 } from '@/scripts/schema/Types';
+import { Button } from '@/components/ui/button';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -26,17 +27,35 @@ async function update(): Promise<void> {
   step.value = response.data;
 }
 
+async function handleDelete(): Promise<void> {
+  if (!step.value) {
+    return;
+  }
+
+  const response = await apiClient.delete(
+    `/api/v1/exerciseInfos/${props.stepKey.exerciseInfoId}/steps/${props.stepKey.index}`
+  );
+  if (
+    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
+  ) {
+    return;
+  }
+
+  step.value = undefined;
+}
+
 const step = ref<GetExerciseInfoStepResponse | undefined>(undefined);
 
 update();
 </script>
 
 <template>
-  <li v-if="step">
-    <picture v-if="step.imageUrl">
+  <li v-if="step" class="my-4">
+    <p class="mb-2">{{ step.description }}</p>
+    <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
       <img />
     </picture>
-    <p>{{ step.description }}</p>
+    <Button @click="handleDelete">Delete</Button>
   </li>
 </template>

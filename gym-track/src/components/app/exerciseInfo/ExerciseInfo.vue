@@ -92,9 +92,9 @@ defineExpose({
 
     <div>
       <h4>Steps</h4>
-      <ul>
+      <ol class="list-decimal">
         <ExerciseInfoStep v-for="step in exerciseInfo.steps" :step-key="step" />
-      </ul>
+      </ol>
     </div>
 
     <ButtonDialog
