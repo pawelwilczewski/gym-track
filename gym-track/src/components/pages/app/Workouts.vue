@@ -6,22 +6,18 @@ import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
 
 const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
-const createWorkoutDialogOpen = ref(false);
-function handleWorkoutCreated(): void {
-  createWorkoutDialogOpen.value = false;
-  workoutsList.value?.update();
-}
 </script>
 
 <template>
   <OneColumnLayout>
-    <ButtonDialog
-      dialogTitle="Create New Workout"
-      v-model:open="createWorkoutDialogOpen"
-    >
+    <ButtonDialog dialogTitle="Create New Workout">
       <template #button>Create Workout</template>
-      <template #dialog
-        ><CreateWorkout @created="handleWorkoutCreated"
+      <template #dialog="{ closeDialog }"
+        ><CreateWorkout
+          @created="
+            workoutsList?.update();
+            closeDialog();
+          "
       /></template>
     </ButtonDialog>
     <section>
