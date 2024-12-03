@@ -46,13 +46,7 @@ async function handleDelete(): Promise<void> {
   workout.value = undefined;
 }
 
-async function handleWorkoutExerciseCreated(): Promise<void> {
-  createExerciseDialogOpen.value = false;
-  update();
-}
-
 const workout = ref<GetWorkoutResponse | undefined>(props.initialWorkout);
-const createExerciseDialogOpen = ref<boolean>(false);
 const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
 </script>
 
@@ -68,15 +62,15 @@ const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
       :getExerciseKeys="() => workout!.exercises ?? []"
       ref="exercisesList"
     />
-    <ButtonDialog
-      dialogTitle="Create Workout Exercise"
-      v-model:open="createExerciseDialogOpen"
-    >
+    <ButtonDialog dialogTitle="Create Workout Exercise">
       <template #button>Add Exercise</template>
-      <template #dialog
+      <template #dialog="{ closeDialog }"
         ><CreateWorkoutExercise
           :workout="workout"
-          @created="handleWorkoutExerciseCreated"
+          @created="
+            update();
+            closeDialog();
+          "
       /></template>
     </ButtonDialog>
   </Entity>

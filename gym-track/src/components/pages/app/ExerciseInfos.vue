@@ -6,22 +6,18 @@ import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import { ref } from 'vue';
 
 const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
-const createExerciseInfoDialogOpen = ref(false);
-const handleExerciseInfoCreated: () => Promise<void> = async () => {
-  createExerciseInfoDialogOpen.value = false;
-  exerciseInfosList.value?.update();
-};
 </script>
 
 <template>
   <OneColumnLayout>
-    <ButtonDialog
-      dialogTitle="Create New Exercise"
-      v-model:open="createExerciseInfoDialogOpen"
-    >
+    <ButtonDialog dialogTitle="Create New Exercise">
       <template #button>Create Exercise</template>
-      <template #dialog
-        ><CreateExerciseInfo @created="handleExerciseInfoCreated"
+      <template #dialog="{ closeDialog }"
+        ><CreateExerciseInfo
+          @created="
+            exerciseInfosList?.update();
+            closeDialog();
+          "
       /></template>
     </ButtonDialog>
     <section>

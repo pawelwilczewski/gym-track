@@ -56,11 +56,6 @@ const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
 
 const createStepDialogOpen = ref(false);
 
-function handleStepCreated(): void {
-  createStepDialogOpen.value = false;
-  update();
-}
-
 defineExpose({
   update,
 });
@@ -103,10 +98,13 @@ defineExpose({
       v-model:open="createStepDialogOpen"
     >
       <template #button>Add Step</template>
-      <template #dialog>
+      <template #dialog="{ closeDialog }">
         <CreateExerciseInfoStep
           :exerciseInfoId="exerciseInfo.id"
-          @created="handleStepCreated"
+          @created="
+            update();
+            closeDialog();
+          "
         />
       </template>
     </ButtonDialog>
