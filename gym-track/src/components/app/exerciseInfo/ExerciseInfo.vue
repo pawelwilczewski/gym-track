@@ -54,8 +54,6 @@ const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
   props.initialExerciseInfo
 );
 
-const createStepDialogOpen = ref(false);
-
 defineExpose({
   update,
 });
@@ -93,10 +91,7 @@ defineExpose({
       </ol>
     </div>
 
-    <ButtonDialog
-      dialogTitle="Add Exercise Step"
-      v-model:open="createStepDialogOpen"
-    >
+    <ButtonDialog dialogTitle="Add Exercise Step">
       <template #button>Add Step</template>
       <template #dialog="{ closeDialog }">
         <CreateExerciseInfoStep
