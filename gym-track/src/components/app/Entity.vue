@@ -2,9 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
+import { type ComponentIsType } from '@/scripts/utils/ComponentTypes';
 
 const { is = 'div' } = defineProps<{
-  is?: 'div' | 'li';
+  is?: ComponentIsType;
 }>();
 
 const emit = defineEmits<{
