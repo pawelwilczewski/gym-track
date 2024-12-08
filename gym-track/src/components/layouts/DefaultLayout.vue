@@ -5,13 +5,13 @@ import HeaderContent from '../app/HeaderContent.vue';
 
 <template>
   <div class="min-h-screen grid grid-cols-1 grid-rows-auto-1fr-auto">
-    <header class="maxed-content-width mx-auto p-8">
+    <header class="container mx-auto p-8">
       <HeaderContent />
     </header>
     <main>
       <slot />
     </main>
-    <footer class="maxed-content-width mx-auto p-8">
+    <footer class="container mx-auto p-8">
       <FooterContent />
     </footer>
   </div>
