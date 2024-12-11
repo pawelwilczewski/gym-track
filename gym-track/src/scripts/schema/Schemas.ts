@@ -33,7 +33,6 @@ export const createExerciseInfoSchema = toTypedSchema(
 
 export const createExerciseInfoStepSchema = toTypedSchema(
   z.object({
-    index: z.number().int().min(0),
     description: z.string().trim().min(1),
     image: z
       .instanceof(File, { message: 'Thumbnail is required.' })

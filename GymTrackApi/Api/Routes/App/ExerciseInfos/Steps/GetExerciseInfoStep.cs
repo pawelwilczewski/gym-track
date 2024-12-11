@@ -1,4 +1,3 @@
-using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
@@ -7,7 +6,6 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
@@ -20,12 +18,10 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		if (!Index.TryCreate(index, out var indexTyped)) return ValidationErrors.NegativeIndex();
-
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
 			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == indexTyped))
+			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
@@ -34,7 +30,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 		var step = exerciseInfo.Steps.SingleOrDefault();
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
-		return TypedResults.Ok(new GetExerciseInfoStepResponse(step.Index.IntValue, step.Description.ToString(), step.ImageFile?.ToString()));
+		return TypedResults.Ok(new GetExerciseInfoStepResponse(step.Index, step.Description.ToString(), step.ImageFile?.ToString()));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

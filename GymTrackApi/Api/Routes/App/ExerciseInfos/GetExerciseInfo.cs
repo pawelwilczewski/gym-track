@@ -32,7 +32,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 			exerciseInfo.Description.ToString(),
 			exerciseInfo.AllowedMetricTypes,
 			exerciseInfo.ThumbnailImage?.ToString(),
-			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfoId.Value, step.Index.IntValue)).ToList()));
+			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfoId.Value, step.Index)).ToList()));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

@@ -2,7 +2,6 @@ using Domain.Models.Workout;
 using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Index = Domain.Models.Index;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
@@ -10,8 +9,10 @@ internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<E
 {
 	public void Configure(EntityTypeBuilder<ExerciseInfo.Step> builder)
 	{
+		const string tableName = "ExerciseInfoSteps";
+
 		builder
-			.ToTable("ExerciseInfoSteps", Schemas.WORKOUT)
+			.ToTable(tableName, Schemas.WORKOUT)
 			.HasKey(step => new
 			{
 				step.ExerciseInfoId,
@@ -27,7 +28,5 @@ internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<E
 			.WithMany(exerciseInfo => exerciseInfo.Steps)
 			.HasForeignKey(step => step.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Cascade);
-
-		builder.Property(step => step.Index).HasConversion(Index.Converter);
 	}
 }

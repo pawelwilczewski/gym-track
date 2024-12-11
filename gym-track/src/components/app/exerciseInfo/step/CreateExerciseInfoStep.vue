@@ -28,7 +28,6 @@ const emit = defineEmits<{
 
 const onSubmit = form.handleSubmit(async values => {
   const formData = new FormData();
-  formData.append('index', values.index.toString());
   formData.append('description', values.description);
   if (values.image) {
     formData.append('image', values.image);
@@ -55,15 +54,6 @@ const onSubmit = form.handleSubmit(async values => {
 
 <template>
   <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="index">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Index</FormLabel>
-        <FormControl>
-          <Input placeholder="Index" type="number" v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
     <FormField v-slot="{ componentField }" name="description">
       <FormItem>
         <FormLabel class="text-lg !text-current">Description</FormLabel>

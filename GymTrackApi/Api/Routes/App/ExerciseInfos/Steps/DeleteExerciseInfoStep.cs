@@ -1,4 +1,3 @@
-using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
@@ -7,7 +6,6 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
@@ -21,14 +19,12 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
-		if (!Index.TryCreate(index, out var indexTyped)) return ValidationErrors.NegativeIndex();
-
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfoStep = await dataContext.ExerciseInfoSteps
 			.Include(exerciseInfoStep => exerciseInfoStep.ExerciseInfo)
 			.ThenInclude(exerciseInfo => exerciseInfo.Users)
 			.FirstOrDefaultAsync(exerciseInfoStep => exerciseInfoStep.ExerciseInfoId == id
-				&& exerciseInfoStep.Index == indexTyped, cancellationToken)
+				&& exerciseInfoStep.Index == index, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found");
