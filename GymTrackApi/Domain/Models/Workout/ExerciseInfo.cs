@@ -59,7 +59,7 @@ public class ExerciseInfo
 		return exerciseInfo;
 	}
 
-	public class Step
+	public class Step : IIndexed
 	{
 		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
 		public int Index { get; private set; }

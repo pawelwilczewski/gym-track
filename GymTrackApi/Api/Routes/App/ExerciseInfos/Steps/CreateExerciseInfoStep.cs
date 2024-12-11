@@ -1,6 +1,7 @@
 using Api.Common;
 using Api.Files;
 using Application.Persistence;
+using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -36,9 +37,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var index = exerciseInfo.Steps.Count > 0
-			? exerciseInfo.Steps.Select(step => step.Index).Max() + 1
-			: 0;
+		var index = exerciseInfo.Steps.GetNextIndex();
 		var displayOrder = exerciseInfo.Steps.Count > 0
 			? exerciseInfo.Steps.Select(step => step.DisplayOrder).Max() + 1
 			: 0;

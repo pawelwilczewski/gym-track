@@ -26,7 +26,7 @@ public class Workout
 		return workout;
 	}
 
-	public class Exercise
+	public class Exercise : IIndexed
 	{
 		public Id<Workout> WorkoutId { get; private set; }
 		public int Index { get; private set; }
@@ -48,7 +48,7 @@ public class Workout
 			ExerciseInfoId = exerciseInfoId;
 		}
 
-		public class Set
+		public class Set : IIndexed
 		{
 			public Id<Workout> WorkoutId { get; private set; }
 			public int ExerciseIndex { get; private set; }

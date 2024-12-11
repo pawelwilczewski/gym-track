@@ -1,6 +1,7 @@
 using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
+using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -47,7 +48,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			});
 		}
 
-		var index = exercise.Sets.Count > 0 ? exercise.Sets.Select(set => set.Index).Max() + 1 : 0;
+		var index = exercise.Sets.GetNextIndex();
 		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount);
 
 		exercise.Sets.Add(set);

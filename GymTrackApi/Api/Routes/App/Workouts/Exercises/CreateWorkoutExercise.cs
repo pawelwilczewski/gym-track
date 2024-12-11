@@ -1,5 +1,6 @@
 using Api.Dtos;
 using Application.Persistence;
+using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -37,7 +38,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var index = workout.Exercises.Count > 0 ? workout.Exercises.Select(exercise => exercise.Index).Max() + 1 : 0;
+		var index = workout.Exercises.GetNextIndex();
 		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId);
 
 		workout.Exercises.Add(exercise);
