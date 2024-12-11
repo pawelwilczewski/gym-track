@@ -26,15 +26,6 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 
-		if (workout.Exercises.FirstOrDefault(exercise => exercise.Index == request.Index) is not null)
-		{
-			return TypedResults.ValidationProblem(
-				new Dictionary<string, string[]>
-				{
-					{ nameof(Workout.Exercise.Index), ["Duplicate workout exercise index."] }
-				});
-		}
-
 		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
 		var exerciseInfoId = new Id<ExerciseInfo>(request.ExerciseInfoId);
@@ -46,7 +37,8 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var exercise = new Workout.Exercise(workoutIdTyped, request.Index, exerciseInfoId);
+		var index = workout.Exercises.Count > 0 ? workout.Exercises.Select(exercise => exercise.Index).Max() + 1 : 0;
+		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId);
 
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

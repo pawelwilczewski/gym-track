@@ -30,7 +30,7 @@ internal sealed class WorkoutExerciseTests
 		var result = await CreateWorkoutExercise.Handler(
 				creator.GetHttpContext(),
 				workout.Id.Value,
-				new CreateWorkoutExerciseRequest(exerciseIndex, exerciseInfo.Id.Value),
+				new CreateWorkoutExerciseRequest(exerciseInfo.Id.Value),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);

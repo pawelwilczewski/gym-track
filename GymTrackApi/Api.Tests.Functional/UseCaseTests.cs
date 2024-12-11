@@ -76,8 +76,8 @@ internal sealed class UseCaseTests
 		var lastSlashIndex = exerciseInfoUriString.LastIndexOf('/');
 		var exerciseId = Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
 
-		const int exerciseIndex = 1;
-		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises", new CreateWorkoutExerciseRequest(exerciseIndex, exerciseId));
+		const int exerciseIndex = 0;
+		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises", new CreateWorkoutExerciseRequest(exerciseId));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var exerciseUri = response.Headers.Location!;
 
@@ -87,7 +87,7 @@ internal sealed class UseCaseTests
 
 		const int setIndex = 0;
 		Amount.TryCreate(1000.0, out var distance);
-		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets", new CreateWorkoutExerciseSetRequest(setIndex, new Distance(distance, Distance.Unit.Metre), 3));
+		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets", new CreateWorkoutExerciseSetRequest(new Distance(distance, Distance.Unit.Metre), 3));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var setUri = response.Headers.Location!;
 

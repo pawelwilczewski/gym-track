@@ -26,6 +26,8 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
 			.ThenInclude(exercise => exercise.ExerciseInfo)
+			.Include(workout => workout.Exercises)
+			.ThenInclude(exercise => exercise.Sets)
 			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
 			.ConfigureAwait(false);
 
@@ -45,7 +47,8 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			});
 		}
 
-		var set = new Workout.Exercise.Set(exercise, request.Index, request.Metric, repsCount);
+		var index = exercise.Sets.Count > 0 ? exercise.Sets.Select(set => set.Index).Max() + 1 : 0;
+		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount);
 
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

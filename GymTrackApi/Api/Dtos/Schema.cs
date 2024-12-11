@@ -3,11 +3,9 @@ using Domain.Models.Workout;
 namespace Api.Dtos;
 
 public sealed record class CreateWorkoutExerciseRequest(
-	int Index,
 	Guid ExerciseInfoId);
 
 public sealed record class CreateWorkoutExerciseSetRequest(
-	int Index,
 	ExerciseMetric Metric,
 	int Reps);
 

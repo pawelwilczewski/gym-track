@@ -11,28 +11,28 @@ namespace Api.Tests.Unit;
 
 internal sealed class WorkoutExerciseSetTests
 {
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, int setIndex, Type responseType)> CreateWorkoutExerciseSetData()
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, Type responseType)> CreateWorkoutExerciseSetData()
 	{
 		Amount.TryCreate(120.0, out var amount);
 
 		return
 		[
-			new([Users.User2], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(ForbidHttpResult)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(Created)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, -1, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), -1, 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 0, 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 0, 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 1, 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Kilogram), 1, 0, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 1, 0, typeof(Created))
+			new([Users.User2], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(ForbidHttpResult)),
+			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
+			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), -1, typeof(ValidationProblem)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 0, typeof(ValidationProblem)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 0, typeof(ValidationProblem)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 1, typeof(ValidationProblem)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Kilogram), 1, typeof(Created)),
+			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 1, typeof(Created))
 		];
 	}
 
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseSetData))]
-	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, int setIndex, Type responseType)
+	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
@@ -49,7 +49,7 @@ internal sealed class WorkoutExerciseSetTests
 				creator.GetHttpContext(),
 				workout.Id.Value,
 				index,
-				new CreateWorkoutExerciseSetRequest(setIndex, metric, reps),
+				new CreateWorkoutExerciseSetRequest(metric, reps),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
