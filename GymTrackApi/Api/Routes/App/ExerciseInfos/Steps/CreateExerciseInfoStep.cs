@@ -38,9 +38,7 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var index = exerciseInfo.Steps.GetNextIndex();
-		var displayOrder = exerciseInfo.Steps.Count > 0
-			? exerciseInfo.Steps.Select(step => step.DisplayOrder).Max() + 1
-			: 0;
+		var displayOrder = exerciseInfo.Steps.GetNextDisplayOrder();
 		FilePath? path = null;
 		if (image is not null)
 		{
