@@ -45,12 +45,12 @@ internal sealed class ExerciseInfoStepTests
 	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, int accessedIndex, Type responseType)> GetExerciseInfoStepData() =>
 	[
 		new([Users.Admin1], Users.User1, 0, typeof(Ok<GetExerciseInfoStepResponse>)),
-		new([Users.Admin1], Users.User1, -1, typeof(ValidationProblem)),
+		new([Users.Admin1], Users.User1, -1, typeof(NotFound<string>)),
 		new([Users.User1], Users.Admin1, 0, typeof(Ok<GetExerciseInfoStepResponse>)),
 		new([Users.User1], Users.Admin1, 1, typeof(NotFound<string>)),
 		new([Users.User2], Users.Admin1, 0, typeof(Ok<GetExerciseInfoStepResponse>)),
 		new([Users.User1], Users.User1, 0, typeof(Ok<GetExerciseInfoStepResponse>)),
-		new([Users.User1], Users.User1, 1, typeof(Ok<GetExerciseInfoStepResponse>)),
+		new([Users.User1], Users.User1, 1, typeof(NotFound<string>)),
 		new([Users.User1], Users.User1, 2, typeof(NotFound<string>)),
 		new([Users.User2], Users.User1, 0, typeof(ForbidHttpResult))
 	];
@@ -67,7 +67,7 @@ internal sealed class ExerciseInfoStepTests
 
 		if (!Description.TryCreate("Test Description", out var description, out _)) throw new Exception("Invalid test case");
 
-		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, description, null, 0));
+		exerciseInfo.Steps.Add(new ExerciseInfo.Step(exerciseInfo.Id, 0, description, null, 0));
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
 		var result = await GetExerciseInfoStep.Handler(
@@ -127,7 +127,7 @@ internal sealed class ExerciseInfoStepTests
 
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 
-		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, originalDescription, null, 0);
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, null, 0);
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -167,7 +167,7 @@ internal sealed class ExerciseInfoStepTests
 
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 
-		var step = new ExerciseInfo.Step(exerciseInfo.Id, originalDescription, null, 0);
+		var step = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, null, 0);
 		exerciseInfo.Steps.Add(step);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
@@ -208,7 +208,7 @@ internal sealed class ExerciseInfoStepTests
 
 		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
 
-		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, originalDescription, null, 0);
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, null, 0);
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 

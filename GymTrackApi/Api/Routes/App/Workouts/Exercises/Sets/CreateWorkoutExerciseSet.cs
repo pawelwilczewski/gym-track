@@ -7,7 +7,6 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.Workouts.Exercises.Sets;
 
@@ -21,7 +20,6 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		if (!Index.TryCreate(request.Index, out var index)) return ValidationErrors.NegativeIndex();
 		if (!PositiveCount.TryCreate(request.Reps, out var repsCount)) return ValidationErrors.NonPositiveCount("Reps");
 
 		var workoutIdTyped = new Id<Workout>(workoutId);
@@ -47,7 +45,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 			});
 		}
 
-		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount);
+		var set = new Workout.Exercise.Set(exercise, request.Index, request.Metric, repsCount);
 
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

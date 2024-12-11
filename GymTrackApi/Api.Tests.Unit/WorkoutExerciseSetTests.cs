@@ -4,7 +4,6 @@ using Api.Tests.Unit.Mocks;
 using Domain.Models;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Index = Domain.Models.Index;
 
 // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
 
@@ -20,7 +19,7 @@ internal sealed class WorkoutExerciseSetTests
 		[
 			new([Users.User2], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(ForbidHttpResult)),
 			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(Created)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, -1, typeof(ValidationProblem)),
+			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, -1, typeof(Created)),
 			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, 0, typeof(Created)),
 			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), -1, 0, typeof(ValidationProblem)),
 			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 0, 0, typeof(ValidationProblem)),
@@ -42,15 +41,14 @@ internal sealed class WorkoutExerciseSetTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(0, out var index)) throw new Exception("Invalid test case");
-
+		const int index = 0;
 		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await CreateWorkoutExerciseSet.Handler(
 				creator.GetHttpContext(),
 				workout.Id.Value,
-				index.IntValue,
+				index,
 				new CreateWorkoutExerciseSetRequest(setIndex, metric, reps),
 				dataContext,
 				CancellationToken.None)
@@ -81,19 +79,18 @@ internal sealed class WorkoutExerciseSetTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(0, out var exerciseIndex)) throw new Exception("Invalid test case");
-		if (!Index.TryCreate(addedSetIndex, out var setIndex)) throw new Exception("Invalid test case");
+		const int exerciseIndex = 0;
 		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps));
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, addedSetIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await GetWorkoutExerciseSet.Handler(
 				accessor.GetHttpContext(),
 				workout.Id.Value,
-				exerciseIndex.IntValue,
+				exerciseIndex,
 				accessedSetIndex,
 				dataContext,
 				CancellationToken.None)
@@ -130,8 +127,8 @@ internal sealed class WorkoutExerciseSetTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(0, out var exerciseIndex)) throw new Exception("Invalid test case");
-		if (!Index.TryCreate(0, out var setIndex)) throw new Exception("Invalid test case");
+		const int exerciseIndex = 0;
+		const int setIndex = 0;
 		if (!PositiveCount.TryCreate(2, out var originalReps)) throw new Exception("Invalid test case");
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
@@ -142,8 +139,8 @@ internal sealed class WorkoutExerciseSetTests
 		var result = await EditWorkoutExerciseSet.Handler(
 				editor.GetHttpContext(),
 				workout.Id.Value,
-				exerciseIndex.IntValue,
-				setIndex.IntValue,
+				exerciseIndex,
+				setIndex,
 				new EditWorkoutExerciseSetRequest(metric, reps),
 				dataContext,
 				CancellationToken.None)
@@ -173,8 +170,8 @@ internal sealed class WorkoutExerciseSetTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(0, out var exerciseIndex)) throw new Exception("Invalid test case");
-		if (!Index.TryCreate(setIndex, out var index)) throw new Exception("Invalid test case");
+		const int exerciseIndex = 0;
+		const int index = 0;
 		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
@@ -185,7 +182,7 @@ internal sealed class WorkoutExerciseSetTests
 		var result = await DeleteWorkoutExerciseSet.Handler(
 				deleter.GetHttpContext(),
 				workout.Id.Value,
-				exerciseIndex.IntValue,
+				exerciseIndex,
 				deletedSetIndex,
 				dataContext,
 				CancellationToken.None)

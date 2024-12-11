@@ -23,7 +23,7 @@ internal sealed class GetWorkouts : IEndpoint
 		var workoutsResponse = workouts.Select(workout => new GetWorkoutResponse(
 			workout.Id.Value,
 			workout.Name.ToString(),
-			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index.IntValue)).ToList()));
+			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index)).ToList()));
 		return TypedResults.Ok(await workoutsResponse
 			.ToListAsync(cancellationToken)
 			.ConfigureAwait(false));

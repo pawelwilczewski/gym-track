@@ -4,7 +4,6 @@ using Domain.Models.Workout;
 using Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Index = Domain.Models.Index;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
@@ -30,9 +29,6 @@ internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration
 				set.ExerciseIndex
 			})
 			.OnDelete(DeleteBehavior.Cascade);
-
-		builder.Property(set => set.Index)
-			.HasConversion(Index.Converter);
 
 		builder.Property(set => set.Reps)
 			.HasConversion(PositiveCount.Converter);

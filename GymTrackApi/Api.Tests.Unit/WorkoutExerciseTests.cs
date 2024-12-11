@@ -3,7 +3,6 @@ using Api.Routes.App.Workouts.Exercises;
 using Api.Tests.Unit.Mocks;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Index = Domain.Models.Index;
 
 namespace Api.Tests.Unit;
 
@@ -12,7 +11,7 @@ internal sealed class WorkoutExerciseTests
 	public static IEnumerable<(IUserInfo creator, IUserInfo exerciseInfoOwner, int exerciseIndex, Type responseType)> CreateWorkoutExerciseData() =>
 	[
 		new(Users.Admin1, Users.Admin1, 0, typeof(Created)),
-		new(Users.Admin1, Users.User1, -1, typeof(ValidationProblem)),
+		new(Users.Admin1, Users.User1, -1, typeof(Created)),
 		new(Users.User1, Users.Admin1, 0, typeof(Created)),
 		new(Users.User2, Users.User1, 0, typeof(ForbidHttpResult))
 	];
@@ -61,9 +60,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(exerciseIndex, out var index)) throw new Exception("Invalid test case");
-
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
+		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await GetWorkoutExercise.Handler(
@@ -98,8 +95,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		if (!Index.TryCreate(exerciseIndex, out var index)) throw new Exception("Invalid test case");
-
+		const int index = 0;
 		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 

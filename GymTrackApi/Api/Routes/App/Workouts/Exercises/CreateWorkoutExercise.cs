@@ -1,4 +1,3 @@
-using Api.Common;
 using Api.Dtos;
 using Application.Persistence;
 using Domain.Models;
@@ -7,7 +6,6 @@ using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Index = Domain.Models.Index;
 
 namespace Api.Routes.App.Workouts.Exercises;
 
@@ -20,8 +18,6 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		if (!Index.TryCreate(request.Index, out var index)) return ValidationErrors.NegativeIndex();
-
 		var workoutIdTyped = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
@@ -30,7 +26,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 
-		if (workout.Exercises.FirstOrDefault(exercise => exercise.Index == index) is not null)
+		if (workout.Exercises.FirstOrDefault(exercise => exercise.Index == request.Index) is not null)
 		{
 			return TypedResults.ValidationProblem(
 				new Dictionary<string, string[]>
@@ -50,7 +46,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId);
+		var exercise = new Workout.Exercise(workoutIdTyped, request.Index, exerciseInfoId);
 
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

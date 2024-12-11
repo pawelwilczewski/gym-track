@@ -29,7 +29,7 @@ internal sealed class GetWorkout : IEndpoint
 		return TypedResults.Ok(new GetWorkoutResponse(
 			workout.Id.Value,
 			workout.Name.ToString(),
-			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workoutId.Value, exercise.Index.IntValue))
+			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workoutId.Value, exercise.Index))
 				.ToList()));
 	}
 
