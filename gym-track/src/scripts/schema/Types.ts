@@ -72,6 +72,7 @@ export type GetExerciseInfoStepResponse = {
 
 export type GetWorkoutExerciseResponse = {
   index: number;
+  exerciseInfoId: UUID;
   sets: WorkoutExerciseSetKey[];
 };
 

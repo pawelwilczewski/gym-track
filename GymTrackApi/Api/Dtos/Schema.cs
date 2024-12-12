@@ -46,6 +46,7 @@ public sealed record class GetExerciseInfoStepResponse(
 
 public sealed record class GetWorkoutExerciseResponse(
 	int Index,
+	Guid ExerciseInfoId,
 	List<WorkoutExerciseSetKey> Sets);
 
 public sealed record class GetWorkoutExerciseSetResponse(

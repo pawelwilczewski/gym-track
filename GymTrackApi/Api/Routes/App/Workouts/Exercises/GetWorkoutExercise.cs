@@ -33,6 +33,7 @@ internal sealed class GetWorkoutExercise : IEndpoint
 
 		return TypedResults.Ok(new GetWorkoutExerciseResponse(
 			exercise.Index,
+			exercise.ExerciseInfoId.Value,
 			exercise.Sets.Select(set => new WorkoutExerciseSetKey(workoutId, index, set.Index))
 				.ToList()));
 	}

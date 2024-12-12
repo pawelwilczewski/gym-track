@@ -60,5 +60,7 @@ const emit = defineEmits<{
     @deleted="handleDelete"
   >
     <h4>{{ exercise.index }}</h4>
+    <p>{{ exercise.exerciseInfoId }}</p>
+    <div v-for="set in exercise.sets">{{ set.workoutId }}</div>
   </Entity>
 </template>
