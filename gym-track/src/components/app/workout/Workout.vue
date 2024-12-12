@@ -3,8 +3,8 @@ import Entity from '../Entity.vue';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
-import { GetWorkoutResponse } from '@/scripts/schema/Types';
-import { ref } from 'vue';
+import { GetWorkoutResponse, WorkoutExerciseKey } from '@/scripts/schema/Types';
+import { Ref, ref, watch } from 'vue';
 import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '../misc/ButtonDialog.vue';
@@ -27,7 +27,6 @@ async function update(): Promise<void> {
   }
 
   workout.value = response.data;
-  exercisesList.value?.update();
 }
 
 async function handleDelete(): Promise<void> {
@@ -47,20 +46,34 @@ async function handleDelete(): Promise<void> {
 }
 
 const workout = ref<GetWorkoutResponse | undefined>(props.initialWorkout);
-const exercisesList = ref<typeof WorkoutExercisesList | undefined>(undefined);
+
+const exerciseKeys: Ref<WorkoutExerciseKey[]> = ref(
+  workout.value?.exercises ?? []
+);
+watch(workout, () => {
+  exerciseKeys.value = workout.value?.exercises ?? [];
+});
 </script>
 
 <template>
   <Entity
     v-if="workout"
     class="mx-auto border border-border rounded-xl w-80 flex flex-col gap-6 p-8"
-    @delete="handleDelete"
+    @deleted="handleDelete"
   >
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
     <WorkoutExercisesList
-      :getExerciseKeys="() => workout!.exercises ?? []"
+      v-if="exerciseKeys"
+      :exerciseKeys="exerciseKeys"
       ref="exercisesList"
+      @exercise-deleted="
+        key => {
+          exerciseKeys = exerciseKeys.filter(
+            exerciseKey => exerciseKey !== key
+          );
+        }
+      "
     />
     <ButtonDialog dialogTitle="Create Workout Exercise">
       <template #button>Add Exercise</template>

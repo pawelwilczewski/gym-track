@@ -1,56 +1,23 @@
 <script setup lang="ts">
-import {
-  GetWorkoutExerciseResponse,
-  WorkoutExerciseKey,
-} from '@/scripts/schema/Types';
+import { WorkoutExerciseKey } from '@/scripts/schema/Types';
 import WorkoutExercise from '@/components/app/workout/exercise/WorkoutExercise.vue';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
-import { apiClient } from '@/scripts/http/Clients';
-import { ref } from 'vue';
 
-const props = defineProps<{
-  getExerciseKeys: () => WorkoutExerciseKey[];
+defineProps<{
+  exerciseKeys: WorkoutExerciseKey[];
 }>();
 
-const exercises = ref<GetWorkoutExerciseResponse[]>([]);
-
-async function update(): Promise<void> {
-  exercises.value = await Promise.all(
-    props.getExerciseKeys().map(async workoutExerciseKey => {
-      const response = await apiClient.get(
-        `api/v1/workouts/${workoutExerciseKey.workoutId}/exercises/${workoutExerciseKey.index}`
-      );
-      if (
-        ErrorHandler.forResponse(response)
-          .handleFully(toastErrorHandler)
-          .wasError()
-      ) {
-        return undefined;
-      }
-
-      return response.data;
-    })
-  );
-}
-
-update();
-
-defineExpose({
-  update,
-});
+const emit = defineEmits<{
+  exerciseDeleted: [WorkoutExerciseKey];
+}>();
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <ol>
-      <li>
-        <WorkoutExercise
-          v-for="exercise in exercises"
-          :key="exercise.index"
-          :exercise="exercise"
-        />
-      </li>
-    </ol>
-  </div>
+  <ol class="list-decimal flex flex-col gap-4">
+    <WorkoutExercise
+      v-for="key in exerciseKeys"
+      :key="key.index"
+      :exerciseKey="key"
+      @deleted="emit('exerciseDeleted', key)"
+    />
+  </ol>
 </template>

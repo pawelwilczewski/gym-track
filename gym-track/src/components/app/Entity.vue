@@ -9,7 +9,7 @@ const { is = 'div' } = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  delete: [];
+  deleted: [];
 }>();
 </script>
 
@@ -23,7 +23,7 @@ const emit = defineEmits<{
         </template>
         <template #button><Pencil class="w-4 h-4" /></template>
       </ButtonDialog>
-      <Button @click="emit('delete')" variant="ghost" size="sm"
+      <Button @click="emit('deleted')" variant="ghost" size="sm"
         ><Trash2 class="w-4 h-4" />
       </Button>
     </div>
