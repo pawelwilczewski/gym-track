@@ -63,7 +63,7 @@ defineExpose({
   <Entity
     v-if="exerciseInfo"
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
-    @delete="handleDelete"
+    @deleted="handleDelete"
   >
     <h3>{{ exerciseInfo.name }}</h3>
 
