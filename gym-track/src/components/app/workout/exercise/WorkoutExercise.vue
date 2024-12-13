@@ -7,7 +7,9 @@ const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
 }>();
 
-const { workoutExercise, destroy } = useWorkoutExercise(props.exerciseKey);
+const { workoutExercise, destroy } = useWorkoutExercise(props.exerciseKey, {
+  immediate: true,
+});
 
 const emit = defineEmits<{
   deleted: [WorkoutExerciseKey];

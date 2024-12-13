@@ -1,59 +1,32 @@
 <script setup lang="ts">
+import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
 import Entity from '../../Entity.vue';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
-import {
-  ExerciseInfoStepKey,
-  GetExerciseInfoStepResponse,
-} from '@/scripts/schema/Types';
-import { ref } from 'vue';
+import { ExerciseInfoStepKey } from '@/scripts/schema/Types';
 
 const props = defineProps<{
   stepKey: ExerciseInfoStepKey;
 }>();
 
-async function update(): Promise<void> {
-  const response = await apiClient.get(
-    `/api/v1/exerciseInfos/${props.stepKey.exerciseInfoId}/steps/${props.stepKey.index}`
-  );
-
-  if (
-    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
-  ) {
-    return;
-  }
-
-  step.value = response.data;
-}
-
-async function handleDelete(): Promise<void> {
-  if (!step.value) {
-    return;
-  }
-
-  const response = await apiClient.delete(
-    `/api/v1/exerciseInfos/${props.stepKey.exerciseInfoId}/steps/${props.stepKey.index}`
-  );
-  if (
-    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
-  ) {
-    return;
-  }
-
-  emit('deleted', props.stepKey);
-}
+const { step, destroy } = useExerciseInfoStep(props.stepKey, {
+  immediate: true,
+});
 
 const emit = defineEmits<{
   deleted: [ExerciseInfoStepKey];
 }>();
-
-const step = ref<GetExerciseInfoStepResponse | undefined>(undefined);
-update();
 </script>
 
 <template>
-  <Entity v-if="step" is="li" class="my-4" @deleted="handleDelete">
+  <Entity
+    v-if="step"
+    is="li"
+    class="my-4"
+    @deleted="
+      destroy();
+      emit('deleted', props.stepKey);
+    "
+  >
     <p class="mb-2">{{ step.description }}</p>
     <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
