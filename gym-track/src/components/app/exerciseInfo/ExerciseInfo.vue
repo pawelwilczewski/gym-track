@@ -31,7 +31,8 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
     @deleted="
       destroy();
-      emit('deleted', initialExerciseInfo.id);
+      emit('deleted', exerciseInfo.id);
+      exerciseInfo = undefined;
     "
   >
     <h3>{{ exerciseInfo.name }}</h3>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Entity from '../Entity.vue';
-import { GetWorkoutResponse, WorkoutExerciseKey } from '@/scripts/schema/Types';
-import { ref, watch } from 'vue';
+import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import { UUID } from 'crypto';
 import { useWorkout } from '@/composables/UseWorkout';
+import { useWorkoutExerciseKeys } from '@/composables/UseWorkoutExerciseKeys';
 
 const props = defineProps<{
   initialWorkout: GetWorkoutResponse;
@@ -16,14 +16,7 @@ const { workout, update, destroy } = useWorkout(props.initialWorkout.id, {
   initialValue: props.initialWorkout,
 });
 
-const exerciseKeys = ref<WorkoutExerciseKey[]>([]);
-watch(
-  workout,
-  () => {
-    exerciseKeys.value = workout.value?.exercises ?? [];
-  },
-  { immediate: true }
-);
+const { exerciseKeys } = useWorkoutExerciseKeys(workout);
 
 const emit = defineEmits<{ deleted: [UUID] }>();
 </script>
@@ -35,6 +28,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     @deleted="
       destroy();
       emit('deleted', workout.id);
+      workout = undefined;
     "
   >
     <h3>{{ workout.name }}</h3>
