@@ -2,8 +2,7 @@
 import ExerciseInfo from './ExerciseInfo.vue';
 import { useExerciseInfos } from '@/composables/UseExerciseInfos';
 
-const { exerciseInfos, update } = useExerciseInfos();
-update();
+const { exerciseInfos, update } = useExerciseInfos({ immediate: true });
 
 defineExpose({
   update,

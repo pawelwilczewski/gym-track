@@ -1,17 +1,17 @@
 import { apiClient } from '@/scripts/http/Clients';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
+import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import { Ref, ref } from 'vue';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 
-export function useExerciseInfos(options?: { immediate?: boolean }): {
-  exerciseInfos: Ref<GetExerciseInfoResponse[]>;
+export function useWorkouts(options?: { immediate?: boolean }): {
+  workouts: Ref<GetWorkoutResponse[]>;
   update: () => Promise<void>;
 } {
-  const exerciseInfos = ref<GetExerciseInfoResponse[]>([]);
+  const workouts = ref<GetWorkoutResponse[]>([]);
 
   async function update(): Promise<void> {
-    const response = await apiClient.get('/api/v1/exerciseInfos');
+    const response = await apiClient.get('/api/v1/workouts');
 
     if (
       ErrorHandler.forResponse(response)
@@ -21,7 +21,7 @@ export function useExerciseInfos(options?: { immediate?: boolean }): {
       return;
     }
 
-    exerciseInfos.value = response.data;
+    workouts.value = response.data;
   }
 
   if (options?.immediate) {
@@ -29,7 +29,7 @@ export function useExerciseInfos(options?: { immediate?: boolean }): {
   }
 
   return {
-    exerciseInfos,
+    workouts,
     update,
   };
 }

@@ -1,30 +1,12 @@
 <script setup lang="ts">
 import Workout from '@/components/app/workout/Workout.vue';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
-import { apiClient } from '@/scripts/http/Clients';
-import { GetWorkoutResponse } from '@/scripts/schema/Types';
-import { ref } from 'vue';
+import { useWorkouts } from '@/composables/UseWorkouts';
 
-const workouts = ref<GetWorkoutResponse[]>([]);
-
-async function update(): Promise<void> {
-  const response = await apiClient.get('/api/v1/workouts');
-
-  if (
-    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
-  ) {
-    return;
-  }
-
-  workouts.value = response.data;
-}
+const { workouts, update } = useWorkouts({ immediate: true });
 
 defineExpose({
   update,
 });
-
-update();
 </script>
 
 <template>
