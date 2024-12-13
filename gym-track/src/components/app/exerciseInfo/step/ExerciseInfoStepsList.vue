@@ -1,0 +1,23 @@
+<script setup lang="ts">
+import { ExerciseInfoStepKey } from '@/scripts/schema/Types';
+import ExerciseInfoStep from './ExerciseInfoStep.vue';
+
+defineProps<{
+  stepKeys: ExerciseInfoStepKey[];
+}>();
+
+const emit = defineEmits<{
+  stepDeleted: [ExerciseInfoStepKey];
+}>();
+</script>
+
+<template>
+  <ol class="list-decimal">
+    <ExerciseInfoStep
+      v-for="key in stepKeys"
+      :key="key.index"
+      :stepKey="key"
+      @deleted="emit('stepDeleted', key)"
+    />
+  </ol>
+</template>

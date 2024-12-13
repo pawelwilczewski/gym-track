@@ -33,6 +33,11 @@ update();
       v-for="workout in workouts"
       :key="workout.id"
       :initialWorkout="workout"
+      @deleted="
+        workoutId => {
+          workouts = workouts.filter(workout => workout.id !== workoutId);
+        }
+      "
     />
   </div>
 </template>

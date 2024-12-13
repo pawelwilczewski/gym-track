@@ -4,10 +4,11 @@ import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
 import { GetWorkoutResponse, WorkoutExerciseKey } from '@/scripts/schema/Types';
-import { Ref, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '../misc/ButtonDialog.vue';
+import { UUID } from 'crypto';
 
 const props = defineProps<{
   initialWorkout: GetWorkoutResponse;
@@ -42,17 +43,22 @@ async function handleDelete(): Promise<void> {
   ) {
     return;
   }
-  workout.value = undefined;
+
+  emit('deleted', props.initialWorkout.id);
 }
 
 const workout = ref<GetWorkoutResponse | undefined>(props.initialWorkout);
 
-const exerciseKeys: Ref<WorkoutExerciseKey[]> = ref(
-  workout.value?.exercises ?? []
+const exerciseKeys = ref<WorkoutExerciseKey[]>([]);
+watch(
+  workout,
+  () => {
+    exerciseKeys.value = workout.value?.exercises ?? [];
+  },
+  { immediate: true }
 );
-watch(workout, () => {
-  exerciseKeys.value = workout.value?.exercises ?? [];
-});
+
+const emit = defineEmits<{ deleted: [UUID] }>();
 </script>
 
 <template>

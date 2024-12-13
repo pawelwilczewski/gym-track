@@ -2,14 +2,17 @@
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
-import { ref } from 'vue';
-import ExerciseInfoStep from './step/ExerciseInfoStep.vue';
+import {
+  ExerciseInfoStepKey,
+  GetExerciseInfoResponse,
+} from '@/scripts/schema/Types';
+import { ref, watch } from 'vue';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/scripts/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
 import Entity from '../Entity.vue';
+import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -29,7 +32,6 @@ async function update(): Promise<void> {
   ) {
     return;
   }
-
   exerciseInfo.value = response.data;
 }
 
@@ -52,6 +54,15 @@ async function handleDelete(): Promise<void> {
 
 const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
   props.initialExerciseInfo
+);
+
+const stepKeys = ref<ExerciseInfoStepKey[]>([]);
+watch(
+  exerciseInfo,
+  newExerciseInfo => {
+    stepKeys.value = newExerciseInfo?.steps ?? [];
+  },
+  { immediate: true }
 );
 
 defineExpose({
@@ -86,9 +97,14 @@ defineExpose({
 
     <div>
       <h4>Steps</h4>
-      <ol class="list-decimal">
-        <ExerciseInfoStep v-for="step in exerciseInfo.steps" :step-key="step" />
-      </ol>
+      <ExerciseInfoStepsList
+        :stepKeys="stepKeys"
+        @step-deleted="
+          key => {
+            stepKeys = stepKeys.filter(stepKey => stepKey !== key);
+          }
+        "
+      />
     </div>
 
     <ButtonDialog dialogTitle="Add Exercise Step">

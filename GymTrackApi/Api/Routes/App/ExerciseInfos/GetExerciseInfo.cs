@@ -21,6 +21,7 @@ internal sealed class GetExerciseInfo : IEndpoint
 		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
 			.Include(exerciseInfo => exerciseInfo.Users)
 			.Include(exerciseInfo => exerciseInfo.Exercises)
+			.Include(exerciseInfo => exerciseInfo.Steps)
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");

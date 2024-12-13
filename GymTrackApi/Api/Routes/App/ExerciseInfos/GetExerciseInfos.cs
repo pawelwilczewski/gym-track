@@ -17,9 +17,12 @@ internal sealed class GetExerciseInfos : IEndpoint
 	{
 		var userId = httpContext.User.GetUserId();
 		var isAdmin = httpContext.User.IsInRole(Role.ADMINISTRATOR);
+
 		var exerciseInfos = dataContext.ExerciseInfos
 			.Where(exerciseInfo => exerciseInfo.Users.Count <= 0 || isAdmin || exerciseInfo.Users.Any(user => user.UserId == userId))
+			.Include(exerciseInfo => exerciseInfo.Steps)
 			.AsNoTracking();
+
 		var exerciseInfosResponse = exerciseInfos.Select(exerciseInfo => new GetExerciseInfoResponse(
 			exerciseInfo.Id.Value,
 			exerciseInfo.Name.ToString(),
@@ -27,6 +30,7 @@ internal sealed class GetExerciseInfos : IEndpoint
 			exerciseInfo.AllowedMetricTypes,
 			exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.ToString() : null,
 			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index)).ToList()));
+
 		return TypedResults.Ok(await exerciseInfosResponse
 			.ToListAsync(cancellationToken)
 			.ConfigureAwait(false));

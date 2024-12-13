@@ -41,16 +41,19 @@ async function handleDelete(): Promise<void> {
     return;
   }
 
-  step.value = undefined;
+  emit('deleted', props.stepKey);
 }
 
-const step = ref<GetExerciseInfoStepResponse | undefined>(undefined);
+const emit = defineEmits<{
+  deleted: [ExerciseInfoStepKey];
+}>();
 
+const step = ref<GetExerciseInfoStepResponse | undefined>(undefined);
 update();
 </script>
 
 <template>
-  <Entity v-if="step" is="li" class="my-4" @delete="handleDelete">
+  <Entity v-if="step" is="li" class="my-4" @deleted="handleDelete">
     <p class="mb-2">{{ step.description }}</p>
     <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
