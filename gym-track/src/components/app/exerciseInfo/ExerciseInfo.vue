@@ -1,69 +1,25 @@
 <script setup lang="ts">
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { apiClient } from '@/scripts/http/Clients';
-import {
-  ExerciseInfoStepKey,
-  GetExerciseInfoResponse,
-} from '@/scripts/schema/Types';
-import { ref, watch } from 'vue';
+import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/scripts/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
 import Entity from '../Entity.vue';
 import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
+import { useExerciseInfo } from '@/composables/UseExerciseInfo';
+import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
 }>();
 
-async function update(): Promise<void> {
-  if (!exerciseInfo.value) {
-    return;
-  }
-
-  const response = await apiClient.get(
-    `/api/v1/exerciseInfos/${exerciseInfo.value.id}`
-  );
-
-  if (
-    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
-  ) {
-    return;
-  }
-  exerciseInfo.value = response.data;
-}
-
-async function handleDelete(): Promise<void> {
-  if (!exerciseInfo.value) {
-    return;
-  }
-
-  const response = await apiClient.delete(
-    `/api/v1/exerciseInfos/${exerciseInfo.value.id}`
-  );
-  if (
-    ErrorHandler.forResponse(response).handleFully(toastErrorHandler).wasError()
-  ) {
-    return;
-  }
-
-  exerciseInfo.value = undefined;
-}
-
-const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
-  props.initialExerciseInfo
+const { exerciseInfo, update, destroy } = useExerciseInfo(
+  props.initialExerciseInfo.id,
+  { initialValue: props.initialExerciseInfo }
 );
 
-const stepKeys = ref<ExerciseInfoStepKey[]>([]);
-watch(
-  exerciseInfo,
-  newExerciseInfo => {
-    stepKeys.value = newExerciseInfo?.steps ?? [];
-  },
-  { immediate: true }
-);
+const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
 defineExpose({
   update,
@@ -74,7 +30,7 @@ defineExpose({
   <Entity
     v-if="exerciseInfo"
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
-    @deleted="handleDelete"
+    @deleted="destroy"
   >
     <h3>{{ exerciseInfo.name }}</h3>
 
