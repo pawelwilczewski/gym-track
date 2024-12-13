@@ -9,6 +9,7 @@ import Entity from '../Entity.vue';
 import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
 import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
+import { UUID } from 'crypto';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -21,16 +22,17 @@ const { exerciseInfo, update, destroy } = useExerciseInfo(
 
 const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
-defineExpose({
-  update,
-});
+const emit = defineEmits<{ deleted: [UUID] }>();
 </script>
 
 <template>
   <Entity
     v-if="exerciseInfo"
     class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
-    @deleted="destroy"
+    @deleted="
+      destroy();
+      emit('deleted', initialExerciseInfo.id);
+    "
   >
     <h3>{{ exerciseInfo.name }}</h3>
 

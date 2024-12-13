@@ -1,28 +1,26 @@
 import { apiClient } from '@/scripts/http/Clients';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
+import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import { Ref, ref } from 'vue';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { toastErrorHandler } from '@/scripts/errors/Handlers';
 import { UUID } from 'crypto';
 
-export function useExerciseInfo(
+export function useWorkout(
   id: UUID,
-  options?: { immediate?: boolean; initialValue?: GetExerciseInfoResponse }
+  options?: { immediate?: boolean; initialValue?: GetWorkoutResponse }
 ): {
-  exerciseInfo: Ref<GetExerciseInfoResponse | undefined>;
+  workout: Ref<GetWorkoutResponse | undefined>;
   update: () => Promise<void>;
   destroy: () => Promise<void>;
 } {
-  const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
-    options?.initialValue
-  );
+  const workout = ref<GetWorkoutResponse | undefined>(options?.initialValue);
 
   if (options?.immediate && !options?.initialValue) {
     update();
   }
 
   async function update(): Promise<void> {
-    const response = await apiClient.get(`/api/v1/exerciseInfos/${id}`);
+    const response = await apiClient.get(`/api/v1/workouts/${id}`);
 
     if (
       ErrorHandler.forResponse(response)
@@ -32,11 +30,11 @@ export function useExerciseInfo(
       return;
     }
 
-    exerciseInfo.value = response.data;
+    workout.value = response.data;
   }
 
   async function destroy(): Promise<void> {
-    const response = await apiClient.delete(`/api/v1/exerciseInfos/${id}`);
+    const response = await apiClient.delete(`/api/v1/workouts/${id}`);
 
     if (
       ErrorHandler.forResponse(response)
@@ -48,7 +46,7 @@ export function useExerciseInfo(
   }
 
   return {
-    exerciseInfo,
+    workout,
     update,
     destroy,
   };

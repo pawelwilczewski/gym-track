@@ -14,6 +14,13 @@ defineExpose({
     <ExerciseInfo
       v-for="exerciseInfo in exerciseInfos"
       :initialExerciseInfo="exerciseInfo"
+      @deleted="
+        id => {
+          exerciseInfos = exerciseInfos.filter(
+            exerciseInfo => exerciseInfo.id !== id
+          );
+        }
+      "
     />
   </div>
 </template>
