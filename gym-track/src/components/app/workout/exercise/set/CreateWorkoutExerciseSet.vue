@@ -43,22 +43,22 @@ const onSubmit = form.handleSubmit(async values => {
   const request: { reps: number; metric: ExerciseMetric | undefined } = {
     reps: values.reps,
     metric:
-      values.metricType === ExerciseMetricType.Distance.toString()
+      values.metricType === ExerciseMetricType.Distance
         ? {
             $type: 'Distance',
-            value: values.distanceValue,
-            units: values.distanceUnits,
+            value: values.distanceValue!,
+            units: values.distanceUnits!,
           }
-        : values.metricType === ExerciseMetricType.Duration.toString()
+        : values.metricType === ExerciseMetricType.Duration
           ? {
               $type: 'Duration',
-              time: values.time,
+              time: values.time!,
             }
-          : values.metricType === ExerciseMetricType.Weight.toString()
+          : values.metricType === ExerciseMetricType.Weight
             ? {
                 $type: 'Weight',
-                value: values.weightValue,
-                units: values.weightUnits,
+                value: values.weightValue!,
+                units: values.weightUnits!,
               }
             : undefined,
   };
@@ -129,8 +129,12 @@ const onSubmit = form.handleSubmit(async values => {
               <SelectValue placeholder="Units" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem :value="DistanceUnit.Metre">Metres</SelectItem>
-              <SelectItem :value="DistanceUnit.Yard">Yards</SelectItem>
+              <SelectItem :value="DistanceUnit.Metre.toString()"
+                >Metres</SelectItem
+              >
+              <SelectItem :value="DistanceUnit.Yard.toString()"
+                >Yards</SelectItem
+              >
             </SelectContent>
           </Select>
         </FormControl>
@@ -157,8 +161,12 @@ const onSubmit = form.handleSubmit(async values => {
               <SelectValue placeholder="Units" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem :value="WeightUnit.Kilogram">Kilograms</SelectItem>
-              <SelectItem :value="WeightUnit.Pound">Pounds</SelectItem>
+              <SelectItem :value="WeightUnit.Kilogram.toString()"
+                >Kilograms</SelectItem
+              >
+              <SelectItem :value="WeightUnit.Pound.toString()"
+                >Pounds</SelectItem
+              >
             </SelectContent>
           </Select>
         </FormControl>

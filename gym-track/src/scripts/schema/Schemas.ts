@@ -16,15 +16,39 @@ export const createWorkoutExerciseSchema = toTypedSchema(
 );
 
 export const createWorkoutExerciseSetSchema = toTypedSchema(
-  z.object({
-    metricType: z.string(),
-    reps: z.number().int().positive(),
-    distanceValue: z.number().positive(),
-    distanceUnits: z.nativeEnum(DistanceUnit),
-    weightValue: z.number().positive(),
-    weightUnits: z.nativeEnum(WeightUnit),
-    time: z.string().time(),
-  })
+  z
+    .object({
+      metricType: z.preprocess(
+        val => Number(val),
+        z.nativeEnum(ExerciseMetricType)
+      ),
+      reps: z.number().int().positive(),
+      distanceValue: z.number().positive().optional(),
+      distanceUnits: z
+        .preprocess(val => Number(val), z.nativeEnum(DistanceUnit))
+        .optional(),
+      weightValue: z.number().positive().optional(),
+      weightUnits: z
+        .preprocess(val => Number(val), z.nativeEnum(WeightUnit))
+        .optional(),
+      time: z.string().time().optional(),
+    })
+    .refine(schema => {
+      switch (schema.metricType) {
+        case ExerciseMetricType.Distance: {
+          return schema.distanceValue != null && schema.distanceUnits != null;
+        }
+        case ExerciseMetricType.Duration: {
+          return schema.time;
+        }
+        case ExerciseMetricType.Weight: {
+          return schema.weightValue != null && schema.weightUnits != null;
+        }
+        default: {
+          return false;
+        }
+      }
+    }, 'All values are required.')
 );
 
 export const createExerciseInfoSchema = toTypedSchema(

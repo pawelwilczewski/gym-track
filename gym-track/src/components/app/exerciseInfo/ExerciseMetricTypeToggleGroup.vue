@@ -3,13 +3,16 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ExerciseMetricType } from '@/scripts/schema/Types';
 import { Weight, Clock, Route } from 'lucide-vue-next';
 import { SingleOrMultipleType } from 'node_modules/radix-vue/dist/shared/types';
+import { PropType } from 'vue';
 
-const { disabled = false } = defineProps<{
+const { disabled = false, toggleType } = defineProps<{
   disabled?: boolean;
   toggleType: SingleOrMultipleType;
 }>();
 
-const model = defineModel<string[]>();
+const model = defineModel({
+  type: [Array<string>, String] as PropType<Array<string> | string>,
+});
 </script>
 
 <template>

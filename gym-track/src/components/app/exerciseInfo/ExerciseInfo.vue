@@ -47,6 +47,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     <div>
       <h4 class="mb-2">Allowed Metric Types</h4>
       <ExerciseMetricTypeToggleGroup
+        toggle-type="multiple"
         :model-value="
           enumFlagsValueToStringArray(exerciseInfo.allowedMetricTypes)
         "
