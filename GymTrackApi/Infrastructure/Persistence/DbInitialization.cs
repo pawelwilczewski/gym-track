@@ -14,13 +14,13 @@ public static class DbInitialization
 		using var scope = serviceProvider.CreateScope();
 		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-		if (bool.TryParse(dbSection["DeleteExisting"], out var delete) && delete)
+		if (bool.TryParse(dbSection["DeleteDbIfExists"], out var delete) && delete)
 		{
 			await dbContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
 		}
 
 		var created = false;
-		if (bool.TryParse(dbSection["TryCreate"], out var create) && create)
+		if (bool.TryParse(dbSection["TryCreateDbIfNotExists"], out var create) && create)
 		{
 			await TryCreateDb(dbSection["ConnectionString"]!, async connection =>
 				{
