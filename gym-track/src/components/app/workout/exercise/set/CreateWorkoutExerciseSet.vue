@@ -1,0 +1,181 @@
+<script setup lang="ts">
+import { useForm } from 'vee-validate';
+import { apiClient } from '@/scripts/http/Clients';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import Button from '@/components/ui/button/Button.vue';
+import { createWorkoutExerciseSetSchema } from '@/scripts/schema/Schemas';
+import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
+import {
+  DistanceUnit,
+  ExerciseMetric,
+  ExerciseMetricType,
+  WeightUnit,
+  WorkoutExerciseKey,
+} from '@/scripts/schema/Types';
+import ExerciseMetricTypeToggleGroup from '@/components/app/exerciseInfo/ExerciseMetricTypeToggleGroup.vue';
+import Input from '@/components/ui/input/Input.vue';
+import Select from '@/components/ui/select/Select.vue';
+import SelectItem from '@/components/ui/select/SelectItem.vue';
+import SelectContent from '@/components/ui/select/SelectContent.vue';
+import SelectValue from '@/components/ui/select/SelectValue.vue';
+import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
+
+const props = defineProps<{
+  workoutExerciseKey: WorkoutExerciseKey;
+}>();
+
+const emit = defineEmits<{
+  created: [];
+}>();
+
+const form = useForm({
+  validationSchema: createWorkoutExerciseSetSchema,
+});
+
+const onSubmit = form.handleSubmit(async values => {
+  const request: { reps: number; metric: ExerciseMetric | undefined } = {
+    reps: values.reps,
+    metric:
+      values.metricType === ExerciseMetricType.Distance.toString()
+        ? {
+            $type: 'Distance',
+            value: values.distanceValue,
+            units: values.distanceUnits,
+          }
+        : values.metricType === ExerciseMetricType.Duration.toString()
+          ? {
+              $type: 'Duration',
+              time: values.time,
+            }
+          : values.metricType === ExerciseMetricType.Weight.toString()
+            ? {
+                $type: 'Weight',
+                value: values.weightValue,
+                units: values.weightUnits,
+              }
+            : undefined,
+  };
+
+  if (!request.metric) {
+    throw new Error(`Invalid request metric type: ${values.metricType}`);
+  }
+
+  const response = await apiClient.post(
+    `/api/v1/workouts/${props.workoutExerciseKey.workoutId}/exercises/${props.workoutExerciseKey.index}/sets`,
+    request
+  );
+
+  if (
+    ErrorHandler.forResponse(response)
+      .handlePartially(formErrorHandler, form)
+      .handleFully(toastErrorHandler)
+      .wasError()
+  ) {
+    return;
+  }
+
+  emit('created');
+});
+</script>
+
+<template>
+  <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
+    <FormField v-slot="{ componentField }" name="reps">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Reps</FormLabel>
+        <FormControl>
+          <Input placeholder="Reps" type="number" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="metricType">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Metric Type</FormLabel>
+        <FormControl>
+          <ExerciseMetricTypeToggleGroup
+            toggleType="single"
+            v-bind="componentField"
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="distanceValue">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Distance</FormLabel>
+        <FormControl>
+          <Input placeholder="Distance" type="number" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="distanceUnits">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Units</FormLabel>
+        <FormControl>
+          <Select v-bind="componentField">
+            <SelectTrigger>
+              <SelectValue placeholder="Units" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem :value="DistanceUnit.Metre">Metres</SelectItem>
+              <SelectItem :value="DistanceUnit.Yard">Yards</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="weightValue">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Weight</FormLabel>
+        <FormControl>
+          <Input placeholder="Weight" type="number" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="weightUnits">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Units</FormLabel>
+        <FormControl>
+          <Select v-bind="componentField">
+            <SelectTrigger>
+              <SelectValue placeholder="Units" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem :value="WeightUnit.Kilogram">Kilograms</SelectItem>
+              <SelectItem :value="WeightUnit.Pound">Pounds</SelectItem>
+            </SelectContent>
+          </Select>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField v-slot="{ componentField }" name="time">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Duration</FormLabel>
+        <FormControl>
+          <Input type="time" step="1" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <Button class="mx-auto mt-4" type="submit">Create</Button>
+  </form>
+</template>

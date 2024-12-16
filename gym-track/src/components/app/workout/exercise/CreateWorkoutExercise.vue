@@ -12,11 +12,11 @@ import Button from '@/components/ui/button/Button.vue';
 import { createWorkoutExerciseSchema } from '@/scripts/schema/Schemas';
 import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
-import { GetWorkoutResponse } from '@/scripts/schema/Types';
 import ExerciseInfosDropdown from '../../exerciseInfo/ExerciseInfosCombobox.vue';
+import { UUID } from 'crypto';
 
 const props = defineProps<{
-  workout: GetWorkoutResponse;
+  workoutId: UUID;
 }>();
 
 const emit = defineEmits<{
@@ -29,7 +29,7 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(async values => {
   const response = await apiClient.post(
-    `/api/v1/workouts/${props.workout.id}/exercises`,
+    `/api/v1/workouts/${props.workoutId}/exercises`,
     {
       exerciseInfoId: values.exerciseInfoId,
     }

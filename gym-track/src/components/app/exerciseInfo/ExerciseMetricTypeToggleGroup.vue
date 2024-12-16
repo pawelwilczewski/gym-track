@@ -2,14 +2,18 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ExerciseMetricType } from '@/scripts/schema/Types';
 import { Weight, Clock, Route } from 'lucide-vue-next';
+import { SingleOrMultipleType } from 'node_modules/radix-vue/dist/shared/types';
 
-const { disabled = false } = defineProps<{ disabled?: boolean }>();
+const { disabled = false } = defineProps<{
+  disabled?: boolean;
+  toggleType: SingleOrMultipleType;
+}>();
 
 const model = defineModel<string[]>();
 </script>
 
 <template>
-  <ToggleGroup type="multiple" v-model="model" :disabled="disabled">
+  <ToggleGroup :type="toggleType" v-model="model" :disabled="disabled">
     <ToggleGroupItem
       :value="ExerciseMetricType.Weight.toString()"
       aria-label="Toggle reps"

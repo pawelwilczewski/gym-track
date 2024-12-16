@@ -49,7 +49,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
       <template #button>Add Exercise</template>
       <template #dialog="{ closeDialog }"
         ><CreateWorkoutExercise
-          :workout="workout"
+          :workoutId="workout.id"
           @created="
             update();
             closeDialog();

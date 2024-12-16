@@ -59,6 +59,7 @@ const onSubmit = form.handleSubmit(async values => {
         <FormMessage />
       </FormItem>
     </FormField>
+
     <FormField v-slot="{ componentField }" name="description">
       <FormItem>
         <FormLabel class="text-lg !text-current">Description</FormLabel>
@@ -68,17 +69,22 @@ const onSubmit = form.handleSubmit(async values => {
         <FormMessage />
       </FormItem>
     </FormField>
+
     <FormField v-slot="{ componentField }" name="allowedMetricTypes">
       <FormItem>
         <FormLabel class="text-lg !text-current"
           >Allowed Metric Types</FormLabel
         >
         <FormControl>
-          <ExerciseMetricTypeToggleGroup v-bind="componentField" />
+          <ExerciseMetricTypeToggleGroup
+            toggleType="multiple"
+            v-bind="componentField"
+          />
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
+
     <FormField v-slot="{ setValue }" name="thumbnailImage">
       <FormItem>
         <FormLabel class="text-lg !text-current">Thumbnail Image</FormLabel>

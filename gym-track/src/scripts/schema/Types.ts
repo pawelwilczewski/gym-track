@@ -18,7 +18,6 @@ export type CreateWorkoutExerciseRequest = {
 };
 
 export type CreateWorkoutExerciseSetRequest = {
-  index: number;
   metric: ExerciseMetric;
   reps: number;
 };
@@ -106,30 +105,30 @@ export type WorkoutExerciseSetKey = {
 export type ExerciseMetric = Weight | Duration | Distance;
 
 export type Weight = {
-  type: 'Weight';
+  $type: 'Weight';
   value: Amount;
   units: WeightUnit;
 };
 
 export enum WeightUnit {
-  Kilogram = 'Kilogram',
-  Pound = 'Pound',
+  Kilogram = 0,
+  Pound = 1,
 }
 
 export type Duration = {
-  type: 'Duration';
+  $type: 'Duration';
   time: string;
 };
 
 export type Distance = {
-  type: 'Distance';
+  $type: 'Distance';
   value: Amount;
   units: DistanceUnit;
 };
 
 export enum DistanceUnit {
-  Metre = 'Metre',
-  Yard = 'Yard',
+  Metre = 0,
+  Yard = 1,
 }
 
 export type Amount = number;

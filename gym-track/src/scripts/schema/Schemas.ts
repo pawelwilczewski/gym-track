@@ -1,6 +1,6 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { z } from 'zod';
-import { ExerciseMetricType } from './Types';
+import { DistanceUnit, ExerciseMetricType, WeightUnit } from './Types';
 import { zodEnumFlagsAsStringArray } from './ZodUtils';
 
 export const createWorkoutSchema = toTypedSchema(
@@ -12,6 +12,18 @@ export const createWorkoutSchema = toTypedSchema(
 export const createWorkoutExerciseSchema = toTypedSchema(
   z.object({
     exerciseInfoId: z.string().uuid(),
+  })
+);
+
+export const createWorkoutExerciseSetSchema = toTypedSchema(
+  z.object({
+    metricType: z.string(),
+    reps: z.number().int().positive(),
+    distanceValue: z.number().positive(),
+    distanceUnits: z.nativeEnum(DistanceUnit),
+    weightValue: z.number().positive(),
+    weightUnits: z.nativeEnum(WeightUnit),
+    time: z.string().time(),
   })
 );
 
