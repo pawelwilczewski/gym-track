@@ -10,15 +10,16 @@ const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
 
 <template>
   <OneColumnLayout>
-    <ButtonDialog dialogTitle="Create New Workout">
+    <ButtonDialog dialog-title="Create New Workout">
       <template #button>Create Workout</template>
-      <template #dialog="{ closeDialog }"
-        ><CreateWorkout
+      <template #dialog="{ closeDialog }">
+        <CreateWorkout
           @created="
             workoutsList?.update();
             closeDialog();
           "
-      /></template>
+        />
+      </template>
     </ButtonDialog>
     <section>
       <h1 class="mt-10 mb-6">Your Workouts</h1>

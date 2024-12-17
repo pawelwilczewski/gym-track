@@ -17,14 +17,14 @@ const emit = defineEmits<{
   <component :is="is" class="relative">
     <slot />
     <div class="absolute top-0 right-0 flex">
-      <ButtonDialog dialogTitle="Edit" variant="ghost">
+      <ButtonDialog dialog-title="Edit" variant="ghost">
         <template #dialog>
           <slot name="edit">Your edit form goes here.</slot>
         </template>
         <template #button><Pencil class="w-4 h-4" /></template>
       </ButtonDialog>
-      <Button @click="emit('deleted')" variant="ghost" size="sm"
-        ><Trash2 class="w-4 h-4" />
+      <Button variant="ghost" size="sm" @click="emit('deleted')">
+        <Trash2 class="w-4 h-4" />
       </Button>
     </div>
   </component>

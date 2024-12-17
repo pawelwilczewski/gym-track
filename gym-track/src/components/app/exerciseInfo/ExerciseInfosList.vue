@@ -13,7 +13,8 @@ defineExpose({
   <div v-if="exerciseInfos" class="flex flex-col gap-4">
     <ExerciseInfo
       v-for="exerciseInfo in exerciseInfos"
-      :initialExerciseInfo="exerciseInfo"
+      :key="exerciseInfo.id"
+      :initial-exercise-info="exerciseInfo"
       @deleted="
         id => {
           exerciseInfos = exerciseInfos.filter(

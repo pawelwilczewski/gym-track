@@ -10,15 +10,16 @@ const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
 
 <template>
   <OneColumnLayout>
-    <ButtonDialog dialogTitle="Create New Exercise">
+    <ButtonDialog dialog-title="Create New Exercise">
       <template #button>Create Exercise</template>
-      <template #dialog="{ closeDialog }"
-        ><CreateExerciseInfo
+      <template #dialog="{ closeDialog }">
+        <CreateExerciseInfo
           @created="
             exerciseInfosList?.update();
             closeDialog();
           "
-      /></template>
+        />
+      </template>
     </ButtonDialog>
     <section>
       <h1 class="mb-6">Your Exercises</h1>

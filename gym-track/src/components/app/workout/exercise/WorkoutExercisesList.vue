@@ -16,7 +16,7 @@ const emit = defineEmits<{
     <WorkoutExercise
       v-for="key in exerciseKeys"
       :key="key.index"
-      :exerciseKey="key"
+      :exercise-key="key"
       @deleted="emit('exerciseDeleted', key)"
     />
   </ol>

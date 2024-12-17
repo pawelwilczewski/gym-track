@@ -16,27 +16,27 @@ const model = defineModel({
 </script>
 
 <template>
-  <ToggleGroup :type="toggleType" v-model="model" :disabled="disabled">
+  <ToggleGroup v-model="model" :type="toggleType" :disabled="disabled">
     <ToggleGroupItem
       :value="ExerciseMetricType.Weight.toString()"
       aria-label="Toggle reps"
-      class="whitespace-pre"
     >
-      <Weight class="h-4 w-4" /> Weight
+      <Weight class="h-4 w-4 mr-1" />
+      Weight
     </ToggleGroupItem>
     <ToggleGroupItem
       :value="ExerciseMetricType.Duration.toString()"
       aria-label="Toggle duration"
-      class="whitespace-pre"
     >
-      <Clock class="h-4 w-4" /> Duration
+      <Clock class="h-4 w-4 mr-1" />
+      Duration
     </ToggleGroupItem>
     <ToggleGroupItem
       :value="ExerciseMetricType.Distance.toString()"
       aria-label="Toggle distance"
-      class="whitespace-pre"
     >
-      <Route class="h-4 w-4" /> Distance
+      <Route class="h-4 w-4 mr-1" />
+      Distance
     </ToggleGroupItem>
   </ToggleGroup>
 </template>

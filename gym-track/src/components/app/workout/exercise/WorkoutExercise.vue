@@ -4,6 +4,7 @@ import { WorkoutExerciseKey } from '@/scripts/schema/Types';
 import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
 import CreateWorkoutExerciseSet from './set/CreateWorkoutExerciseSet.vue';
+import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
 
 const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
@@ -29,7 +30,17 @@ const emit = defineEmits<{
   >
     <h4>{{ workoutExercise.index }}</h4>
     <p>{{ workoutExercise.exerciseInfoId }}</p>
-    <div v-for="set in workoutExercise.sets">{{ set.workoutId }}</div>
+
+    <div>
+      <h5 class="mb-2">Sets</h5>
+      <ol class="list-decimal flex flex-col gap-4">
+        <WorkoutExerciseSet
+          v-for="key in workoutExercise.sets"
+          :key="key.index"
+          :exercise-set-key="key"
+        />
+      </ol>
+    </div>
 
     <ButtonDialog dialog-title="Create Exercise Set">
       <template #button>Create Set</template>
