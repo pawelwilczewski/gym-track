@@ -110,79 +110,105 @@ const onSubmit = form.handleSubmit(async values => {
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="distanceValue">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Distance</FormLabel>
-        <FormControl>
-          <Input placeholder="Distance" type="number" v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+    <template
+      v-if="
+        form.controlledValues.value.metricType == ExerciseMetricType.Distance
+      "
+    >
+      <FormField v-slot="{ componentField }" name="distanceValue">
+        <FormItem>
+          <FormLabel class="text-lg !text-current">Distance</FormLabel>
+          <FormControl>
+            <Input
+              placeholder="Distance"
+              type="number"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
 
-    <FormField v-slot="{ componentField }" name="distanceUnits">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Units</FormLabel>
-        <FormControl>
-          <Select v-bind="componentField">
-            <SelectTrigger>
-              <SelectValue placeholder="Units" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem :value="DistanceUnit.Metre.toString()"
-                >Metres</SelectItem
-              >
-              <SelectItem :value="DistanceUnit.Yard.toString()"
-                >Yards</SelectItem
-              >
-            </SelectContent>
-          </Select>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+      <FormField v-slot="{ componentField }" name="distanceUnits">
+        <FormItem>
+          <FormLabel class="text-lg !text-current">Units</FormLabel>
+          <FormControl>
+            <Select v-bind="componentField">
+              <SelectTrigger>
+                <SelectValue placeholder="Units" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem :value="DistanceUnit.Metre.toString()"
+                  >Metres</SelectItem
+                >
+                <SelectItem :value="DistanceUnit.Yard.toString()"
+                  >Yards</SelectItem
+                >
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </template>
 
-    <FormField v-slot="{ componentField }" name="weightValue">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Weight</FormLabel>
-        <FormControl>
-          <Input placeholder="Weight" type="number" v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+    <template
+      v-if="form.controlledValues.value.metricType == ExerciseMetricType.Weight"
+    >
+      <FormField
+        v-if="
+          form.controlledValues.value.metricType == ExerciseMetricType.Weight
+        "
+        v-slot="{ componentField }"
+        name="weightValue"
+      >
+        <FormItem>
+          <FormLabel class="text-lg !text-current">Weight</FormLabel>
+          <FormControl>
+            <Input placeholder="Weight" type="number" v-bind="componentField" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
 
-    <FormField v-slot="{ componentField }" name="weightUnits">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Units</FormLabel>
-        <FormControl>
-          <Select v-bind="componentField">
-            <SelectTrigger>
-              <SelectValue placeholder="Units" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem :value="WeightUnit.Kilogram.toString()"
-                >Kilograms</SelectItem
-              >
-              <SelectItem :value="WeightUnit.Pound.toString()"
-                >Pounds</SelectItem
-              >
-            </SelectContent>
-          </Select>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+      <FormField v-slot="{ componentField }" name="weightUnits">
+        <FormItem>
+          <FormLabel class="text-lg !text-current">Units</FormLabel>
+          <FormControl>
+            <Select v-bind="componentField">
+              <SelectTrigger>
+                <SelectValue placeholder="Units" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem :value="WeightUnit.Kilogram.toString()"
+                  >Kilograms</SelectItem
+                >
+                <SelectItem :value="WeightUnit.Pound.toString()"
+                  >Pounds</SelectItem
+                >
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </template>
 
-    <FormField v-slot="{ componentField }" name="time">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Duration</FormLabel>
-        <FormControl>
-          <Input type="time" step="1" v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+    <template
+      v-if="
+        form.controlledValues.value.metricType == ExerciseMetricType.Duration
+      "
+    >
+      <FormField v-slot="{ componentField }" name="time">
+        <FormItem>
+          <FormLabel class="text-lg !text-current">Duration</FormLabel>
+          <FormControl>
+            <Input type="time" step="1" v-bind="componentField" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+    </template>
 
     <Button class="mx-auto mt-4" type="submit">Create</Button>
   </form>
