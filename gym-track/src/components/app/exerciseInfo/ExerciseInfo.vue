@@ -28,7 +28,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
 <template>
   <Entity
     v-if="exerciseInfo"
-    class="mx-auto border border-border rounded-xl flex flex-col gap-6 p-8"
+    class="card"
     @deleted="
       destroy();
       emit('deleted', exerciseInfo.id);
@@ -58,7 +58,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     <div>
       <h4>Steps</h4>
       <ExerciseInfoStepsList
-        :stepKeys="stepKeys"
+        :step-keys="stepKeys"
         @step-deleted="
           key => {
             stepKeys = stepKeys.filter(stepKey => stepKey !== key);
@@ -67,11 +67,11 @@ const emit = defineEmits<{ deleted: [UUID] }>();
       />
     </div>
 
-    <ButtonDialog dialogTitle="Add Exercise Step">
+    <ButtonDialog dialog-title="Add Exercise Step">
       <template #button>Add Step</template>
       <template #dialog="{ closeDialog }">
         <CreateExerciseInfoStep
-          :exerciseInfoId="exerciseInfo.id"
+          :exercise-info-id="exerciseInfo.id"
           @created="
             update();
             closeDialog();

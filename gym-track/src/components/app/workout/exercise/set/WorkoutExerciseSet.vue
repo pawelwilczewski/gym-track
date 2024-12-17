@@ -33,7 +33,7 @@ const emit = defineEmits<{
       emit('deleted', props.exerciseSetKey);
     "
   >
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 px-4">
       <span class="flex gap-1">
         <Tally5 class="w-4 h-4 my-auto" />
         {{ workoutExerciseSet.reps }}

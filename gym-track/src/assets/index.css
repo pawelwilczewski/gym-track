@@ -107,4 +107,8 @@
   h6 {
     @apply font-semibold;
   }
+
+  .card {
+    @apply mx-auto border border-border rounded-xl flex flex-col gap-6 p-8;
+  }
 }

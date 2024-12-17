@@ -21,32 +21,33 @@ const emit = defineEmits<{
 
 <template>
   <Entity
+    is="li"
     v-if="workoutExercise"
-    class="flex flex-col gap-6 p-8"
     @deleted="
       destroy();
       emit('deleted', props.exerciseKey);
     "
   >
-    <h4>{{ workoutExercise.index }}</h4>
-    <p>{{ workoutExercise.exerciseInfoId }}</p>
+    <div class="flex flex-col gap-6 py-8 px-4">
+      <p>{{ workoutExercise.exerciseInfoId }}</p>
 
-    <div>
-      <h5 class="mb-2">Sets</h5>
-      <ol class="list-decimal flex flex-col gap-4">
-        <WorkoutExerciseSet
-          v-for="key in workoutExercise.sets"
-          :key="key.index"
-          :exercise-set-key="key"
-        />
-      </ol>
+      <div>
+        <h5 class="mb-2">Sets</h5>
+        <ol class="list-decimal flex flex-col gap-6">
+          <WorkoutExerciseSet
+            v-for="key in workoutExercise.sets"
+            :key="key.index"
+            :exercise-set-key="key"
+          />
+        </ol>
+      </div>
+
+      <ButtonDialog dialog-title="Create Exercise Set">
+        <template #button>Create Set</template>
+        <template #dialog>
+          <CreateWorkoutExerciseSet :workout-exercise-key="exerciseKey" />
+        </template>
+      </ButtonDialog>
     </div>
-
-    <ButtonDialog dialog-title="Create Exercise Set">
-      <template #button>Create Set</template>
-      <template #dialog>
-        <CreateWorkoutExerciseSet :workout-exercise-key="exerciseKey" />
-      </template>
-    </ButtonDialog>
   </Entity>
 </template>
