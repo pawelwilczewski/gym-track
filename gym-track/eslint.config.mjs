@@ -13,6 +13,11 @@ export default [
       parserOptions: {
         parser: typescriptEslintParser,
         extraFileExtensions: ['.vue'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.app.json',
+          './tsconfig.node.json',
+        ],
       },
     },
     plugins: {
@@ -24,6 +29,7 @@ export default [
     rules: {
       '@typescript-eslint/explicit-function-return-type': ['error'],
       '@typescript-eslint/explicit-module-boundary-types': ['error'],
+      '@typescript-eslint/switch-exhaustiveness-check': ['error'],
       '@typescript-eslint/no-var-requires': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'prefer-promise-reject-errors': 'off',
