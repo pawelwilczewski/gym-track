@@ -60,6 +60,7 @@ const emit = defineEmits<{
         <template #dialog="{ closeDialog }">
           <CreateWorkoutExerciseSet
             :workout-exercise-key="exerciseKey"
+            :exercise-info-id="workoutExercise.exerciseInfoId"
             @created="
               update();
               closeDialog();

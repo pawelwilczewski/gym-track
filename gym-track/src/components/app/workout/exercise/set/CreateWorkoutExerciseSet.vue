@@ -26,9 +26,12 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
+import { useExerciseInfo } from '@/composables/UseExerciseInfo';
+import { UUID } from 'crypto';
 
 const props = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
+  exerciseInfoId: UUID;
 }>();
 
 const emit = defineEmits<{
@@ -37,6 +40,10 @@ const emit = defineEmits<{
 
 const form = useForm({
   validationSchema: createWorkoutExerciseSetSchema,
+});
+
+const { exerciseInfo } = useExerciseInfo(props.exerciseInfoId, {
+  immediate: true,
 });
 
 const onSubmit = form.handleSubmit(async values => {
@@ -102,8 +109,9 @@ const onSubmit = form.handleSubmit(async values => {
         <FormLabel class="text-lg !text-current">Metric Type</FormLabel>
         <FormControl>
           <ExerciseMetricTypeToggleGroup
-            toggleType="single"
+            toggle-type="single"
             v-bind="componentField"
+            :enabled-options="exerciseInfo?.allowedMetricTypes"
           />
         </FormControl>
         <FormMessage />
@@ -138,12 +146,12 @@ const onSubmit = form.handleSubmit(async values => {
                 <SelectValue placeholder="Units" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem :value="DistanceUnit.Metre.toString()"
-                  >Metres</SelectItem
-                >
-                <SelectItem :value="DistanceUnit.Yard.toString()"
-                  >Yards</SelectItem
-                >
+                <SelectItem :value="DistanceUnit.Metre.toString()">
+                  Metres
+                </SelectItem>
+                <SelectItem :value="DistanceUnit.Yard.toString()">
+                  Yards
+                </SelectItem>
               </SelectContent>
             </Select>
           </FormControl>
@@ -180,12 +188,12 @@ const onSubmit = form.handleSubmit(async values => {
                 <SelectValue placeholder="Units" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem :value="WeightUnit.Kilogram.toString()"
-                  >Kilograms</SelectItem
-                >
-                <SelectItem :value="WeightUnit.Pound.toString()"
-                  >Pounds</SelectItem
-                >
+                <SelectItem :value="WeightUnit.Kilogram.toString()">
+                  Kilograms
+                </SelectItem>
+                <SelectItem :value="WeightUnit.Pound.toString()">
+                  Pounds
+                </SelectItem>
               </SelectContent>
             </Select>
           </FormControl>
