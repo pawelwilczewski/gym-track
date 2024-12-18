@@ -10,9 +10,12 @@ const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
 }>();
 
-const { workoutExercise, destroy } = useWorkoutExercise(props.exerciseKey, {
-  immediate: true,
-});
+const { workoutExercise, update, destroy } = useWorkoutExercise(
+  props.exerciseKey,
+  {
+    immediate: true,
+  }
+);
 
 const emit = defineEmits<{
   deleted: [WorkoutExerciseKey];
@@ -54,8 +57,14 @@ const emit = defineEmits<{
 
       <ButtonDialog dialog-title="Create Exercise Set">
         <template #button>Create Set</template>
-        <template #dialog>
-          <CreateWorkoutExerciseSet :workout-exercise-key="exerciseKey" />
+        <template #dialog="{ closeDialog }">
+          <CreateWorkoutExerciseSet
+            :workout-exercise-key="exerciseKey"
+            @created="
+              update();
+              closeDialog();
+            "
+          />
         </template>
       </ButtonDialog>
     </div>
