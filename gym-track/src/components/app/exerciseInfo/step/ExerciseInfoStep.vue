@@ -19,8 +19,8 @@ const emit = defineEmits<{
 
 <template>
   <Entity
-    v-if="step"
     is="li"
+    v-if="step"
     class="my-4"
     @deleted="
       destroy();

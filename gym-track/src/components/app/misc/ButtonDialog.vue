@@ -22,7 +22,7 @@ const { variant = 'outline' } = defineProps<{
     <DialogContent>
       <DialogDescription></DialogDescription>
       <DialogTitle>{{ dialogTitle }}</DialogTitle>
-      <slot name="dialog" :closeDialog="() => (open = false)" />
+      <slot name="dialog" :close-dialog="() => (open = false)" />
     </DialogContent>
   </Dialog>
 </template>

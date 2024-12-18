@@ -16,7 +16,7 @@ const emit = defineEmits<{
     <ExerciseInfoStep
       v-for="key in stepKeys"
       :key="key.index"
-      :stepKey="key"
+      :step-key="key"
       @deleted="emit('stepDeleted', key)"
     />
   </ol>

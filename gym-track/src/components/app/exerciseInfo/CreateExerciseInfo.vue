@@ -72,12 +72,12 @@ const onSubmit = form.handleSubmit(async values => {
 
     <FormField v-slot="{ componentField }" name="allowedMetricTypes">
       <FormItem>
-        <FormLabel class="text-lg !text-current"
-          >Allowed Metric Types</FormLabel
-        >
+        <FormLabel class="text-lg !text-current">
+          Allowed Metric Types
+        </FormLabel>
         <FormControl>
           <ExerciseMetricTypeToggleGroup
-            toggleType="multiple"
+            toggle-type="multiple"
             v-bind="componentField"
           />
         </FormControl>
