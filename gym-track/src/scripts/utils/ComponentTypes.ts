@@ -1,3 +1,3 @@
 import { type Component } from 'vue';
 
-export type ComponentIsType = string | Component | (() => Component);
+export type IsComponentType = string | Component | (() => Component);
