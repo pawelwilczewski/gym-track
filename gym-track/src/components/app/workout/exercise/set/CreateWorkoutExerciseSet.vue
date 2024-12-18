@@ -16,6 +16,7 @@ import {
   DistanceUnit,
   ExerciseMetric,
   ExerciseMetricType,
+  GetExerciseInfoResponse,
   WeightUnit,
   WorkoutExerciseKey,
 } from '@/scripts/schema/Types';
@@ -26,12 +27,10 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
-import { useExerciseInfo } from '@/composables/UseExerciseInfo';
-import { UUID } from 'crypto';
 
 const props = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
-  exerciseInfoId: UUID;
+  exerciseInfo: GetExerciseInfoResponse | undefined | null;
 }>();
 
 const emit = defineEmits<{
@@ -40,10 +39,6 @@ const emit = defineEmits<{
 
 const form = useForm({
   validationSchema: createWorkoutExerciseSetSchema,
-});
-
-const { exerciseInfo } = useExerciseInfo(props.exerciseInfoId, {
-  immediate: true,
 });
 
 const onSubmit = form.handleSubmit(async values => {

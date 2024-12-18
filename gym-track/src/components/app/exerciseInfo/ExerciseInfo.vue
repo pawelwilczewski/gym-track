@@ -10,13 +10,14 @@ import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
 import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
+import { computed } from 'vue';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
 }>();
 
 const { exerciseInfo, update, destroy } = useExerciseInfo(
-  props.initialExerciseInfo.id,
+  computed(() => props.initialExerciseInfo.id),
   { initialValue: props.initialExerciseInfo }
 );
 

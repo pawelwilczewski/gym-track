@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ExerciseMetric } from '@/scripts/schema/Types';
 import { formatDistance, formatWeight } from '@/scripts/utils/Formatters';
-import { Clock, Weight } from 'lucide-vue-next';
+import { Clock, Route, Weight } from 'lucide-vue-next';
 
 defineProps<{
   exerciseMetric: ExerciseMetric;
