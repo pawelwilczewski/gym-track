@@ -3,7 +3,7 @@ import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import WorkoutsList from '@/components/app/workout/WorkoutsList.vue';
 import { ref } from 'vue';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
-import CreateWorkout from '@/components/app/workout/CreateWorkout.vue';
+import CreateWorkoutForm from '@/components/app/workout/CreateWorkoutForm.vue';
 
 const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
 </script>
@@ -13,7 +13,7 @@ const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
     <ButtonDialog dialog-title="Create New Workout">
       <template #button>Create Workout</template>
       <template #dialog="{ closeDialog }">
-        <CreateWorkout
+        <CreateWorkoutForm
           @created="
             workoutsList?.update();
             closeDialog();

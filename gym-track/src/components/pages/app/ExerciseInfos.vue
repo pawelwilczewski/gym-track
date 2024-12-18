@@ -22,7 +22,7 @@ const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
       </template>
     </ButtonDialog>
     <section>
-      <h1 class="mb-6">Your Exercises</h1>
+      <h1 class="mt-10 mb-6">Your Exercises</h1>
       <ExerciseInfosList ref="exerciseInfosList" />
     </section>
   </OneColumnLayout>
