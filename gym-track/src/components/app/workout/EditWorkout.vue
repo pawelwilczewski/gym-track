@@ -14,17 +14,31 @@ import { createWorkoutSchema } from '@/app/schema/Schemas';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { toTypedSchema } from '@vee-validate/zod';
+import { z } from 'zod';
+import { UUID } from 'crypto';
+
+const props = defineProps<{
+  workoutId: UUID;
+  initialValues: z.infer<typeof createWorkoutSchema>;
+}>();
 
 const form = useForm({
   validationSchema: toTypedSchema(createWorkoutSchema),
 });
 
+if (props.initialValues) {
+  form.setValues(props.initialValues, false);
+}
+
 const emit = defineEmits<{
-  created: [];
+  edited: [];
 }>();
 
 const onSubmit = form.handleSubmit(async values => {
-  const response = await apiClient.post('/api/v1/workouts', values);
+  const response = await apiClient.put(
+    `/api/v1/workouts/${props.workoutId}`,
+    values
+  );
 
   if (
     ErrorHandler.forResponse(response)
@@ -35,7 +49,7 @@ const onSubmit = form.handleSubmit(async values => {
     return;
   }
 
-  emit('created');
+  emit('edited');
 });
 </script>
 
@@ -50,6 +64,6 @@ const onSubmit = form.handleSubmit(async values => {
         <FormMessage />
       </FormItem>
     </FormField>
-    <Button class="mx-auto px-8 mt-4" type="submit">Create</Button>
+    <Button class="mx-auto px-8 mt-4" type="submit">Edit</Button>
   </form>
 </template>
