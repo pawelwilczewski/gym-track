@@ -7,6 +7,7 @@ import CreateWorkoutExerciseSet from './set/CreateWorkoutExerciseSet.vue';
 import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
 import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { computed, watch } from 'vue';
+import EditWorkoutExerciseForm from './EditWorkoutExerciseForm.vue';
 
 const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
@@ -34,6 +35,7 @@ const emit = defineEmits<{
   <Entity
     is="li"
     v-if="workoutExercise"
+    :editable="false"
     @deleted="
       destroy();
       emit('deleted', props.exerciseKey);
@@ -77,5 +79,14 @@ const emit = defineEmits<{
         </template>
       </ButtonDialog>
     </div>
+    <template #edit="{ closeDialog }">
+      <EditWorkoutExerciseForm
+        :workout-exercise-key="exerciseKey"
+        @edited="
+          update();
+          closeDialog();
+        "
+      />
+    </template>
   </Entity>
 </template>

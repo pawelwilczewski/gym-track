@@ -25,7 +25,7 @@ const model = defineModel<UUID | undefined>();
 
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
-const { exerciseInfos, update } = useExerciseInfos();
+const { exerciseInfos } = useExerciseInfos({ immediate: true });
 
 function encodeSelectedValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
@@ -78,8 +78,6 @@ function handleSelected(event: SelectEvent<AcceptableValue>): void {
   }
   isOpen.value = false;
 }
-
-update();
 </script>
 
 <template>

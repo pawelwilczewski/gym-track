@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Entity from '../Entity.vue';
 import { GetWorkoutResponse } from '@/app/schema/Types';
-import CreateWorkoutExercise from '@/components/app/workout/exercise/CreateWorkoutExercise.vue';
+import CreateWorkoutExerciseForm from '@/components/app/workout/exercise/CreateWorkoutExerciseForm.vue';
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import { UUID } from 'crypto';
@@ -48,7 +48,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     <ButtonDialog dialog-title="Create Workout Exercise">
       <template #button>Add Exercise</template>
       <template #dialog="{ closeDialog }">
-        <CreateWorkoutExercise
+        <CreateWorkoutExerciseForm
           :workout-id="workout.id"
           @created="
             update();
