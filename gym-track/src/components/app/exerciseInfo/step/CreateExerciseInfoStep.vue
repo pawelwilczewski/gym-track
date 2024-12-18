@@ -15,11 +15,12 @@ import Textarea from '@/components/ui/textarea/Textarea.vue';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { UUID } from 'crypto';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const props = defineProps<{ exerciseInfoId: UUID }>();
 
 const form = useForm({
-  validationSchema: createExerciseInfoStepSchema,
+  validationSchema: toTypedSchema(createExerciseInfoStepSchema),
 });
 
 const emit = defineEmits<{

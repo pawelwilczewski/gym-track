@@ -18,8 +18,10 @@ const emit = defineEmits<{
     <slot />
     <div class="absolute top-0 right-0 flex">
       <ButtonDialog dialog-title="Edit" variant="ghost">
-        <template #dialog>
-          <slot name="edit">Your edit form goes here.</slot>
+        <template #dialog="{ closeDialog }">
+          <slot name="edit" :close-dialog="closeDialog">
+            Your edit form goes here.
+          </slot>
         </template>
         <template #button><Pencil class="w-4 h-4" /></template>
       </ButtonDialog>

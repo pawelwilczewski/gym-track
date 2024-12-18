@@ -27,6 +27,7 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const props = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
@@ -38,7 +39,7 @@ const emit = defineEmits<{
 }>();
 
 const form = useForm({
-  validationSchema: createWorkoutExerciseSetSchema,
+  validationSchema: toTypedSchema(createWorkoutExerciseSetSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

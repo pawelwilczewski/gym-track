@@ -14,6 +14,7 @@ import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import ExerciseInfosDropdown from '../../exerciseInfo/ExerciseInfosCombobox.vue';
 import { UUID } from 'crypto';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const props = defineProps<{
   workoutId: UUID;
@@ -24,7 +25,7 @@ const emit = defineEmits<{
 }>();
 
 const form = useForm({
-  validationSchema: createWorkoutExerciseSchema,
+  validationSchema: toTypedSchema(createWorkoutExerciseSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

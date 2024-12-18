@@ -16,9 +16,10 @@ import { signUpSchema } from '@/app/schema/Schemas';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import router from '@/Router';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: signUpSchema,
+  validationSchema: toTypedSchema(signUpSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

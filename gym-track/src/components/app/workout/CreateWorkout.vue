@@ -13,9 +13,10 @@ import Input from '@/components/ui/input/Input.vue';
 import { createWorkoutSchema } from '@/app/schema/Schemas';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: createWorkoutSchema,
+  validationSchema: toTypedSchema(createWorkoutSchema),
 });
 
 const emit = defineEmits<{

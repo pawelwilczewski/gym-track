@@ -20,9 +20,10 @@ import {
   invalidCredentialsErrorHandler,
   toastErrorHandler,
 } from '@/app/errors/Handlers';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: logInRequestSchema,
+  validationSchema: toTypedSchema(logInRequestSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

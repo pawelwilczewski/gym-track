@@ -16,9 +16,10 @@ import { Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
 import Countdown from '@/components/app/misc/Countdown.vue';
 import { forgotPasswordSchema } from '@/app/schema/Schemas';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: forgotPasswordSchema,
+  validationSchema: toTypedSchema(forgotPasswordSchema),
 });
 
 const resubmitTime: number = 60;
@@ -27,7 +28,7 @@ const countdown = ref<typeof Countdown | undefined>(undefined);
 const sendEmailEnabled = ref(true);
 
 const onSubmit = form.handleSubmit(values => {
-  if (!sendEmailEnabled) {
+  if (!sendEmailEnabled.value) {
     return;
   }
 
@@ -57,24 +58,24 @@ const handleCountdownComplete: () => void = () => {
             <FormControl>
               <Input type="email" placeholder="Email" v-bind="componentField" />
             </FormControl>
-            <FormDescription
-              >If an account with this email exists, the reset link will be
-              sent.</FormDescription
-            >
+            <FormDescription>
+              If an account with this email exists, the reset link will be
+            </FormDescription>
             <FormMessage />
           </FormItem>
         </FormField>
 
         <div class="flex gap-2 justify-center mt-4">
-          <Button :disabled="!sendEmailEnabled" type="submit"
-            ><Mail class="w-4 h-4 mr-2" /> Send Reset Email</Button
-          >
+          <Button :disabled="!sendEmailEnabled" type="submit">
+            <Mail class="w-4 h-4 mr-2" />
+            Send Reset Email
+          </Button>
           <div v-show="!sendEmailEnabled" class="my-auto">
             <Countdown
+              ref="countdown"
               :total-duration-seconds="resubmitTime"
               :tick-interval-seconds="1"
               @complete="handleCountdownComplete"
-              ref="countdown"
             ></Countdown>
           </div>
         </div>

@@ -7,6 +7,7 @@ import ButtonDialog from '../misc/ButtonDialog.vue';
 import { UUID } from 'crypto';
 import { useWorkout } from '@/composables/UseWorkout';
 import { useWorkoutExerciseKeys } from '@/composables/UseWorkoutExerciseKeys';
+import CreateWorkout from './CreateWorkout.vue';
 
 const props = defineProps<{
   initialWorkout: GetWorkoutResponse;
@@ -56,5 +57,14 @@ const emit = defineEmits<{ deleted: [UUID] }>();
         />
       </template>
     </ButtonDialog>
+    <template #edit="{ closeDialog }">
+      <CreateWorkout
+        :initial-values="{ name: workout.name }"
+        @created="
+          update();
+          closeDialog();
+        "
+      />
+    </template>
   </Entity>
 </template>

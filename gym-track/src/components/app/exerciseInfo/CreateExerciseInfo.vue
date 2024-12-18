@@ -15,9 +15,10 @@ import Textarea from '@/components/ui/textarea/Textarea.vue';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
+import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: createExerciseInfoSchema,
+  validationSchema: toTypedSchema(createExerciseInfoSchema),
 });
 
 const emit = defineEmits<{
