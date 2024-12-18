@@ -38,6 +38,16 @@ const emit = defineEmits<{
             v-for="key in workoutExercise.sets"
             :key="key.index"
             :exercise-set-key="key"
+            @deleted="
+              key => {
+                if (!workoutExercise) {
+                  return;
+                }
+                workoutExercise.sets = workoutExercise.sets.filter(
+                  exerciseKey => exerciseKey !== key
+                );
+              }
+            "
           />
         </ol>
       </div>
