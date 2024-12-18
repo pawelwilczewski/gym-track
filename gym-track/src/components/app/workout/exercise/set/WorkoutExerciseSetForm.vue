@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
 import {
   FormControl,
   FormField,
@@ -9,16 +7,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import Button from '@/components/ui/button/Button.vue';
-import { createWorkoutExerciseSetSchema } from '@/app/schema/Schemas';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import {
   DistanceUnit,
-  ExerciseMetric,
   ExerciseMetricType,
   GetExerciseInfoResponse,
   WeightUnit,
-  WorkoutExerciseKey,
 } from '@/app/schema/Types';
 import ExerciseMetricTypeToggleGroup from '@/components/app/exerciseInfo/ExerciseMetricTypeToggleGroup.vue';
 import Input from '@/components/ui/input/Input.vue';
@@ -27,65 +20,14 @@ import SelectItem from '@/components/ui/select/SelectItem.vue';
 import SelectContent from '@/components/ui/select/SelectContent.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
-import { toTypedSchema } from '@vee-validate/zod';
+import { FormContext } from 'vee-validate';
 
-const props = defineProps<{
-  workoutExerciseKey: WorkoutExerciseKey;
+defineProps<{
+  form: FormContext;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
+  submitLabel: string;
+  onSubmit: () => void;
 }>();
-
-const emit = defineEmits<{
-  created: [];
-}>();
-
-const form = useForm({
-  validationSchema: toTypedSchema(createWorkoutExerciseSetSchema),
-});
-
-const onSubmit = form.handleSubmit(async values => {
-  const request: { reps: number; metric: ExerciseMetric | undefined } = {
-    reps: values.reps,
-    metric:
-      values.metricType === ExerciseMetricType.Distance
-        ? {
-            $type: 'Distance',
-            value: values.distanceValue!,
-            units: values.distanceUnits!,
-          }
-        : values.metricType === ExerciseMetricType.Duration
-          ? {
-              $type: 'Duration',
-              time: values.time!,
-            }
-          : values.metricType === ExerciseMetricType.Weight
-            ? {
-                $type: 'Weight',
-                value: values.weightValue!,
-                units: values.weightUnits!,
-              }
-            : undefined,
-  };
-
-  if (!request.metric) {
-    throw new Error(`Invalid request metric type: ${values.metricType}`);
-  }
-
-  const response = await apiClient.post(
-    `/api/v1/workouts/${props.workoutExerciseKey.workoutId}/exercises/${props.workoutExerciseKey.index}/sets`,
-    request
-  );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
-    return;
-  }
-
-  emit('created');
-});
 </script>
 
 <template>
@@ -159,13 +101,7 @@ const onSubmit = form.handleSubmit(async values => {
     <template
       v-if="form.controlledValues.value.metricType == ExerciseMetricType.Weight"
     >
-      <FormField
-        v-if="
-          form.controlledValues.value.metricType == ExerciseMetricType.Weight
-        "
-        v-slot="{ componentField }"
-        name="weightValue"
-      >
+      <FormField v-slot="{ componentField }" name="weightValue">
         <FormItem>
           <FormLabel class="text-lg !text-current">Weight</FormLabel>
           <FormControl>
@@ -198,21 +134,21 @@ const onSubmit = form.handleSubmit(async values => {
       </FormField>
     </template>
 
-    <template
+    <FormField
       v-if="
         form.controlledValues.value.metricType == ExerciseMetricType.Duration
       "
+      v-slot="{ componentField }"
+      name="time"
     >
-      <FormField v-slot="{ componentField }" name="time">
-        <FormItem>
-          <FormLabel class="text-lg !text-current">Duration</FormLabel>
-          <FormControl>
-            <Input type="time" step="1" v-bind="componentField" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-    </template>
+      <FormItem>
+        <FormLabel class="text-lg !text-current">Duration</FormLabel>
+        <FormControl>
+          <Input type="time" step="1" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
 
     <Button class="mx-auto mt-4" type="submit">Create</Button>
   </form>

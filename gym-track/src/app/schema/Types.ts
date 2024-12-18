@@ -105,7 +105,7 @@ export type WorkoutExerciseSetKey = {
 export type ExerciseMetric = Weight | Duration | Distance;
 
 export type Weight = {
-  $type: 'Weight';
+  $type: ExerciseMetricType.Weight;
   value: Amount;
   units: WeightUnit;
 };
@@ -116,12 +116,12 @@ export enum WeightUnit {
 }
 
 export type Duration = {
-  $type: 'Duration';
+  $type: ExerciseMetricType.Duration;
   time: string;
 };
 
 export type Distance = {
-  $type: 'Distance';
+  $type: ExerciseMetricType.Distance;
   value: Amount;
   units: DistanceUnit;
 };

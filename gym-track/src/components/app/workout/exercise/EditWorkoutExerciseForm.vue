@@ -8,9 +8,11 @@ import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseForm from '@/components/app/workout/exercise/WorkoutExerciseForm.vue';
 import { WorkoutExerciseKey } from '@/app/schema/Types';
+import { z } from 'zod';
 
 const props = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
+  initialValues: z.infer<typeof createWorkoutExerciseSchema>;
 }>();
 
 const emit = defineEmits<{
@@ -38,6 +40,10 @@ const onSubmit = form.handleSubmit(async values => {
 
   emit('edited');
 });
+
+if (props.initialValues) {
+  form.setValues(props.initialValues, false);
+}
 </script>
 
 <template>

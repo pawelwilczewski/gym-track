@@ -3,11 +3,11 @@ import Entity from '../../Entity.vue';
 import { WorkoutExerciseKey } from '@/app/schema/Types';
 import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
-import CreateWorkoutExerciseSet from './set/CreateWorkoutExerciseSet.vue';
 import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
 import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { computed, watch } from 'vue';
 import EditWorkoutExerciseForm from './EditWorkoutExerciseForm.vue';
+import CreateWorkoutExerciseSetForm from './set/CreateWorkoutExerciseSetForm.vue';
 
 const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
@@ -51,6 +51,7 @@ const emit = defineEmits<{
             v-for="key in workoutExercise.sets"
             :key="key.index"
             :exercise-set-key="key"
+            :exercise-info="exerciseInfo"
             @deleted="
               key => {
                 if (!workoutExercise) {
@@ -68,7 +69,7 @@ const emit = defineEmits<{
       <ButtonDialog dialog-title="Create Exercise Set">
         <template #button>Create Set</template>
         <template #dialog="{ closeDialog }">
-          <CreateWorkoutExerciseSet
+          <CreateWorkoutExerciseSetForm
             :workout-exercise-key="exerciseKey"
             :exercise-info="exerciseInfo"
             @created="
@@ -82,6 +83,9 @@ const emit = defineEmits<{
     <template #edit="{ closeDialog }">
       <EditWorkoutExerciseForm
         :workout-exercise-key="exerciseKey"
+        :initial-values="{
+          exerciseInfoId: workoutExercise.exerciseInfoId,
+        }"
         @edited="
           update();
           closeDialog();

@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import Entity from '@/components/app/Entity.vue';
 import { useWorkoutExerciseSet } from '@/composables/UseWorkoutExerciseSet';
-import { WorkoutExerciseSetKey } from '@/app/schema/Types';
+import {
+  GetExerciseInfoResponse,
+  WorkoutExerciseSetKey,
+} from '@/app/schema/Types';
 import { computed } from 'vue';
 import ExerciseMetric from '../ExerciseMetric.vue';
 import { Tally5 } from 'lucide-vue-next';
+import EditWorkoutExerciseSetForm from './EditWorkoutExerciseSetForm.vue';
 
 const props = defineProps<{
   exerciseSetKey: WorkoutExerciseSetKey;
+  exerciseInfo: GetExerciseInfoResponse | undefined | null;
 }>();
 
-const { workoutExerciseSet, destroy } = useWorkoutExerciseSet(
+const { workoutExerciseSet, update, destroy } = useWorkoutExerciseSet(
   props.exerciseSetKey,
   {
     immediate: true,
@@ -40,5 +45,19 @@ const emit = defineEmits<{
       </span>
       <ExerciseMetric v-if="exerciseMetric" :exercise-metric="exerciseMetric" />
     </div>
+    <template #edit="{ closeDialog }">
+      <EditWorkoutExerciseSetForm
+        :workout-exercise-set-key="exerciseSetKey"
+        :exercise-info="exerciseInfo"
+        :initial-values="{
+          reps: workoutExerciseSet.reps,
+          metricType: workoutExerciseSet.metric.$type,
+        }"
+        @edited="
+          update();
+          closeDialog();
+        "
+      />
+    </template>
   </Entity>
 </template>

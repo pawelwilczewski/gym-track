@@ -2,9 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Domain.Models.Workout;
 
-[JsonDerivedType(typeof(Weight), nameof(Weight))]
-[JsonDerivedType(typeof(Distance), nameof(Distance))]
-[JsonDerivedType(typeof(Duration), nameof(Duration))]
+[JsonDerivedType(typeof(Weight), (int)ExerciseMetricType.Weight)]
+[JsonDerivedType(typeof(Duration), (int)ExerciseMetricType.Duration)]
+[JsonDerivedType(typeof(Distance), (int)ExerciseMetricType.Distance)]
 public abstract record class ExerciseMetric
 {
 	[JsonIgnore]

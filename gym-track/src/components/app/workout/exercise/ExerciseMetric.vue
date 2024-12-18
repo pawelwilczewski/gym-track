@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ExerciseMetric } from '@/app/schema/Types';
+import { ExerciseMetric, ExerciseMetricType } from '@/app/schema/Types';
 import { formatDistance, formatWeight } from '@/app/utils/Formatters';
 import { Clock, Route, Weight } from 'lucide-vue-next';
 
@@ -9,19 +9,19 @@ defineProps<{
 </script>
 
 <template>
-  <template v-if="exerciseMetric.$type === 'Distance'">
+  <template v-if="exerciseMetric.$type === ExerciseMetricType.Distance">
     <span class="flex gap-1">
       <Route class="w-4 h-4 my-auto" />
       {{ formatDistance(exerciseMetric.value, exerciseMetric.units) }}
     </span>
   </template>
-  <template v-else-if="exerciseMetric.$type === 'Duration'">
+  <template v-else-if="exerciseMetric.$type === ExerciseMetricType.Duration">
     <span class="flex gap-1">
       <Clock class="w-4 h-4 my-auto" />
       {{ exerciseMetric.time }}
     </span>
   </template>
-  <template v-else-if="exerciseMetric.$type === 'Weight'">
+  <template v-else-if="exerciseMetric.$type === ExerciseMetricType.Weight">
     <span class="flex gap-1">
       <Weight class="w-4 h-4 my-auto" />
       {{ formatWeight(exerciseMetric.value, exerciseMetric.units) }}
