@@ -44,7 +44,7 @@ export const createWorkoutExerciseSetSchema = toTypedSchema(
         case ExerciseMetricType.Weight: {
           return schema.weightValue != null && schema.weightUnits != null;
         }
-        default: {
+        case ExerciseMetricType.All: {
           return false;
         }
       }
