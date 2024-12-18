@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { apiClient } from '@/scripts/http/Clients';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
+import { apiClient } from '@/app/http/Clients';
+import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
-import { enumFlagsValueToStringArray } from '@/scripts/schema/ZodUtils';
+import { enumFlagsValueToStringArray } from '@/app/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
 import Entity from '../Entity.vue';

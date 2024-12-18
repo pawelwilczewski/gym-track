@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
-import { type IsComponentType } from '@/scripts/utils/ComponentTypes';
+import { type IsComponentType } from '@/app/utils/ComponentTypes';
 
 const { is = 'div' } = defineProps<{
   is?: IsComponentType;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/scripts/http/Clients';
+import { apiClient } from '@/app/http/Clients';
 import {
   FormControl,
   FormField,
@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/form';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
-import { createExerciseInfoStepSchema } from '@/scripts/schema/Schemas';
+import { createExerciseInfoStepSchema } from '@/app/schema/Schemas';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
-import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { UUID } from 'crypto';
 
 const props = defineProps<{ exerciseInfoId: UUID }>();

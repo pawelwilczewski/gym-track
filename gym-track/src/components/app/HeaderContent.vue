@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import TabButton from './misc/TabButton.vue';
-import { isLoggedIn } from '@/scripts/state/AuthState';
+import { isLoggedIn } from '@/app/state/AuthState';
 </script>
 
 <template>

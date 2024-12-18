@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/popover';
 import { useExerciseInfos } from '@/composables/UseExerciseInfos';
 import { cn } from '@/lib/utils';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
+import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import { UUID } from 'crypto';
 import { Check, ChevronsUpDown } from 'lucide-vue-next';
 import { SelectEvent } from 'node_modules/radix-vue/dist/Combobox/ComboboxItem';

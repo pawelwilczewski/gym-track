@@ -1,7 +1,7 @@
 import {
   ExerciseInfoStepKey,
   GetExerciseInfoResponse,
-} from '@/scripts/schema/Types';
+} from '@/app/schema/Types';
 import { Ref, ref, watch } from 'vue';
 
 export function useExerciseInfoStepKeys(

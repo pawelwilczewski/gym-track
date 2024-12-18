@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { ResponseResult } from './ResponseResult';
-import { uncapitalize } from '@/scripts/utils/StringUtils';
+import { uncapitalize } from '@/app/utils/StringUtils';
 import { match, P } from 'ts-pattern';
 
 export function responseToResult(response: AxiosResponse): ResponseResult {

@@ -1,10 +1,10 @@
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
-import { apiClient } from '@/scripts/http/Clients';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
+import { toastErrorHandler } from '@/app/errors/Handlers';
+import { apiClient } from '@/app/http/Clients';
 import {
   GetWorkoutExerciseResponse,
   WorkoutExerciseKey,
-} from '@/scripts/schema/Types';
+} from '@/app/schema/Types';
 import { ref, Ref } from 'vue';
 
 export function useWorkoutExercise(

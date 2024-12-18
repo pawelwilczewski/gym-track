@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Entity from '@/components/app/Entity.vue';
 import { useWorkoutExerciseSet } from '@/composables/UseWorkoutExerciseSet';
-import { WorkoutExerciseSetKey } from '@/scripts/schema/Types';
+import { WorkoutExerciseSetKey } from '@/app/schema/Types';
 import { computed } from 'vue';
 import ExerciseMetric from '../ExerciseMetric.vue';
 import { Tally5 } from 'lucide-vue-next';

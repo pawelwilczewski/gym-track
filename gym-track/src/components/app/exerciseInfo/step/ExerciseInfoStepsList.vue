@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ExerciseInfoStepKey } from '@/scripts/schema/Types';
+import { ExerciseInfoStepKey } from '@/app/schema/Types';
 import ExerciseInfoStep from './ExerciseInfoStep.vue';
 
 defineProps<{

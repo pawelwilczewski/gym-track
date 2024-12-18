@@ -11,15 +11,15 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { apiClient } from '@/scripts/http/Clients';
+import { apiClient } from '@/app/http/Clients';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
-import { logInRequestSchema } from '@/scripts/schema/Schemas';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { logInRequestSchema } from '@/app/schema/Schemas';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import {
   invalidCredentialsErrorHandler,
   toastErrorHandler,
-} from '@/scripts/errors/Handlers';
+} from '@/app/errors/Handlers';
 
 const form = useForm({
   validationSchema: logInRequestSchema,
@@ -90,27 +90,27 @@ const onSubmit = form.handleSubmit(async values => {
               <FormControl>
                 <Checkbox :checked="value" @update:checked="handleChange" />
               </FormControl>
-              <FormLabel class="!text-current !mt-0 !mb-0"
-                >Remember Me</FormLabel
-              >
+              <FormLabel class="!text-current !mt-0 !mb-0">
+                Remember Me
+              </FormLabel>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <RouterLink to="/forgotPassword" class="text-sm hover:underline"
-            >Forgot Password?</RouterLink
-          >
+          <RouterLink to="/forgotPassword" class="text-sm hover:underline">
+            Forgot Password?
+          </RouterLink>
         </div>
 
         <Button class="mx-auto px-8 mt-4" type="submit">Log In</Button>
       </form>
 
-      <Label class="block text-center text-lg mt-16 font-bold"
-        >No account?</Label
-      >
-      <RouterLink to="/signUp" class="block text-center hover:underline"
-        >Sign Up</RouterLink
-      >
+      <Label class="block text-center text-lg mt-16 font-bold">
+        No account?
+      </Label>
+      <RouterLink to="/signUp" class="block text-center hover:underline">
+        Sign Up
+      </RouterLink>
     </div>
   </DefaultLayout>
 </template>

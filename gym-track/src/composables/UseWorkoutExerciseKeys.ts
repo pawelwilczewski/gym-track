@@ -1,4 +1,4 @@
-import { GetWorkoutResponse, WorkoutExerciseKey } from '@/scripts/schema/Types';
+import { GetWorkoutResponse, WorkoutExerciseKey } from '@/app/schema/Types';
 import { Ref, ref, watch } from 'vue';
 
 export function useWorkoutExerciseKeys(

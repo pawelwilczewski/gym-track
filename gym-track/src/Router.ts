@@ -15,7 +15,7 @@ import NotFound from './components/pages/NotFound.vue';
 import {
   handleAuthAndRedirectBefore,
   handleAuthAndRedirectAfter,
-} from './scripts/middleware/AuthAndRedirect';
+} from './app/middleware/AuthAndRedirect';
 import Dashboard from './components/pages/app/Dashboard.vue';
 import ExerciseInfos from './components/pages/app/ExerciseInfos.vue';
 

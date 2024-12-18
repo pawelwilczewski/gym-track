@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/scripts/http/Clients';
+import { apiClient } from '@/app/http/Clients';
 import {
   FormControl,
   FormField,
@@ -12,9 +12,9 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { signUpSchema } from '@/scripts/schema/Schemas';
-import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
+import { signUpSchema } from '@/app/schema/Schemas';
+import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import router from '@/Router';
 
 const form = useForm({
@@ -75,9 +75,9 @@ const onSubmit = form.handleSubmit(async values => {
 
         <FormField v-slot="{ componentField }" name="confirmPassword">
           <FormItem>
-            <FormLabel class="text-lg !text-current"
-              >Confirm Password</FormLabel
-            >
+            <FormLabel class="text-lg !text-current">
+              Confirm Password
+            </FormLabel>
             <FormControl>
               <Input
                 type="password"
@@ -92,12 +92,12 @@ const onSubmit = form.handleSubmit(async values => {
         <Button class="mx-auto px-8 mt-4" type="submit">Sign Up</Button>
       </form>
 
-      <Label class="block text-center text-lg mt-16 font-bold"
-        >Already have an Account?</Label
-      >
-      <RouterLink to="/logIn" class="block text-center hover:underline"
-        >Log In</RouterLink
-      >
+      <Label class="block text-center text-lg mt-16 font-bold">
+        Already have an Account?
+      </Label>
+      <RouterLink to="/logIn" class="block text-center hover:underline">
+        Log In
+      </RouterLink>
     </div>
   </DefaultLayout>
 </template>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
 import Entity from '../../Entity.vue';
-import { apiClient } from '@/scripts/http/Clients';
-import { ExerciseInfoStepKey } from '@/scripts/schema/Types';
+import { apiClient } from '@/app/http/Clients';
+import { ExerciseInfoStepKey } from '@/app/schema/Types';
 
 const props = defineProps<{
   stepKey: ExerciseInfoStepKey;

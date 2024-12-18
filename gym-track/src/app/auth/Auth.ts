@@ -1,6 +1,6 @@
 import router from '@/Router';
-import { apiClient } from '@/scripts/http/Clients';
-import { UserInfo } from '@/scripts/schema/Types';
+import { apiClient } from '@/app/http/Clients';
+import { UserInfo } from '@/app/schema/Types';
 
 export async function getCurrentUser(): Promise<UserInfo | undefined> {
   const response = await apiClient.get<UserInfo>('/auth/manage/info');

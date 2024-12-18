@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/scripts/http/Clients';
+import { apiClient } from '@/app/http/Clients';
 import {
   FormControl,
   FormField,
@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/form';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
-import { createWorkoutSchema } from '@/scripts/schema/Schemas';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/scripts/errors/Handlers';
+import { createWorkoutSchema } from '@/app/schema/Schemas';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
+import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 
 const form = useForm({
   validationSchema: createWorkoutSchema,

@@ -1,8 +1,8 @@
-import { apiClient } from '@/scripts/http/Clients';
-import { GetExerciseInfoResponse } from '@/scripts/schema/Types';
+import { apiClient } from '@/app/http/Clients';
+import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import { Ref, ref } from 'vue';
-import { ErrorHandler } from '@/scripts/errors/ErrorHandler';
-import { toastErrorHandler } from '@/scripts/errors/Handlers';
+import { ErrorHandler } from '@/app/errors/ErrorHandler';
+import { toastErrorHandler } from '@/app/errors/Handlers';
 
 export function useExerciseInfos(options?: { immediate?: boolean }): {
   exerciseInfos: Ref<GetExerciseInfoResponse[]>;

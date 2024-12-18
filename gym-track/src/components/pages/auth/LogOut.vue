@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Alert, AlertTitle } from '@/components/ui/alert';
-import { logOut } from '@/scripts/auth/Auth';
+import { logOut } from '@/app/auth/Auth';
 
 logOut();
 </script>

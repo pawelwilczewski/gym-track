@@ -15,7 +15,7 @@ import FormDescription from '@/components/ui/form/FormDescription.vue';
 import { Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
 import Countdown from '@/components/app/misc/Countdown.vue';
-import { forgotPasswordSchema } from '@/scripts/schema/Schemas';
+import { forgotPasswordSchema } from '@/app/schema/Schemas';
 
 const form = useForm({
   validationSchema: forgotPasswordSchema,

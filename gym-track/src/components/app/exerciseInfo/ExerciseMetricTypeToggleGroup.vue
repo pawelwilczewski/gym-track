@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { ExerciseMetricType } from '@/scripts/schema/Types';
+import { ExerciseMetricType } from '@/app/schema/Types';
 import { Weight, Clock, Route } from 'lucide-vue-next';
 import { SingleOrMultipleType } from 'node_modules/radix-vue/dist/shared/types';
 import { PropType } from 'vue';

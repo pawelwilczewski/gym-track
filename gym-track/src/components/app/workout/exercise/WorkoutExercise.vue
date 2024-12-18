@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Entity from '../../Entity.vue';
-import { WorkoutExerciseKey } from '@/scripts/schema/Types';
+import { WorkoutExerciseKey } from '@/app/schema/Types';
 import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
 import CreateWorkoutExerciseSet from './set/CreateWorkoutExerciseSet.vue';
