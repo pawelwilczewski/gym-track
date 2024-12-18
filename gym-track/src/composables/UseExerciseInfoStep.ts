@@ -11,11 +11,11 @@ export function useExerciseInfoStep(
   key: ExerciseInfoStepKey,
   options?: { immediate: boolean }
 ): {
-  step: Ref<GetExerciseInfoStepResponse | undefined>;
+  step: Ref<GetExerciseInfoStepResponse | undefined | null>;
   update: () => Promise<void>;
   destroy: () => Promise<void>;
 } {
-  const step = ref<GetExerciseInfoStepResponse | undefined>(undefined);
+  const step = ref<GetExerciseInfoStepResponse | undefined | null>(undefined);
 
   if (options?.immediate) {
     update();
@@ -53,6 +53,8 @@ export function useExerciseInfoStep(
     ) {
       return;
     }
+
+    step.value = null;
   }
 
   return { step, update, destroy };

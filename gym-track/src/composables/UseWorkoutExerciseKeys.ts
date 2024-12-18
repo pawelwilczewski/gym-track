@@ -2,7 +2,7 @@ import { GetWorkoutResponse, WorkoutExerciseKey } from '@/scripts/schema/Types';
 import { Ref, ref, watch } from 'vue';
 
 export function useWorkoutExerciseKeys(
-  workout: Ref<GetWorkoutResponse | undefined>
+  workout: Ref<GetWorkoutResponse | undefined | null>
 ): {
   exerciseKeys: Ref<WorkoutExerciseKey[]>;
 } {

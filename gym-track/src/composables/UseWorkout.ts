@@ -9,11 +9,13 @@ export function useWorkout(
   id: UUID,
   options?: { immediate?: boolean; initialValue?: GetWorkoutResponse }
 ): {
-  workout: Ref<GetWorkoutResponse | undefined>;
+  workout: Ref<GetWorkoutResponse | undefined | null>;
   update: () => Promise<void>;
   destroy: () => Promise<void>;
 } {
-  const workout = ref<GetWorkoutResponse | undefined>(options?.initialValue);
+  const workout = ref<GetWorkoutResponse | undefined | null>(
+    options?.initialValue
+  );
 
   if (options?.immediate && !options?.initialValue) {
     update();
@@ -43,6 +45,8 @@ export function useWorkout(
     ) {
       return;
     }
+
+    workout.value = null;
   }
 
   return {

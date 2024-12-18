@@ -9,11 +9,11 @@ export function useExerciseInfo(
   id: UUID,
   options?: { immediate?: boolean; initialValue?: GetExerciseInfoResponse }
 ): {
-  exerciseInfo: Ref<GetExerciseInfoResponse | undefined>;
+  exerciseInfo: Ref<GetExerciseInfoResponse | undefined | null>;
   update: () => Promise<void>;
   destroy: () => Promise<void>;
 } {
-  const exerciseInfo = ref<GetExerciseInfoResponse | undefined>(
+  const exerciseInfo = ref<GetExerciseInfoResponse | undefined | null>(
     options?.initialValue
   );
 
@@ -45,6 +45,8 @@ export function useExerciseInfo(
     ) {
       return;
     }
+
+    exerciseInfo.value = null;
   }
 
   return {

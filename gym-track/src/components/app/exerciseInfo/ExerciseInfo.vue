@@ -30,9 +30,8 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     v-if="exerciseInfo"
     class="card"
     @deleted="
-      destroy();
       emit('deleted', exerciseInfo.id);
-      exerciseInfo = undefined;
+      destroy();
     "
   >
     <h3>{{ exerciseInfo.name }}</h3>
