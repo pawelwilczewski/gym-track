@@ -31,7 +31,16 @@ function encodeSelectedValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
 }
 
-function decodeSelectedValue(value: string): { id: UUID; name: string } {
+function decodeSelectedValue(value: AcceptableValue): {
+  id: UUID;
+  name: string;
+} {
+  if (typeof value !== 'string') {
+    throw Error(
+      'Unhandled decode value type, currently only supporting string!'
+    );
+  }
+
   const split = value.split('|', 2);
   return { id: split[0] as UUID, name: split[1] };
 }
@@ -43,15 +52,20 @@ function decodeSelectedValueOrDefault<TAlternative>(
   return value.length > 0 ? decodeSelectedValue(value) : alternative;
 }
 
-function filterEntriesShown(entries: any[], searchPhrase: string): string[] {
+function filterEntriesShown(
+  entries: AcceptableValue[],
+  searchPhrase: string
+): string[] {
   const searchPhraseLower = searchPhrase.toLowerCase();
-  return entries.filter(entry => {
-    const itemValue = decodeSelectedValue(entry);
-    return (
-      itemValue.id.toLowerCase() === searchPhraseLower ||
-      itemValue.name.toLowerCase().includes(searchPhraseLower)
-    );
-  });
+  return entries
+    .map(entry => entry as string)
+    .filter(entry => {
+      const itemValue = decodeSelectedValue(entry);
+      return (
+        itemValue.id.toLowerCase() === searchPhraseLower ||
+        itemValue.name.toLowerCase().includes(searchPhraseLower)
+      );
+    });
 }
 
 function handleSelected(event: SelectEvent<AcceptableValue>): void {
@@ -69,8 +83,8 @@ update();
 </script>
 
 <template>
-  <Popover v-model:open="isOpen" v-if="exerciseInfos">
-    <PopoverTrigger asChild>
+  <Popover v-if="exerciseInfos" v-model:open="isOpen">
+    <PopoverTrigger as-child>
       <Button
         variant="outline"
         role="combobox"
@@ -86,7 +100,7 @@ update();
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-[200px] p-0">
-      <Command :filterFunction="filterEntriesShown">
+      <Command :filter-function="filterEntriesShown">
         <CommandInput class="h-9" placeholder="Search exercises..." />
         <CommandEmpty>No exercises found.</CommandEmpty>
         <CommandList>
