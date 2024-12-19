@@ -1,5 +1,5 @@
 using Api.Common;
-using Api.Dtos;
+using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Common;
@@ -15,11 +15,15 @@ internal sealed class EditExerciseInfo : IEndpoint
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid id,
-		[FromBody] EditExerciseInfoRequest request,
+		[FromForm] string name,
+		[FromForm] string description,
+		[FromForm] ExerciseMetricType allowedMetricTypes,
+		IFormFile? thumbnailImage,
 		[FromServices] IDataContext dataContext,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
-		if ((request.AllowedMetricTypes & ExerciseMetricType.All) == 0)
+		if ((allowedMetricTypes & ExerciseMetricType.All) == 0)
 		{
 			return TypedResults.ValidationProblem(new Dictionary<string, string[]>
 			{
@@ -35,17 +39,24 @@ internal sealed class EditExerciseInfo : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		if (!exerciseInfo.Name.TrySet(request.Name, out var error))
+		if (!exerciseInfo.Name.TrySet(name, out var error))
 		{
 			return error.ToValidationProblem("Name");
 		}
 
-		if (!exerciseInfo.Description.TrySet(request.Description, out error))
+		if (!exerciseInfo.Description.TrySet(description, out error))
 		{
 			return error.ToValidationProblem("Description");
 		}
 
-		exerciseInfo.AllowedMetricTypes = request.AllowedMetricTypes;
+		exerciseInfo.AllowedMetricTypes = allowedMetricTypes;
+
+		if (thumbnailImage is not null)
+		{
+			var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
+			var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
+			await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
+		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 		return TypedResults.NoContent();
@@ -53,7 +64,8 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{id:guid}", Handler);
+		builder.MapPut("{id:guid}", Handler)
+			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
 		return builder;
 	}
 }

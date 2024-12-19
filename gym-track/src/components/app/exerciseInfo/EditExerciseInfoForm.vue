@@ -33,6 +33,7 @@ const emit = defineEmits<{
 
 const onSubmit = form.handleSubmit(async values => {
   const formData = new FormData();
+  formData.append('_method', 'PUT');
   formData.append('name', values.name);
   formData.append('description', values.description);
   formData.append('allowedMetricTypes', values.allowedMetricTypes.toString());

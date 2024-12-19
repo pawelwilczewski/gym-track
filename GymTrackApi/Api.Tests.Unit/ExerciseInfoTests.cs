@@ -122,8 +122,12 @@ internal sealed class ExerciseInfoTests
 		var result = await EditExerciseInfo.Handler(
 				editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
-				new EditExerciseInfoRequest(name, description, allowedMetricTypes),
+				name,
+				description,
+				allowedMetricTypes,
+				Placeholders.FormFile(),
 				dataContext,
+				new TempFileStoragePathProvider(),
 				CancellationToken.None)
 			.ConfigureAwait(false);
 

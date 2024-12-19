@@ -2,6 +2,7 @@ using System.Text;
 using Api.Authorization;
 using Api.Common;
 using Api.Files;
+using Api.Middleware;
 using Api.Routes;
 using Application.Persistence;
 using Asp.Versioning;
@@ -116,6 +117,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
+app.AddPutFormSupport();
 
 app.MapAllRoutes();
 
