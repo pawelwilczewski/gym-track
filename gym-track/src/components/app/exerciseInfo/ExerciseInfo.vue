@@ -11,6 +11,9 @@ import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
 import { computed } from 'vue';
+import EditExerciseInfoForm from './EditExerciseInfoForm.vue';
+import { getImageFileFromUrl } from '@/app/utils/FileUtils';
+import { computedAsync } from '@vueuse/core';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -20,6 +23,13 @@ const { exerciseInfo, update, destroy } = useExerciseInfo(
   computed(() => props.initialExerciseInfo.id),
   { initialValue: props.initialExerciseInfo }
 );
+
+const thumbnailFile = computedAsync(async () => {
+  if (!exerciseInfo.value || !exerciseInfo.value.thumbnailUrl) {
+    return undefined;
+  }
+  return await getImageFileFromUrl(exerciseInfo.value.thumbnailUrl, apiClient);
+});
 
 const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
@@ -79,5 +89,24 @@ const emit = defineEmits<{ deleted: [UUID] }>();
         />
       </template>
     </ButtonDialog>
+
+    <template #edit="{ closeDialog }">
+      <EditExerciseInfoForm
+        :id="exerciseInfo.id"
+        :initial-values="{
+          // TODO Pawel: maybe initial-values for edit forms should be handled automatically by edit forms? more single-responsibility?
+          description: exerciseInfo.description,
+          allowedMetricTypes: enumFlagsValueToStringArray(
+            exerciseInfo.allowedMetricTypes
+          ),
+          name: exerciseInfo.name,
+          thumbnailImage: thumbnailFile,
+        }"
+        @edited="
+          update();
+          closeDialog();
+        "
+      />
+    </template>
   </Entity>
 </template>
