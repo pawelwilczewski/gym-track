@@ -94,6 +94,8 @@ builder.Services.Configure<JsonOptions>(options => options.SerializerOptions.Con
 
 var app = builder.Build();
 
+app.UseCors();
+
 await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
 await app.Services.AddRoles().ConfigureAwait(false);
 
@@ -112,7 +114,6 @@ if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseCors();
 app.UseRouting();
 app.UseAuthorization();
 
