@@ -2,7 +2,11 @@
 import Entity from '@/components/app/Entity.vue';
 import { useWorkoutExerciseSet } from '@/composables/UseWorkoutExerciseSet';
 import {
+  Distance,
+  Duration,
+  ExerciseMetricType,
   GetExerciseInfoResponse,
+  Weight,
   WorkoutExerciseSetKey,
 } from '@/app/schema/Types';
 import { computed } from 'vue';
@@ -27,6 +31,42 @@ const exerciseMetric = computed(() => workoutExerciseSet.value?.metric);
 const emit = defineEmits<{
   deleted: [WorkoutExerciseSetKey];
 }>();
+
+const initialValues = computed(() => {
+  if (!workoutExerciseSet.value) {
+    return undefined;
+  }
+
+  const base = {
+    reps: workoutExerciseSet.value.reps,
+    metricType: workoutExerciseSet.value.metric.$type.toString(),
+  };
+
+  switch (workoutExerciseSet.value.metric.$type) {
+    case ExerciseMetricType.Weight: {
+      const weight = workoutExerciseSet.value.metric as Weight;
+      return {
+        weightUnits: weight.units.toString(),
+        weightValue: weight.value,
+        ...base,
+      };
+    }
+    case ExerciseMetricType.Duration: {
+      const duration = workoutExerciseSet.value.metric as Duration;
+      return { time: duration.time, ...base };
+    }
+    case ExerciseMetricType.Distance: {
+      const distance = workoutExerciseSet.value.metric as Distance;
+      return {
+        distanceUnits: distance.units.toString(),
+        distanceValue: distance.value,
+        ...base,
+      };
+    }
+  }
+
+  return base;
+});
 </script>
 
 <template>
@@ -49,10 +89,7 @@ const emit = defineEmits<{
       <EditWorkoutExerciseSetForm
         :workout-exercise-set-key="exerciseSetKey"
         :exercise-info="exerciseInfo"
-        :initial-values="{
-          reps: workoutExerciseSet.reps,
-          metricType: workoutExerciseSet.metric.$type,
-        }"
+        :initial-values="initialValues"
         @edited="
           update();
           closeDialog();

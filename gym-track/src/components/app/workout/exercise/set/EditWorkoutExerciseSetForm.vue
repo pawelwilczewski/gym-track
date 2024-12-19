@@ -16,7 +16,7 @@ import { z } from 'zod';
 const props = defineProps<{
   workoutExerciseSetKey: WorkoutExerciseSetKey;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
-  initialValues: z.infer<typeof createWorkoutExerciseSetSchema>;
+  initialValues: z.infer<typeof createWorkoutExerciseSetSchema> | undefined;
 }>();
 
 const emit = defineEmits<{
