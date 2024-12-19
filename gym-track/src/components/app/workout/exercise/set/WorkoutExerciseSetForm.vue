@@ -150,6 +150,6 @@ defineProps<{
       </FormItem>
     </FormField>
 
-    <Button class="mx-auto mt-4" type="submit">Create</Button>
+    <Button class="mx-auto mt-4" type="submit">{{ submitLabel }}</Button>
   </form>
 </template>

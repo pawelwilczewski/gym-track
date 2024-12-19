@@ -12,11 +12,21 @@ import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseSetForm from './WorkoutExerciseSetForm.vue';
 import { createWorkoutExerciseSchemaToRequest } from '@/app/schema/Converters';
 import { z } from 'zod';
+import { Override } from '@/app/utils/TypeUtils';
 
 const props = defineProps<{
   workoutExerciseSetKey: WorkoutExerciseSetKey;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
-  initialValues: z.infer<typeof createWorkoutExerciseSetSchema> | undefined;
+  initialValues: // override because model bindings require string values
+  | Override<
+        z.infer<typeof createWorkoutExerciseSetSchema>,
+        {
+          metricType: string;
+          weightUnits: string | undefined;
+          distanceUnits: string | undefined;
+        }
+      >
+    | undefined;
 }>();
 
 const emit = defineEmits<{

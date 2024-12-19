@@ -40,32 +40,37 @@ const initialValues = computed(() => {
   const base = {
     reps: workoutExerciseSet.value.reps,
     metricType: workoutExerciseSet.value.metric.$type.toString(),
+    distanceValue: undefined,
+    distanceUnits: undefined,
+    weightValue: undefined,
+    weightUnits: undefined,
+    time: undefined,
   };
 
   switch (workoutExerciseSet.value.metric.$type) {
     case ExerciseMetricType.Weight: {
       const weight = workoutExerciseSet.value.metric as Weight;
       return {
+        ...base,
         weightUnits: weight.units.toString(),
         weightValue: weight.value,
-        ...base,
       };
     }
     case ExerciseMetricType.Duration: {
       const duration = workoutExerciseSet.value.metric as Duration;
-      return { time: duration.time, ...base };
+      return { ...base, time: duration.time };
     }
     case ExerciseMetricType.Distance: {
       const distance = workoutExerciseSet.value.metric as Distance;
       return {
+        ...base,
         distanceUnits: distance.units.toString(),
         distanceValue: distance.value,
-        ...base,
       };
     }
   }
 
-  return base;
+  throw Error('Unreachable code');
 });
 </script>
 
