@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
-
 import { createExerciseInfoSchema } from '@/app/schema/Schemas';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
@@ -18,6 +17,7 @@ const props = defineProps<{
         z.infer<typeof createExerciseInfoSchema>,
         {
           allowedMetricTypes: string[] | undefined;
+          thumbnailImage: string | null | undefined;
         }
       >
     | undefined;
@@ -57,11 +57,26 @@ const onSubmit = form.handleSubmit(async values => {
 });
 
 if (props.initialValues) {
-  form.setValues(props.initialValues, false);
+  let values = props.initialValues;
+  delete values.thumbnailImage;
+  form.setValues(
+    values as Override<
+      z.infer<typeof createExerciseInfoSchema>,
+      {
+        allowedMetricTypes: string[] | undefined;
+        thumbnailImage: undefined;
+      }
+    >,
+    false
+  );
 }
 // TODO Pawel: antiforgery tokens! here and everywhere else in forms!
 </script>
 
 <template>
-  <ExerciseInfoForm submit-label="Save" :on-submit="onSubmit" />
+  <ExerciseInfoForm
+    submit-label="Save"
+    :on-submit="onSubmit"
+    :current-thumbnail-image-url="initialValues?.thumbnailImage"
+  />
 </template>

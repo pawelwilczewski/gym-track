@@ -14,6 +14,7 @@ import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 defineProps<{
   submitLabel: string;
   onSubmit: () => void;
+  currentThumbnailImageUrl?: string | null | undefined;
 }>();
 </script>
 
@@ -58,6 +59,16 @@ defineProps<{
       <FormItem>
         <FormLabel class="text-lg !text-current">Thumbnail Image</FormLabel>
         <FormControl>
+          <img
+            v-if="currentThumbnailImageUrl != null"
+            :src="currentThumbnailImageUrl"
+            alt="Thumbnail preview"
+            class="image-preview"
+          />
+          <p v-else-if="currentThumbnailImageUrl === null">
+            No thumbnail image set.
+          </p>
+
           <Input
             type="file"
             accept="image/jpeg,image/png,image/gif"

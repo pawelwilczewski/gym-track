@@ -12,8 +12,6 @@ import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
 import { computed } from 'vue';
 import EditExerciseInfoForm from './EditExerciseInfoForm.vue';
-import { getImageFileFromUrl } from '@/app/utils/FileUtils';
-import { computedAsync } from '@vueuse/core';
 
 const props = defineProps<{
   initialExerciseInfo: GetExerciseInfoResponse;
@@ -23,13 +21,6 @@ const { exerciseInfo, update, destroy } = useExerciseInfo(
   computed(() => props.initialExerciseInfo.id),
   { initialValue: props.initialExerciseInfo }
 );
-
-const thumbnailFile = computedAsync(async () => {
-  if (!exerciseInfo.value || !exerciseInfo.value.thumbnailUrl) {
-    return undefined;
-  }
-  return await getImageFileFromUrl(exerciseInfo.value.thumbnailUrl, apiClient);
-});
 
 const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
@@ -100,7 +91,10 @@ const emit = defineEmits<{ deleted: [UUID] }>();
             exerciseInfo.allowedMetricTypes
           ),
           name: exerciseInfo.name,
-          thumbnailImage: thumbnailFile,
+          thumbnailImage:
+            exerciseInfo.thumbnailUrl != null
+              ? `${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`
+              : null,
         }"
         @edited="
           update();
