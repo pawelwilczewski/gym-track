@@ -4,7 +4,7 @@ import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/app/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
-import CreateExerciseInfoStep from './step/CreateExerciseInfoStep.vue';
+import CreateExerciseInfoStepForm from './step/CreateExerciseInfoStepForm.vue';
 import Entity from '../Entity.vue';
 import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
 import { useExerciseInfo } from '@/composables/UseExerciseInfo';
@@ -70,7 +70,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
     <ButtonDialog dialog-title="Add Exercise Step">
       <template #button>Add Step</template>
       <template #dialog="{ closeDialog }">
-        <CreateExerciseInfoStep
+        <CreateExerciseInfoStepForm
           :exercise-info-id="exerciseInfo.id"
           @created="
             update();

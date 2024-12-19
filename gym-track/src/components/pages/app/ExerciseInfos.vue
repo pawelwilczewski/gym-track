@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CreateExerciseInfo from '@/components/app/exerciseInfo/CreateExerciseInfo.vue';
+import CreateExerciseInfoForm from '@/components/app/exerciseInfo/CreateExerciseInfoForm.vue';
 import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.vue';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
@@ -13,7 +13,7 @@ const exerciseInfosList = ref<typeof ExerciseInfosList | undefined>(undefined);
     <ButtonDialog dialog-title="Create New Exercise">
       <template #button>Create Exercise</template>
       <template #dialog="{ closeDialog }">
-        <CreateExerciseInfo
+        <CreateExerciseInfoForm
           @created="
             exerciseInfosList?.update();
             closeDialog();
