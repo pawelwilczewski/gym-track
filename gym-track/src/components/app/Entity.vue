@@ -4,17 +4,15 @@ import { Pencil, Trash2 } from 'lucide-vue-next';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import { type IsComponentType } from '@/app/utils/ComponentTypes';
 
-const { is = 'div' } = withDefaults(
-  defineProps<{
-    is?: IsComponentType;
-    editable?: boolean;
-    deletable?: boolean;
-  }>(),
-  {
-    editable: true,
-    deletable: true,
-  }
-);
+const {
+  is = 'div',
+  editable = true,
+  deletable = true,
+} = defineProps<{
+  is?: IsComponentType;
+  editable?: boolean;
+  deletable?: boolean;
+}>();
 
 const emit = defineEmits<{
   deleted: [];
