@@ -11,7 +11,7 @@ public class ExerciseInfo
 
 	public Name Name { get; private set; }
 
-	public FilePath? ThumbnailImage { get; private set; }
+	public FilePath? ThumbnailImage { get; set; }
 	public Description Description { get; private set; }
 
 	public ExerciseMetricType AllowedMetricTypes { get; set; }

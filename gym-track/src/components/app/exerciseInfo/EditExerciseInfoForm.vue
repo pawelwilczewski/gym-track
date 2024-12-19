@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
-import { createExerciseInfoSchema } from '@/app/schema/Schemas';
+import {
+  createExerciseInfoSchema,
+  editExerciseInfoSchema,
+} from '@/app/schema/Schemas';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -24,7 +27,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-  validationSchema: toTypedSchema(createExerciseInfoSchema),
+  validationSchema: toTypedSchema(editExerciseInfoSchema),
 });
 
 const emit = defineEmits<{
@@ -37,6 +40,10 @@ const onSubmit = form.handleSubmit(async values => {
   formData.append('name', values.name);
   formData.append('description', values.description);
   formData.append('allowedMetricTypes', values.allowedMetricTypes.toString());
+  formData.append(
+    'replaceThumbnailImage',
+    values.replaceThumbnailImage.toString()
+  );
   if (values.thumbnailImage) {
     formData.append('thumbnailImage', values.thumbnailImage);
   }

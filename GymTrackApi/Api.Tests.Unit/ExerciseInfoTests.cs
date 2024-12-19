@@ -95,77 +95,46 @@ internal sealed class ExerciseInfoTests
 		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string name, string description, ExerciseMetricType allowedMetricTypes, Type responseType)> EditExerciseInfoData() =>
+	public static IEnumerable<EditExerciseTestData> EditExerciseInfoData() =>
 	[
-		new([Users.Admin1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Distance | ExerciseMetricType.Duration | ExerciseMetricType.Weight, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Duration | ExerciseMetricType.Weight, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "", "ValidDescription", ExerciseMetricType.Duration | ExerciseMetricType.Weight, typeof(ValidationProblem)),
-		new([Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(NoContent)),
-		new([Users.User1], Users.User1, "ValidName", "ValidDescription", 0, typeof(ValidationProblem)),
-		new([Users.User1, Users.User2], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, typeof(ForbidHttpResult))
+		new([Users.Admin1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Distance | ExerciseMetricType.Duration | ExerciseMetricType.Weight, false, null, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Duration | ExerciseMetricType.Weight, false, null, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "", "ValidDescription", ExerciseMetricType.Duration | ExerciseMetricType.Weight, false, null, typeof(ValidationProblem)),
+		new([Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(NoContent)),
+		new([Users.User1], Users.User1, "ValidName", "ValidDescription", 0, false, null, typeof(ValidationProblem)),
+		new([Users.User1, Users.User2], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, false, null, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, true, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.Admin1], Users.Admin1, "ValidName", "ValidDescription", ExerciseMetricType.Distance, true, null, typeof(NoContent))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(EditExerciseInfoData))]
-	public async Task EditExerciseInfo_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string name, string description, ExerciseMetricType allowedMetricTypes, Type responseType)
+	public async Task EditExerciseInfo_ReturnsCorrectResponse(EditExerciseTestData data)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, data.Owners)
 			.Build()
 			.ConfigureAwait(false);
 
 		var result = await EditExerciseInfo.Handler(
-				editor.GetHttpContext(),
+				data.Editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
-				name,
-				description,
-				allowedMetricTypes,
-				Placeholders.FormFile(),
+				data.Name,
+				data.Description,
+				data.AllowedMetricTypes,
+				data.ReplaceThumbnail,
+				data.Thumbnail,
 				dataContext,
 				new TempFileStoragePathProvider(),
 				CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
-	}
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)> EditExerciseInfoThumbnailData() =>
-	[
-		new([Users.Admin1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.User1], Users.User1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult))
-	];
-
-	[Test]
-	[MethodDataSource(nameof(EditExerciseInfoThumbnailData))]
-	public async Task EditExerciseInfoThumbnail_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
-			.Build()
-			.ConfigureAwait(false);
-
-		var result = await EditExerciseInfoThumbnail.Handler(
-				editor.GetHttpContext(),
-				exerciseInfo.Id.Value,
-				thumbnail,
-				dataContext,
-				new TempFileStoragePathProvider(),
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Result).IsTypeOf(data.ResponseType);
 	}
 
 	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteExerciseInfoData() =>
@@ -198,4 +167,14 @@ internal sealed class ExerciseInfoTests
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
 	}
+
+	internal readonly record struct EditExerciseTestData(
+		IReadOnlyList<IUserInfo> Owners,
+		IUserInfo Editor,
+		string Name,
+		string Description,
+		ExerciseMetricType AllowedMetricTypes,
+		bool ReplaceThumbnail,
+		IFormFile? Thumbnail,
+		Type ResponseType);
 }

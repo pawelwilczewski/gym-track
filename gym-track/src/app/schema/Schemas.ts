@@ -58,6 +58,12 @@ export const createExerciseInfoSchema = z.object({
     .optional(),
 });
 
+export const editExerciseInfoSchema = createExerciseInfoSchema.merge(
+  z.object({
+    replaceThumbnailImage: z.boolean(),
+  })
+);
+
 export const createExerciseInfoStepSchema = z.object({
   description: z.string().trim().min(1),
   image: z

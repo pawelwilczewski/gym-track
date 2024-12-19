@@ -55,6 +55,18 @@ defineProps<{
       </FormItem>
     </FormField>
 
+    <FormField v-slot="{ componentField }" name="replaceThumbnailImage">
+      <FormItem>
+        <FormLabel class="text-lg !text-current">
+          Replace Thumbnail Image
+        </FormLabel>
+        <FormControl>
+          <Input type="checkbox" v-bind="componentField" />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
     <FormField v-slot="{ setValue }" name="thumbnailImage">
       <FormItem>
         <FormLabel class="text-lg !text-current">Thumbnail Image</FormLabel>

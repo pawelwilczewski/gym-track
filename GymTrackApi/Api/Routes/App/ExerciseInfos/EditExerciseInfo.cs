@@ -18,6 +18,7 @@ internal sealed class EditExerciseInfo : IEndpoint
 		[FromForm] string name,
 		[FromForm] string description,
 		[FromForm] ExerciseMetricType allowedMetricTypes,
+		[FromForm] bool replaceThumbnailImage,
 		IFormFile? thumbnailImage,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
@@ -41,21 +42,65 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 		if (!exerciseInfo.Name.TrySet(name, out var error))
 		{
-			return error.ToValidationProblem("Name");
+			return error.ToValidationProblem(nameof(ExerciseInfo.Name));
 		}
 
 		if (!exerciseInfo.Description.TrySet(description, out error))
 		{
-			return error.ToValidationProblem("Description");
+			return error.ToValidationProblem(nameof(ExerciseInfo.Description));
 		}
 
 		exerciseInfo.AllowedMetricTypes = allowedMetricTypes;
 
-		if (thumbnailImage is not null)
+		if (replaceThumbnailImage)
 		{
-			var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
-			var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
-			await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
+			var localImagesDirectory = Path.Combine(
+				fileStoragePathProvider.RootPath,
+				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.Replace('/', Path.DirectorySeparatorChar));
+
+			var matchingFiles = Directory.EnumerateFiles(
+					localImagesDirectory,
+					$"{id}.*", SearchOption.TopDirectoryOnly)
+				.ToList();
+
+			if (matchingFiles.Count > 1)
+			{
+				await Console.Error.WriteLineAsync("More than one thumbnail image found. This should never happen.")
+					.ConfigureAwait(false);
+			}
+
+			var currentThumbnailPath = matchingFiles switch
+			{
+				[]              => null,
+				[{ } single]    => single,
+				[{ } first, ..] => first
+			};
+
+			if (currentThumbnailPath is not null)
+			{
+				File.Delete(currentThumbnailPath);
+			}
+
+			if (thumbnailImage is null)
+			{
+				exerciseInfo.ThumbnailImage = null;
+			}
+			else
+			{
+				var thumbnailPathString =
+					$"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}.{Path.GetExtension(thumbnailImage.FileName)}";
+
+				if (!FilePath.TryCreate(thumbnailPathString,
+					out var finalThumbnailPath, out error))
+				{
+					return error.ToValidationProblem(nameof(ExerciseInfo.ThumbnailImage));
+				}
+
+				await thumbnailImage.SaveToFile(thumbnailPathString, cancellationToken)
+					.ConfigureAwait(false);
+
+				exerciseInfo.ThumbnailImage = finalThumbnailPath;
+			}
 		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
