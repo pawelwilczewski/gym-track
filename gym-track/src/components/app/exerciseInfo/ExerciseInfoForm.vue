@@ -15,8 +15,9 @@ import { FormContext } from 'vee-validate';
 
 defineProps<{
   form: FormContext;
-  thumbnailImageSection: 'upload' | 'replace';
-  currentThumbnailImageUrl?: string | null | undefined;
+  thumbnailImageSection:
+    | { type: 'upload' }
+    | { type: 'replace'; currentThumbnailImageUrl: string | null | undefined };
   submitLabel: string;
   onSubmit: () => void;
 }>();
@@ -60,7 +61,7 @@ defineProps<{
     </FormField>
 
     <FormField
-      v-if="thumbnailImageSection === 'replace'"
+      v-if="thumbnailImageSection.type === 'replace'"
       v-slot="{ value, handleChange }"
       name="replaceThumbnailImage"
     >
@@ -77,8 +78,8 @@ defineProps<{
 
     <FormField
       v-if="
-        thumbnailImageSection === 'upload' ||
-        (thumbnailImageSection === 'replace' &&
+        thumbnailImageSection.type === 'upload' ||
+        (thumbnailImageSection.type === 'replace' &&
           form.controlledValues.value.replaceThumbnailImage)
       "
       v-slot="{ setValue }"
@@ -87,19 +88,24 @@ defineProps<{
       <FormItem>
         <FormLabel class="text-lg !text-current">Thumbnail Image</FormLabel>
         <FormControl>
-          <figure v-if="currentThumbnailImageUrl != null">
-            <img
-              :src="currentThumbnailImageUrl"
-              alt="Thumbnail preview"
-              class="thumbnail-image mx-auto"
-            />
-            <figcaption class="text-sm text-center mt-1">
-              Previous thumbnail image
-            </figcaption>
-          </figure>
-          <p v-else-if="currentThumbnailImageUrl === null">
-            No thumbnail image currently set.
-          </p>
+          <template v-if="thumbnailImageSection.type === 'replace'">
+            <figure
+              v-if="thumbnailImageSection.currentThumbnailImageUrl != null"
+              class="py-2"
+            >
+              <img
+                :src="thumbnailImageSection.currentThumbnailImageUrl"
+                alt="Thumbnail preview"
+                class="thumbnail-image mx-auto"
+              />
+              <figcaption class="text-sm text-center mt-1">
+                Previous thumbnail image
+              </figcaption>
+            </figure>
+            <p v-else class="text-sm py-2">
+              No thumbnail image previously set.
+            </p>
+          </template>
 
           <Input
             type="file"
