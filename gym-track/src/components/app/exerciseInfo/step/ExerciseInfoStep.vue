@@ -30,7 +30,7 @@ const emit = defineEmits<{
     <p class="mb-2">{{ step.description }}</p>
     <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
-      <img />
+      <img class="step-image mx-auto" />
     </picture>
   </Entity>
 </template>

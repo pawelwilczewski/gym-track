@@ -40,7 +40,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
 
     <picture v-if="exerciseInfo.thumbnailUrl">
       <source :srcset="`${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`" />
-      <img />
+      <img class="thumbnail-image mx-auto" />
     </picture>
 
     <p>{{ exerciseInfo.description }}</p>

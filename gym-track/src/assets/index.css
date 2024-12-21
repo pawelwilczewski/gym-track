@@ -111,4 +111,12 @@
   .card {
     @apply mx-auto border border-border rounded-xl flex flex-col gap-6 p-8;
   }
+
+  .thumbnail-image {
+    @apply rounded-sm h-40 object-contain;
+  }
+
+  .step-image {
+    @apply rounded-sm h-52 object-contain;
+  }
 }

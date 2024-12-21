@@ -41,5 +41,10 @@ const onSubmit = form.handleSubmit(async values => {
 </script>
 
 <template>
-  <ExerciseInfoForm submit-label="Create" :on-submit="onSubmit" />
+  <ExerciseInfoForm
+    :form="form"
+    thumbnail-image-section="upload"
+    submit-label="Create"
+    :on-submit="onSubmit"
+  />
 </template>

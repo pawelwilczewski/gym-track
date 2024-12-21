@@ -83,8 +83,10 @@ if (props.initialValues) {
 
 <template>
   <ExerciseInfoForm
-    submit-label="Save"
-    :on-submit="onSubmit"
+    :form="form"
+    thumbnail-image-section="replace"
     :current-thumbnail-image-url="initialValues?.thumbnailImage"
+    :on-submit="onSubmit"
+    submit-label="Save"
   />
 </template>

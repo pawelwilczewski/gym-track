@@ -11,11 +11,14 @@ import Input from '@/components/ui/input/Input.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
+import { FormContext } from 'vee-validate';
 
 defineProps<{
+  form: FormContext;
+  thumbnailImageSection: 'upload' | 'replace';
+  currentThumbnailImageUrl?: string | null | undefined;
   submitLabel: string;
   onSubmit: () => void;
-  currentThumbnailImageUrl?: string | null | undefined;
 }>();
 </script>
 
@@ -56,7 +59,11 @@ defineProps<{
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ value, handleChange }" name="replaceThumbnailImage">
+    <FormField
+      v-if="thumbnailImageSection === 'replace'"
+      v-slot="{ value, handleChange }"
+      name="replaceThumbnailImage"
+    >
       <FormItem>
         <FormControl>
           <Checkbox :checked="value" @update:checked="handleChange" />
@@ -68,18 +75,30 @@ defineProps<{
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ setValue }" name="thumbnailImage">
+    <FormField
+      v-if="
+        thumbnailImageSection === 'upload' ||
+        (thumbnailImageSection === 'replace' &&
+          form.controlledValues.value.replaceThumbnailImage)
+      "
+      v-slot="{ setValue }"
+      name="thumbnailImage"
+    >
       <FormItem>
         <FormLabel class="text-lg !text-current">Thumbnail Image</FormLabel>
         <FormControl>
-          <img
-            v-if="currentThumbnailImageUrl != null"
-            :src="currentThumbnailImageUrl"
-            alt="Thumbnail preview"
-            class="image-preview"
-          />
+          <figure v-if="currentThumbnailImageUrl != null">
+            <img
+              :src="currentThumbnailImageUrl"
+              alt="Thumbnail preview"
+              class="thumbnail-image mx-auto"
+            />
+            <figcaption class="text-sm text-center mt-1">
+              Previous thumbnail image
+            </figcaption>
+          </figure>
           <p v-else-if="currentThumbnailImageUrl === null">
-            No thumbnail image set.
+            No thumbnail image currently set.
           </p>
 
           <Input
