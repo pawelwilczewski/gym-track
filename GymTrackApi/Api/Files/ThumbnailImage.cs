@@ -8,9 +8,7 @@ namespace Api.Files;
 internal static class ThumbnailImage
 {
 	private static string GetLocalThumbnailsDirectory(IFileStoragePathProvider fileStoragePathProvider) =>
-		Path.Combine(
-			fileStoragePathProvider.RootPath,
-			Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.Replace('/', Path.DirectorySeparatorChar));
+		Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider);
 
 	public static async Task<FilePath?> SaveOrOverrideAsThumbnailImage(
 		this IFormFile? thumbnailFile,
