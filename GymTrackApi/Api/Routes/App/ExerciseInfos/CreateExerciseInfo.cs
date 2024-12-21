@@ -33,23 +33,13 @@ internal sealed class CreateExerciseInfo : IEndpoint
 
 		var id = Id<ExerciseInfo>.New();
 
-		FilePath? path = null;
-		if (thumbnailImage is not null)
-		{
-			var urlPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}";
-			if (!FilePath.TryCreate(urlPath, out path, out error))
-			{
-				return error.ToValidationProblem(nameof(thumbnailImage));
-			}
-
-			var localPath = Path.Combine(fileStoragePathProvider.RootPath, urlPath.Replace('/', Path.DirectorySeparatorChar));
-			Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
-			await thumbnailImage.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
-		}
+		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideAsThumbnailImage(
+				id, fileStoragePathProvider, cancellationToken)
+			.ConfigureAwait(false);
 
 		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-			? ExerciseInfo.CreateForEveryone(exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, id)
-			: ExerciseInfo.CreateForUser(exerciseInfoName, path, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
+			? ExerciseInfo.CreateForEveryone(exerciseInfoName, thumbnailImagePath, exerciseInfoDescription, allowedMetricTypes, id)
+			: ExerciseInfo.CreateForUser(exerciseInfoName, thumbnailImagePath, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
 
 		dataContext.ExerciseInfos.Add(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

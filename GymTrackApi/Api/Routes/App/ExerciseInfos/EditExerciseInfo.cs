@@ -54,63 +54,9 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 		if (replaceThumbnailImage)
 		{
-			var localThumbnailsDirectory = Path.Combine(
-				fileStoragePathProvider.RootPath,
-				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.Replace('/', Path.DirectorySeparatorChar));
-
-			var matchingFiles = Directory.EnumerateFiles(
-					localThumbnailsDirectory,
-					$"{id}.*", SearchOption.TopDirectoryOnly)
-				.ToList();
-
-			if (matchingFiles.Count > 1)
-			{
-				await Console.Error.WriteLineAsync("More than one thumbnail image found. This should never happen.")
-					.ConfigureAwait(false);
-			}
-
-			var currentThumbnailPath = matchingFiles switch
-			{
-				[]              => null,
-				[{ } single]    => single,
-				[{ } first, ..] => first
-			};
-
-			if (currentThumbnailPath is not null)
-			{
-				try
-				{
-					File.Delete(currentThumbnailPath);
-				}
-				catch (IOException ioException)
-				{
-					await Console.Error.WriteLineAsync($"Could not delete thumbnail file: ${ioException.Message}");
-				}
-			}
-
-			if (thumbnailImage is null)
-			{
-				exerciseInfo.ThumbnailImage = null;
-			}
-			else
-			{
-				var thumbnailPathString =
-					$"{localThumbnailsDirectory}/{id}{Path.GetExtension(thumbnailImage.FileName)}"
-						.Replace('/', Path.DirectorySeparatorChar);
-
-				var thumbnailDbPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}"
-					.Replace('/', Path.DirectorySeparatorChar);
-				if (!FilePath.TryCreate(thumbnailDbPath,
-					out var finalThumbnailPath, out error))
-				{
-					return error.ToValidationProblem(nameof(ExerciseInfo.ThumbnailImage));
-				}
-
-				await thumbnailImage.SaveToFile(thumbnailPathString, cancellationToken)
-					.ConfigureAwait(false);
-
-				exerciseInfo.ThumbnailImage = finalThumbnailPath;
-			}
+			exerciseInfo.ThumbnailImage = await thumbnailImage.SaveOrOverrideAsThumbnailImage(
+					exerciseInfoId, fileStoragePathProvider, cancellationToken)
+				.ConfigureAwait(false);
 		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
