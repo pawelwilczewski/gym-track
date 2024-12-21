@@ -10,6 +10,7 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 
 defineProps<{
   submitLabel: string;
@@ -55,14 +56,14 @@ defineProps<{
       </FormItem>
     </FormField>
 
-    <FormField v-slot="{ componentField }" name="replaceThumbnailImage">
+    <FormField v-slot="{ value, handleChange }" name="replaceThumbnailImage">
       <FormItem>
-        <FormLabel class="text-lg !text-current">
+        <FormControl>
+          <Checkbox :checked="value" @update:checked="handleChange" />
+        </FormControl>
+        <FormLabel class="ml-1 !text-current">
           Replace Thumbnail Image
         </FormLabel>
-        <FormControl>
-          <Input type="checkbox" v-bind="componentField" />
-        </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>

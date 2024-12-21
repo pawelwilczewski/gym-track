@@ -54,12 +54,12 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 		if (replaceThumbnailImage)
 		{
-			var localImagesDirectory = Path.Combine(
+			var localThumbnailsDirectory = Path.Combine(
 				fileStoragePathProvider.RootPath,
 				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.Replace('/', Path.DirectorySeparatorChar));
 
 			var matchingFiles = Directory.EnumerateFiles(
-					localImagesDirectory,
+					localThumbnailsDirectory,
 					$"{id}.*", SearchOption.TopDirectoryOnly)
 				.ToList();
 
@@ -78,7 +78,14 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 			if (currentThumbnailPath is not null)
 			{
-				File.Delete(currentThumbnailPath);
+				try
+				{
+					File.Delete(currentThumbnailPath);
+				}
+				catch (IOException ioException)
+				{
+					await Console.Error.WriteLineAsync($"Could not delete thumbnail file: ${ioException.Message}");
+				}
 			}
 
 			if (thumbnailImage is null)
@@ -88,9 +95,12 @@ internal sealed class EditExerciseInfo : IEndpoint
 			else
 			{
 				var thumbnailPathString =
-					$"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}.{Path.GetExtension(thumbnailImage.FileName)}";
+					$"{localThumbnailsDirectory}/{id}{Path.GetExtension(thumbnailImage.FileName)}"
+						.Replace('/', Path.DirectorySeparatorChar);
 
-				if (!FilePath.TryCreate(thumbnailPathString,
+				var thumbnailDbPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{id}{Path.GetExtension(thumbnailImage.FileName)}"
+					.Replace('/', Path.DirectorySeparatorChar);
+				if (!FilePath.TryCreate(thumbnailDbPath,
 					out var finalThumbnailPath, out error))
 				{
 					return error.ToValidationProblem(nameof(ExerciseInfo.ThumbnailImage));

@@ -60,7 +60,7 @@ export const createExerciseInfoSchema = z.object({
 
 export const editExerciseInfoSchema = createExerciseInfoSchema.merge(
   z.object({
-    replaceThumbnailImage: z.boolean(),
+    replaceThumbnailImage: z.boolean().default(false),
   })
 );
 
