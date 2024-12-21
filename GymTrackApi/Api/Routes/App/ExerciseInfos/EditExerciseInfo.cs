@@ -54,8 +54,11 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 		if (replaceThumbnailImage)
 		{
-			exerciseInfo.ThumbnailImage = await thumbnailImage.SaveOrOverrideAsThumbnailImage(
-					exerciseInfoId, fileStoragePathProvider, cancellationToken)
+			exerciseInfo.ThumbnailImage = await thumbnailImage.SaveOrOverrideImage(
+					exerciseInfoId.ToString(),
+					Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY,
+					fileStoragePathProvider,
+					cancellationToken)
 				.ConfigureAwait(false);
 		}
 

@@ -1,50 +1,51 @@
 using System.Diagnostics;
 using Application.Persistence;
 using Domain.Models;
-using Domain.Models.Workout;
 
 namespace Api.Files;
 
 internal static class EntityImage
 {
-	public static async Task<FilePath?> SaveOrOverrideAsThumbnailImage(
-		this IFormFile? thumbnailFile,
-		Id<ExerciseInfo> id,
+	public static async Task<FilePath?> SaveOrOverrideImage(
+		this IFormFile? imageFile,
+		string baseName,
+		string directoryUrl,
 		IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken = default)
 	{
-		await Delete(id, fileStoragePathProvider);
+		await Delete(baseName, directoryUrl, fileStoragePathProvider);
 
-		if (thumbnailFile is null) return null;
+		if (imageFile is null) return null;
 
 		// _GUID to fix image caching issues (same url, image wouldn't refresh on page)
-		var fileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+		var fileName = $"{baseName}_{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
 
 		var localPath = Path.Combine(
-			Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider),
+			directoryUrl.UrlToLocalPath(fileStoragePathProvider),
 			fileName);
 
-		if (!FilePath.TryCreate(Path.Combine(Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY, fileName),
+		if (!FilePath.TryCreate(Path.Combine(directoryUrl, fileName),
 			out var dbPath, out var error))
 		{
 			throw new UnreachableException(
-				$"Couldn't create thumbnail file, this may be due to invalid config path: "
-				+ $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}\nError: {error}");
+				$"Couldn't create image file, this may be due to invalid config path: "
+				+ $"{directoryUrl}\nError: {error}");
 		}
 
-		await thumbnailFile.SaveToFile(localPath, cancellationToken)
+		await imageFile.SaveToFile(localPath, cancellationToken)
 			.ConfigureAwait(false);
 
 		return dbPath;
 	}
 
 	public static async Task Delete(
-		Id<ExerciseInfo> id,
+		string baseName,
+		string directoryUrl,
 		IFileStoragePathProvider fileStoragePathProvider)
 	{
 		var matchingFiles = Directory.EnumerateFiles(
-			Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider),
-			$"{id}*.*", SearchOption.TopDirectoryOnly);
+			directoryUrl.UrlToLocalPath(fileStoragePathProvider),
+			$"{baseName}*.*", SearchOption.TopDirectoryOnly);
 
 		foreach (var path in matchingFiles)
 		{
@@ -54,7 +55,7 @@ internal static class EntityImage
 			}
 			catch (IOException ioException)
 			{
-				await Console.Error.WriteLineAsync($"Could not delete thumbnail file: ${ioException.Message}");
+				await Console.Error.WriteLineAsync($"Could not delete image file: ${ioException.Message}");
 			}
 		}
 	}

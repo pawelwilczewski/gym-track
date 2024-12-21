@@ -33,8 +33,11 @@ internal sealed class CreateExerciseInfo : IEndpoint
 
 		var id = Id<ExerciseInfo>.New();
 
-		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideAsThumbnailImage(
-				id, fileStoragePathProvider, cancellationToken)
+		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideImage(
+				id.ToString(),
+				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY,
+				fileStoragePathProvider,
+				cancellationToken)
 			.ConfigureAwait(false);
 
 		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)

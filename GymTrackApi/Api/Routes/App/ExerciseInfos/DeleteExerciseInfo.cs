@@ -29,7 +29,11 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		dataContext.ExerciseInfos.Remove(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-		await EntityImage.Delete(exerciseInfoId, fileStoragePathProvider).ConfigureAwait(false);
+		await EntityImage.Delete(
+				exerciseInfoId.ToString(),
+				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY,
+				fileStoragePathProvider)
+			.ConfigureAwait(false);
 
 		return TypedResults.NoContent();
 	}
