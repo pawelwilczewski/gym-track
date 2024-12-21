@@ -25,7 +25,8 @@ internal static class ThumbnailImage
 			return null;
 		}
 
-		var thumbnailFileName = $"{id}{Path.GetExtension(thumbnailFile.FileName)}";
+		// _GUID to fix image caching issues (same url, image wouldn't refresh on page)
+		var thumbnailFileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
 
 		var localThumbnailPathString =
 			$"{GetLocalThumbnailsDirectory(fileStoragePathProvider)}/{thumbnailFileName}"
@@ -54,7 +55,7 @@ internal static class ThumbnailImage
 	{
 		var matchingFiles = Directory.EnumerateFiles(
 			GetLocalThumbnailsDirectory(fileStoragePathProvider),
-			$"{id}.*", SearchOption.TopDirectoryOnly);
+			$"{id}*.*", SearchOption.TopDirectoryOnly);
 
 		foreach (var path in matchingFiles)
 		{
