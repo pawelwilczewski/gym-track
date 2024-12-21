@@ -5,11 +5,8 @@ using Domain.Models.Workout;
 
 namespace Api.Files;
 
-internal static class ThumbnailImage
+internal static class EntityImage
 {
-	private static string GetLocalThumbnailsDirectory(IFileStoragePathProvider fileStoragePathProvider) =>
-		Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider);
-
 	public static async Task<FilePath?> SaveOrOverrideAsThumbnailImage(
 		this IFormFile? thumbnailFile,
 		Id<ExerciseInfo> id,
@@ -21,27 +18,24 @@ internal static class ThumbnailImage
 		if (thumbnailFile is null) return null;
 
 		// _GUID to fix image caching issues (same url, image wouldn't refresh on page)
-		var thumbnailFileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+		var fileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
 
-		var localThumbnailPathString =
-			$"{GetLocalThumbnailsDirectory(fileStoragePathProvider)}/{thumbnailFileName}"
-				.Replace('/', Path.DirectorySeparatorChar);
+		var localPath = Path.Combine(
+			Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider),
+			fileName);
 
-		await thumbnailFile.SaveToFile(localThumbnailPathString, cancellationToken)
-			.ConfigureAwait(false);
-
-		var thumbnailDbPath = $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}/{thumbnailFileName}"
-			.Replace('/', Path.DirectorySeparatorChar);
-
-		if (!FilePath.TryCreate(thumbnailDbPath,
-			out var finalThumbnailPath, out var error))
+		if (!FilePath.TryCreate(Path.Combine(Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY, fileName),
+			out var dbPath, out var error))
 		{
 			throw new UnreachableException(
 				$"Couldn't create thumbnail file, this may be due to invalid config path: "
 				+ $"{Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY}\nError: {error}");
 		}
 
-		return finalThumbnailPath;
+		await thumbnailFile.SaveToFile(localPath, cancellationToken)
+			.ConfigureAwait(false);
+
+		return dbPath;
 	}
 
 	public static async Task Delete(
@@ -49,7 +43,7 @@ internal static class ThumbnailImage
 		IFileStoragePathProvider fileStoragePathProvider)
 	{
 		var matchingFiles = Directory.EnumerateFiles(
-			GetLocalThumbnailsDirectory(fileStoragePathProvider),
+			Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY.UrlToLocalPath(fileStoragePathProvider),
 			$"{id}*.*", SearchOption.TopDirectoryOnly);
 
 		foreach (var path in matchingFiles)
