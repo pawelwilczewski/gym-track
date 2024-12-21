@@ -18,10 +18,7 @@ internal static class ThumbnailImage
 	{
 		await Delete(id, fileStoragePathProvider);
 
-		if (thumbnailFile is null)
-		{
-			return null;
-		}
+		if (thumbnailFile is null) return null;
 
 		// _GUID to fix image caching issues (same url, image wouldn't refresh on page)
 		var thumbnailFileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
