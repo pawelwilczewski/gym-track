@@ -47,7 +47,8 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		}
 
 		var index = exercise.Sets.GetNextIndex();
-		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount);
+		var displayOrder = exercise.Sets.GetNextDisplayOrder();
+		var set = new Workout.Exercise.Set(exercise, index, request.Metric, repsCount, displayOrder);
 
 		exercise.Sets.Add(set);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

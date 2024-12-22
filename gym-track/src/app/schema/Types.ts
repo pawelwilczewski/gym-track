@@ -67,6 +67,7 @@ export type GetExerciseInfoStepResponse = {
   index: number;
   description: string;
   imageUrl?: string | null;
+  displayOrder: number;
 };
 
 export type GetWorkoutExerciseResponse = {
@@ -79,6 +80,7 @@ export type GetWorkoutExerciseSetResponse = {
   index: number;
   metric: ExerciseMetric;
   reps: number;
+  displayOrder: number;
 };
 
 export type GetWorkoutResponse = {

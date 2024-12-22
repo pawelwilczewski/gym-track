@@ -84,7 +84,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, addedSetIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps));
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, addedSetIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await GetWorkoutExerciseSet.Handler(
@@ -133,7 +133,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps));
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await EditWorkoutExerciseSet.Handler(
@@ -176,7 +176,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, index, new Duration(TimeSpan.FromSeconds(1000.0)), reps));
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, index, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await DeleteWorkoutExerciseSet.Handler(

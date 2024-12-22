@@ -36,7 +36,11 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
 		if (set is null) return TypedResults.NotFound("Set not found.");
 
-		return TypedResults.Ok(new GetWorkoutExerciseSetResponse(set.Index, set.Metric, set.Reps.IntValue));
+		return TypedResults.Ok(new GetWorkoutExerciseSetResponse(
+			set.Index,
+			set.Metric,
+			set.Reps.IntValue,
+			set.DisplayOrder));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

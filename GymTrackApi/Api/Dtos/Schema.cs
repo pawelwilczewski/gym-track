@@ -34,7 +34,8 @@ public sealed record class GetExerciseInfoResponse(
 public sealed record class GetExerciseInfoStepResponse(
 	int Index,
 	string Description,
-	string? ImageUrl);
+	string? ImageUrl,
+	int DisplayOrder);
 
 public sealed record class GetWorkoutExerciseResponse(
 	int Index,
@@ -44,7 +45,8 @@ public sealed record class GetWorkoutExerciseResponse(
 public sealed record class GetWorkoutExerciseSetResponse(
 	int Index,
 	ExerciseMetric Metric,
-	int Reps);
+	int Reps,
+	int DisplayOrder);
 
 public sealed record class GetWorkoutResponse(
 	Guid Id,
