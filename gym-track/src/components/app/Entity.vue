@@ -1,8 +1,19 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import { type IsComponentType } from '@/app/utils/ComponentTypes';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button, buttonVariants } from '../ui/button';
 
 const {
   is = 'div',
@@ -35,14 +46,34 @@ const emit = defineEmits<{
         </template>
         <template #button><Pencil class="w-4 h-4" /></template>
       </ButtonDialog>
-      <Button
-        v-if="deletable === undefined || deletable"
-        variant="ghost"
-        size="sm"
-        @click="emit('deleted')"
-      >
-        <Trash2 class="w-4 h-4" />
-      </Button>
+
+      <AlertDialog v-if="deletable === undefined || deletable">
+        <AlertDialogTrigger as-child>
+          <Button variant="ghost">
+            <Trash2 class="w-4 h-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              asset.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction as-child>
+              <Button
+                :class="buttonVariants({ variant: 'destructive' })"
+                @click="emit('deleted')"
+              >
+                Delete
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   </component>
 </template>
