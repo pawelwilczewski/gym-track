@@ -6,7 +6,8 @@ internal static class Forms
 	{
 		app.Use(async (context, next) =>
 		{
-			if (context.Request.Method == "POST" && context.Request.Form.ContainsKey("_method"))
+			if (context.Request is { Method: "POST", HasFormContentType: true }
+				&& context.Request.Form.ContainsKey("_method"))
 			{
 				var method = context.Request.Form["_method"].ToString().ToUpper();
 				if (method == "PUT")
