@@ -76,6 +76,12 @@ export const createExerciseInfoStepSchema = z.object({
     .optional(),
 });
 
+export const editExerciseInfoStepSchema = createExerciseInfoStepSchema.merge(
+  z.object({
+    replaceImage: z.boolean().default(false),
+  })
+);
+
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),
 });

@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
 import { createExerciseInfoStepSchema } from '@/app/schema/Schemas';
-import Textarea from '@/components/ui/textarea/Textarea.vue';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { UUID } from 'crypto';
 import { toTypedSchema } from '@vee-validate/zod';
+import ExerciseInfoStepForm from './ExerciseInfoStepForm.vue';
 
 const props = defineProps<{ exerciseInfoId: UUID }>();
 
@@ -54,34 +45,10 @@ const onSubmit = form.handleSubmit(async values => {
 </script>
 
 <template>
-  <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="description">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Description</FormLabel>
-        <FormControl>
-          <Textarea placeholder="Description" v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ setValue }" name="image">
-      <FormItem>
-        <FormLabel class="text-lg !text-current">Image</FormLabel>
-        <FormControl>
-          <Input
-            type="file"
-            accept="image/jpeg,image/png,image/gif"
-            :onchange="
-              (event: Event) => {
-                const input = event?.currentTarget as HTMLInputElement;
-                setValue(input?.files?.[0]);
-              }
-            "
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-    <Button class="mx-auto px-8 mt-4" type="submit">Create</Button>
-  </form>
+  <ExerciseInfoStepForm
+    :form="form"
+    :image-section="{ type: 'upload' }"
+    submit-label="Create"
+    :on-submit="onSubmit"
+  />
 </template>

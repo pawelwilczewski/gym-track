@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
-
 import { createExerciseInfoSchema } from '@/app/schema/Schemas';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';

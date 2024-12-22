@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
@@ -30,8 +31,8 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		await EntityImage.Delete(
-				exerciseInfoId.ToString(),
-				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY,
+				exerciseInfo.GetThumbnailImageBaseName(),
+				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY_URL,
 				fileStoragePathProvider)
 			.ConfigureAwait(false);
 

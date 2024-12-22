@@ -121,6 +121,7 @@ defineProps<{
         <FormMessage />
       </FormItem>
     </FormField>
+
     <Button class="mx-auto px-8 mt-4" type="submit">{{ submitLabel }}</Button>
   </form>
 </template>

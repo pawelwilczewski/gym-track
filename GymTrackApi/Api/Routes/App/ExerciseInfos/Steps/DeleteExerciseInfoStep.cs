@@ -1,3 +1,4 @@
+using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
@@ -32,10 +33,11 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		var exerciseInfo = exerciseInfoStep.ExerciseInfo;
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		if (exerciseInfoStep.ImageFile is not null)
-		{
-			File.Delete(exerciseInfoStep.ImageFile.ToString().UrlToLocalPath(fileStoragePathProvider));
-		}
+		await EntityImage.Delete(
+				exerciseInfoStep.GetImageBaseName(),
+				Paths.EXERCISE_INFO_STEP_IMAGES_DIRECTORY_URL,
+				fileStoragePathProvider)
+			.ConfigureAwait(false);
 
 		exerciseInfo.Steps.Remove(exerciseInfoStep);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

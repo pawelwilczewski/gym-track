@@ -39,21 +39,16 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 
 		var index = exerciseInfo.Steps.GetNextIndex();
 		var displayOrder = exerciseInfo.Steps.GetNextDisplayOrder();
-		FilePath? path = null;
-		if (image is not null)
-		{
-			var urlPath = $"{Paths.EXERCISE_STEP_INFO_IMAGES_DIRECTORY}/{exerciseInfoId}_{index}{Path.GetExtension(image.FileName)}";
-			if (!FilePath.TryCreate(urlPath, out path, out error))
-			{
-				return error.ToValidationProblem("Image File Path");
-			}
 
-			var localPath = urlPath.UrlToLocalPath(fileStoragePathProvider);
-			Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
-			await image.SaveToFile(localPath, cancellationToken).ConfigureAwait(false);
-		}
+		var exerciseInfoStep = new ExerciseInfo.Step(id, index, exerciseInfoStepDescription, null, displayOrder);
 
-		var exerciseInfoStep = new ExerciseInfo.Step(id, index, exerciseInfoStepDescription, path, displayOrder);
+		var imagePath = await image.SaveOrOverrideImage(
+				exerciseInfoStep.GetImageBaseName(),
+				Paths.EXERCISE_INFO_STEP_IMAGES_DIRECTORY_URL,
+				fileStoragePathProvider,
+				cancellationToken)
+			.ConfigureAwait(false);
+		exerciseInfoStep.ImageFile = imagePath;
 
 		exerciseInfo.Steps.Add(exerciseInfoStep);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

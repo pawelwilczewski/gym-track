@@ -8,8 +8,7 @@ internal static class ExerciseInfoStepRoutes
 			.Map(new CreateExerciseInfoStep())
 			.Map(new GetExerciseInfoStep())
 			.Map(new EditExerciseInfoStep())
-			.Map(new DeleteExerciseInfoStep())
-			.Map(new EditExerciseInfoStepImage());
+			.Map(new DeleteExerciseInfoStep());
 
 		return builder;
 	}

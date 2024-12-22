@@ -33,16 +33,17 @@ internal sealed class CreateExerciseInfo : IEndpoint
 
 		var id = Id<ExerciseInfo>.New();
 
+		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
+			? ExerciseInfo.CreateForEveryone(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, id)
+			: ExerciseInfo.CreateForUser(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
+
 		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideImage(
-				id.ToString(),
-				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY,
+				exerciseInfo.GetThumbnailImageBaseName(),
+				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY_URL,
 				fileStoragePathProvider,
 				cancellationToken)
 			.ConfigureAwait(false);
-
-		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-			? ExerciseInfo.CreateForEveryone(exerciseInfoName, thumbnailImagePath, exerciseInfoDescription, allowedMetricTypes, id)
-			: ExerciseInfo.CreateForUser(exerciseInfoName, thumbnailImagePath, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
+		exerciseInfo.ThumbnailImage = thumbnailImagePath;
 
 		dataContext.ExerciseInfos.Add(exerciseInfo);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

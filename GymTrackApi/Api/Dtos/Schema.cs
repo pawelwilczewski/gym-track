@@ -12,14 +12,6 @@ public sealed record class CreateWorkoutExerciseSetRequest(
 public sealed record class CreateWorkoutRequest(
 	string Name);
 
-public sealed record class EditExerciseInfoRequest(
-	string Name,
-	string Description,
-	ExerciseMetricType AllowedMetricTypes);
-
-public sealed record class EditExerciseInfoStepRequest(
-	string Description);
-
 public sealed record class EditWorkoutExerciseSetRequest(
 	ExerciseMetric Metric,
 	int Reps);

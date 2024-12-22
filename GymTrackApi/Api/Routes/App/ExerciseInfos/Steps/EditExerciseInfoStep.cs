@@ -1,5 +1,5 @@
 using Api.Common;
-using Api.Dtos;
+using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Common;
@@ -16,8 +16,11 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int index,
-		[FromBody] EditExerciseInfoStepRequest request,
+		[FromForm] string description,
+		[FromForm] bool replaceImage,
+		IFormFile? image,
 		[FromServices] IDataContext dataContext,
+		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
@@ -33,9 +36,19 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		var step = exerciseInfo.Steps.SingleOrDefault();
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
-		if (!step.Description.TrySet(request.Description, out var error))
+		if (!step.Description.TrySet(description, out var error))
 		{
 			return error.ToValidationProblem("Description");
+		}
+
+		if (replaceImage)
+		{
+			step.ImageFile = await image.SaveOrOverrideImage(
+					step.GetImageBaseName(),
+					Paths.EXERCISE_INFO_STEP_IMAGES_DIRECTORY_URL,
+					fileStoragePathProvider,
+					cancellationToken)
+				.ConfigureAwait(false);
 		}
 
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -44,7 +57,8 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{index:int}", Handler);
+		builder.MapPut("{index:int}", Handler)
+			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
 		return builder;
 	}
 }

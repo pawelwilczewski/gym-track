@@ -6,8 +6,8 @@ namespace Api.Files;
 internal static class Paths
 {
 	// TODO Pawel: this should be stored in some config file instead
-	public const string EXERCISE_INFO_THUMBNAILS_DIRECTORY = "images/exerciseInfo/thumbnails";
-	public const string EXERCISE_STEP_INFO_IMAGES_DIRECTORY = "images/exerciseInfo/step";
+	public const string EXERCISE_INFO_THUMBNAILS_DIRECTORY_URL = "images/exerciseInfo/thumbnails";
+	public const string EXERCISE_INFO_STEP_IMAGES_DIRECTORY_URL = "images/exerciseInfo/step";
 
 	public static FilePath UrlToLocalPath(this FilePath url, IFileStoragePathProvider fileStoragePathProvider) =>
 		FilePath.TryCreate(UrlToLocalPath(url.ToString(), fileStoragePathProvider), out var result, out _)

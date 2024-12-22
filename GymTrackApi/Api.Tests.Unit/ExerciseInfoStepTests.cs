@@ -101,23 +101,25 @@ internal sealed class ExerciseInfoStepTests
 		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, Type responseType)> EditExerciseInfoStepData() =>
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, bool replaceImage, IFormFile? image, Type responseType)> EditExerciseInfoStepData() =>
 	[
-		new([Users.Admin1], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, "ValidDescription", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", typeof(NoContent)),
-		new([Users.User1], Users.User1, null!, typeof(ValidationProblem)),
-		new([Users.User1], Users.User1, Placeholders.RandomStringNCharacters(Description.MAX_LENGTH + 1), typeof(ValidationProblem)),
-		new([Users.User1, Users.User2], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidDescription", typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidDescription", typeof(ForbidHttpResult))
+		new([Users.Admin1], Users.User1, "ValidDescription", false, null, typeof(ForbidHttpResult)),
+		new([Users.Admin1], Users.Admin1, "ValidDescription", false, null, typeof(NoContent)),
+		new([Users.Admin1], Users.Admin1, "ValidDescription", true, null, typeof(NoContent)),
+		new([Users.Admin1], Users.Admin1, "ValidDescription", true, Placeholders.FormFile(), typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", false, null, typeof(NoContent)),
+		new([Users.Admin1, Users.User2], Users.Admin1, "ValidDescription", false, null, typeof(NoContent)),
+		new([Users.User1], Users.User1, null!, false, null, typeof(ValidationProblem)),
+		new([Users.User1], Users.User1, Placeholders.RandomStringNCharacters(Description.MAX_LENGTH + 1), false, null, typeof(ValidationProblem)),
+		new([Users.User1, Users.User2], Users.User1, "ValidDescription", false, null, typeof(ForbidHttpResult)),
+		new([Users.User2], Users.User1, "ValidDescription", false, null, typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidDescription", false, null, typeof(ForbidHttpResult)),
+		new([Users.User2, Users.User1], Users.User1, "ValidDescription", false, null, typeof(ForbidHttpResult))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(EditExerciseInfoStepData))]
-	public async Task EditExerciseInfoStep_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, Type responseType)
+	public async Task EditExerciseInfoStep_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string description, bool replaceImage, IFormFile? image, Type responseType)
 	{
 		using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
@@ -135,47 +137,9 @@ internal sealed class ExerciseInfoStepTests
 				editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
 				0,
-				new EditExerciseInfoStepRequest(description),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf(responseType);
-	}
-
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)> EditExerciseInfoThumbnailData() =>
-	[
-		new([Users.Admin1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.User1], Users.User1, Placeholders.FormFile(), typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, Placeholders.FormFile(), typeof(ForbidHttpResult))
-	];
-
-	[Test]
-	[MethodDataSource(nameof(EditExerciseInfoThumbnailData))]
-	public async Task EditExerciseInfoStepImage_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, IFormFile thumbnail, Type responseType)
-	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
-			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
-			.Build()
-			.ConfigureAwait(false);
-
-		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
-
-		var step = new ExerciseInfo.Step(exerciseInfo.Id, 0, originalDescription, null, 0);
-		exerciseInfo.Steps.Add(step);
-		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
-
-		var result = await EditExerciseInfoStepImage.Handler(
-				editor.GetHttpContext(),
-				exerciseInfo.Id.Value,
-				0,
-				thumbnail,
+				description,
+				replaceImage,
+				image,
 				dataContext,
 				new TempFileStoragePathProvider(),
 				CancellationToken.None)

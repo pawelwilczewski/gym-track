@@ -3,12 +3,13 @@ import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
 import Entity from '../../Entity.vue';
 import { apiClient } from '@/app/http/Clients';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
+import EditExerciseInfoStepForm from './EditExerciseInfoStepForm.vue';
 
 const props = defineProps<{
   stepKey: ExerciseInfoStepKey;
 }>();
 
-const { step, destroy } = useExerciseInfoStep(props.stepKey, {
+const { step, update, destroy } = useExerciseInfoStep(props.stepKey, {
   immediate: true,
 });
 
@@ -32,5 +33,21 @@ const emit = defineEmits<{
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />
       <img class="step-image mx-auto" />
     </picture>
+    <template #edit="{ closeDialog }">
+      <EditExerciseInfoStepForm
+        :step-key="stepKey"
+        :initial-values="{
+          description: step.description,
+          image:
+            step.imageUrl != null
+              ? `${apiClient.getUri()}/${step.imageUrl}`
+              : null,
+        }"
+        @edited="
+          update();
+          closeDialog();
+        "
+      />
+    </template>
   </Entity>
 </template>
