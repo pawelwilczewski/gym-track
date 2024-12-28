@@ -1,6 +1,5 @@
 using Api.Dtos;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -36,7 +35,6 @@ internal sealed class GetWorkoutExercise : IEndpoint
 			exercise.Index,
 			exercise.ExerciseInfoId.Value,
 			exercise.Sets
-				.SortedByDisplayOrder()
 				.Select(set => new WorkoutExerciseSetKey(workoutId, index, set.Index))
 				.ToList()));
 	}

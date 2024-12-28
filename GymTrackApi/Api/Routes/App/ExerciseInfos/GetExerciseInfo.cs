@@ -1,6 +1,5 @@
 using Api.Dtos;
 using Application.Persistence;
-using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
 using Domain.Models.Workout;
@@ -35,7 +34,6 @@ internal sealed class GetExerciseInfo : IEndpoint
 			exerciseInfo.AllowedMetricTypes,
 			exerciseInfo.ThumbnailImage?.ToString(),
 			exerciseInfo.Steps
-				.SortedByDisplayOrder()
 				.Select(step => new ExerciseInfoStepKey(exerciseInfoId.Value, step.Index))
 				.ToList()));
 	}
