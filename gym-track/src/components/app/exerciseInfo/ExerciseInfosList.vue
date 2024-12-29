@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import ExerciseInfo from './ExerciseInfo.vue';
-import { useExerciseInfos } from '@/composables/UseExerciseInfos';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
-const { exerciseInfos, update } = useExerciseInfos({ immediate: true });
-
-defineExpose({
-  update,
-});
+const { exerciseInfos, fetchExerciseInfos } = useExerciseInfos();
+fetchExerciseInfos();
 </script>
 
 <template>
-  <div v-if="exerciseInfos" class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4">
     <ExerciseInfo
       v-for="exerciseInfo in exerciseInfos"
       :key="exerciseInfo.id"

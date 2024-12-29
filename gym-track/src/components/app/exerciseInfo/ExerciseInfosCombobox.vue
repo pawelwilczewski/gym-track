@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useExerciseInfos } from '@/composables/UseExerciseInfos';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 import { cn } from '@/lib/utils';
 import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import { UUID } from 'crypto';
@@ -25,7 +25,8 @@ const model = defineModel<UUID | undefined>();
 
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
-const { exerciseInfos } = useExerciseInfos({ immediate: true });
+const { exerciseInfos, fetchExerciseInfos } = useExerciseInfos();
+fetchExerciseInfos();
 
 function encodeSelectedValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
