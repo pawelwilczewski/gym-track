@@ -2,19 +2,19 @@
 import ExerciseInfo from './ExerciseInfo.vue';
 import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
-const { exerciseInfos, fetchExerciseInfos } = useExerciseInfos();
-fetchExerciseInfos();
+const store = useExerciseInfos();
+store.fetchExerciseInfos();
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <ExerciseInfo
-      v-for="exerciseInfo in exerciseInfos"
+      v-for="exerciseInfo in store.exerciseInfos"
       :key="exerciseInfo.id"
       :initial-exercise-info="exerciseInfo"
       @deleted="
         id => {
-          exerciseInfos = exerciseInfos.filter(
+          store.exerciseInfos = store.exerciseInfos.filter(
             exerciseInfo => exerciseInfo.id !== id
           );
         }

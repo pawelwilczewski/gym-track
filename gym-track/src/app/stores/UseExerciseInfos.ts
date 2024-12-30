@@ -3,10 +3,10 @@ import { apiClient } from '../http/Clients';
 import { ErrorHandler } from '../errors/ErrorHandler';
 import { toastErrorHandler } from '../errors/Handlers';
 import { GetExerciseInfoResponse } from '../schema/Types';
-import { reactive } from 'vue';
+import { ref } from 'vue';
 
 export const useExerciseInfos = defineStore('exerciseInfos', () => {
-  const exerciseInfos = reactive<GetExerciseInfoResponse[]>([]);
+  const exerciseInfos = ref<GetExerciseInfoResponse[]>([]);
 
   async function fetchExerciseInfos(): Promise<void> {
     const response = await apiClient.get('/api/v1/exerciseInfos');
@@ -19,7 +19,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       return;
     }
 
-    exerciseInfos.splice(0, exerciseInfos.length, ...response.data);
+    exerciseInfos.value = response.data;
   }
 
   return {

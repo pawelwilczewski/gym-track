@@ -5,7 +5,7 @@ import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.v
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 
-const { fetchExerciseInfos } = useExerciseInfos();
+const store = useExerciseInfos();
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const { fetchExerciseInfos } = useExerciseInfos();
       <template #dialog="{ closeDialog }">
         <CreateExerciseInfoForm
           @created="
-            fetchExerciseInfos();
+            store.fetchExerciseInfos();
             closeDialog();
           "
         />

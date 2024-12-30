@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
 import WorkoutsList from '@/components/app/workout/WorkoutsList.vue';
-import { ref } from 'vue';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import CreateWorkoutForm from '@/components/app/workout/CreateWorkoutForm.vue';
+import { useWorkouts } from '@/app/stores/UseWorkouts';
 
-const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
+const store = useWorkouts();
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
       <template #dialog="{ closeDialog }">
         <CreateWorkoutForm
           @created="
-            workoutsList?.update();
+            store.fetchWorkouts();
             closeDialog();
           "
         />
@@ -23,7 +23,7 @@ const workoutsList = ref<typeof WorkoutsList | undefined>(undefined);
     </ButtonDialog>
     <section>
       <h1 class="mt-10 mb-6">Your Workouts</h1>
-      <WorkoutsList ref="workoutsList" />
+      <WorkoutsList />
     </section>
   </OneColumnLayout>
 </template>
