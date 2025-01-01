@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 import CreateExerciseInfoForm from '@/components/app/exerciseInfo/CreateExerciseInfoForm.vue';
 import ExerciseInfosList from '@/components/app/exerciseInfo/ExerciseInfosList.vue';
 import ButtonDialog from '@/components/app/misc/ButtonDialog.vue';
 import OneColumnLayout from '@/components/layouts/OneColumnLayout.vue';
-
-const store = useExerciseInfos();
 </script>
 
 <template>
@@ -13,12 +10,7 @@ const store = useExerciseInfos();
     <ButtonDialog dialog-title="Create New Exercise">
       <template #button>Create Exercise</template>
       <template #dialog="{ closeDialog }">
-        <CreateExerciseInfoForm
-          @created="
-            store.fetchExerciseInfos();
-            closeDialog();
-          "
-        />
+        <CreateExerciseInfoForm @created="closeDialog()" />
       </template>
     </ButtonDialog>
     <section>

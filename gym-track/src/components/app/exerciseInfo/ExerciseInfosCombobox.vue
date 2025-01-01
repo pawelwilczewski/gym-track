@@ -25,8 +25,8 @@ const model = defineModel<UUID | undefined>();
 
 const isOpen = ref(false);
 const selectedValueRaw = ref('');
-const store = useExerciseInfos();
-store.fetchExerciseInfos();
+const exerciseInfos = useExerciseInfos();
+exerciseInfos.fetchAll();
 
 function encodeSelectedValue(value: GetExerciseInfoResponse): string {
   return `${value.id}|${value.name}`;
@@ -82,7 +82,7 @@ function handleSelected(event: SelectEvent<AcceptableValue>): void {
 </script>
 
 <template>
-  <Popover v-if="store.exerciseInfos" v-model:open="isOpen">
+  <Popover v-if="exerciseInfos.all" v-model:open="isOpen">
     <PopoverTrigger as-child>
       <Button
         variant="outline"
@@ -104,7 +104,7 @@ function handleSelected(event: SelectEvent<AcceptableValue>): void {
         <CommandEmpty>No exercises found.</CommandEmpty>
         <CommandList>
           <CommandItem
-            v-for="exerciseInfo in store.exerciseInfos"
+            v-for="exerciseInfo in exerciseInfos.all"
             :key="exerciseInfo.id"
             :value="encodeSelectedValue(exerciseInfo)"
             @select="handleSelected"
