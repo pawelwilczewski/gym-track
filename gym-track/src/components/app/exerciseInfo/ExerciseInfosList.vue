@@ -14,6 +14,7 @@ store.fetchExerciseInfos();
       :initial-exercise-info="exerciseInfo"
       @deleted="
         id => {
+          // TODO Pawel: this should be abstracted in store
           store.exerciseInfos = store.exerciseInfos.filter(
             exerciseInfo => exerciseInfo.id !== id
           );

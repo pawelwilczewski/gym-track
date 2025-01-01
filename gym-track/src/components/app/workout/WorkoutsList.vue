@@ -14,6 +14,7 @@ store.fetchWorkouts();
       :initial-workout="workout"
       @deleted="
         workoutId => {
+          // TODO Pawel: this should be abstracted in store
           store.workouts = store.workouts.filter(
             workout => workout.id !== workoutId
           );
