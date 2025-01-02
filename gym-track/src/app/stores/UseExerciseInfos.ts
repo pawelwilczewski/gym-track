@@ -11,6 +11,7 @@ import {
 } from '../schema/Schemas';
 import { z } from 'zod';
 import { FormContext } from 'vee-validate';
+import { toRecord } from '../utils/ConversionUtils';
 
 export const useExerciseInfos = defineStore('exerciseInfos', () => {
   const exerciseInfos = ref<Record<UUID, GetExerciseInfoResponse>>({});
@@ -26,7 +27,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       return;
     }
 
-    exerciseInfos.value = response.data;
+    exerciseInfos.value = toRecord(response.data, item => item.id);
   }
 
   async function fetchById(id: UUID): Promise<void> {
