@@ -16,7 +16,7 @@ import { toRecord } from '../utils/ConversionUtils';
 export const useExerciseInfos = defineStore('exerciseInfos', () => {
   const exerciseInfos = ref<Record<UUID, GetExerciseInfoResponse>>({});
 
-  async function fetchAll(): Promise<void> {
+  async function fetchAll(): Promise<boolean> {
     const response = await apiClient.get('/api/v1/exerciseInfos');
 
     if (
@@ -24,13 +24,15 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
         .handleFully(toastErrorHandler)
         .wasError()
     ) {
-      return;
+      return false;
     }
 
     exerciseInfos.value = toRecord(response.data, item => item.id);
+
+    return true;
   }
 
-  async function fetchById(id: UUID): Promise<void> {
+  async function fetchById(id: UUID): Promise<boolean> {
     const response = await apiClient.get(`/api/v1/exerciseInfos/${id}`);
 
     if (
@@ -38,16 +40,18 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
         .handleFully(toastErrorHandler)
         .wasError()
     ) {
-      return;
+      return false;
     }
 
     exerciseInfos.value[id] = response.data;
+
+    return true;
   }
 
   async function create(
     data: z.infer<typeof createExerciseInfoSchema>,
     form: FormContext
-  ): Promise<void> {
+  ): Promise<boolean> {
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('description', data.description);
@@ -64,20 +68,22 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
         .handleFully(toastErrorHandler)
         .wasError()
     ) {
-      return;
+      return false;
     }
 
     const exerciseInfo: GetExerciseInfoResponse = await apiClient.get(
       response.headers.location
     );
     exerciseInfos.value[exerciseInfo.id] = exerciseInfo;
+
+    return true;
   }
 
   async function update(
     id: UUID,
     data: z.infer<typeof editExerciseInfoSchema>,
     form: FormContext
-  ): Promise<void> {
+  ): Promise<boolean> {
     const formData = new FormData();
     formData.append('_method', 'PUT');
     formData.append('name', data.name);
@@ -102,13 +108,15 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
         .handleFully(toastErrorHandler)
         .wasError()
     ) {
-      return;
+      return false;
     }
 
-    exerciseInfos.value[id] = response.data;
+    fetchById(id);
+
+    return true;
   }
 
-  async function destroy(id: UUID): Promise<void> {
+  async function destroy(id: UUID): Promise<boolean> {
     const response = await apiClient.delete(`/api/v1/exerciseInfos/${id}`);
 
     if (
@@ -116,10 +124,12 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
         .handleFully(toastErrorHandler)
         .wasError()
     ) {
-      return;
+      return false;
     }
 
     delete exerciseInfos.value[id];
+
+    return true;
   }
 
   return {

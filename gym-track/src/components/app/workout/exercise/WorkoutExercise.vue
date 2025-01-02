@@ -4,10 +4,10 @@ import { WorkoutExerciseKey } from '@/app/schema/Types';
 import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
 import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
-import { useExerciseInfo } from '@/composables/UseExerciseInfo';
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
 import EditWorkoutExerciseForm from './EditWorkoutExerciseForm.vue';
 import CreateWorkoutExerciseSetForm from './set/CreateWorkoutExerciseSetForm.vue';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
 const props = defineProps<{
   exerciseKey: WorkoutExerciseKey;
@@ -20,11 +20,12 @@ const { workoutExercise, update, destroy } = useWorkoutExercise(
   }
 );
 
-const { exerciseInfo, update: updateExerciseInfo } = useExerciseInfo(
-  computed(() => workoutExercise.value?.exerciseInfoId)
+const exerciseInfos = useExerciseInfos();
+const exerciseInfo = computed(() =>
+  workoutExercise.value
+    ? exerciseInfos.all[workoutExercise.value.exerciseInfoId]
+    : null
 );
-
-watch(workoutExercise, () => updateExerciseInfo());
 
 const emit = defineEmits<{
   deleted: [WorkoutExerciseKey];

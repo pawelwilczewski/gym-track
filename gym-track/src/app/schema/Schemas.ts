@@ -6,6 +6,8 @@ export const createWorkoutSchema = z.object({
   name: z.string().trim().min(1),
 });
 
+export const editWorkoutSchema = createWorkoutSchema;
+
 export const createWorkoutExerciseSchema = z.object({
   exerciseInfoId: z.string().uuid(),
 });

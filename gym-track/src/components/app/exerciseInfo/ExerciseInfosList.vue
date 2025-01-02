@@ -10,9 +10,8 @@ exerciseInfos.fetchAll();
   <div class="flex flex-col gap-4">
     <ExerciseInfo
       v-for="exerciseInfo in exerciseInfos.all"
+      :id="exerciseInfo.id"
       :key="exerciseInfo.id"
-      :initial-exercise-info="exerciseInfo"
-      @deleted="id => exerciseInfos.destroy(id)"
     />
   </div>
 </template>

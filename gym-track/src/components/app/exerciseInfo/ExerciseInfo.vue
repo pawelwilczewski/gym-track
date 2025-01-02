@@ -1,40 +1,32 @@
 <script setup lang="ts">
 import { apiClient } from '@/app/http/Clients';
-import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/app/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
 import CreateExerciseInfoStepForm from './step/CreateExerciseInfoStepForm.vue';
 import Entity from '../Entity.vue';
 import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
-import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
 import { computed } from 'vue';
 import EditExerciseInfoForm from './EditExerciseInfoForm.vue';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
 const props = defineProps<{
-  initialExerciseInfo: GetExerciseInfoResponse;
+  id: UUID;
 }>();
 
-const { exerciseInfo, update, destroy } = useExerciseInfo(
-  computed(() => props.initialExerciseInfo.id),
-  { initialValue: props.initialExerciseInfo }
-);
+const exerciseInfos = useExerciseInfos();
+const exerciseInfo = computed(() => exerciseInfos.all[props.id]);
 
 const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
-
-const emit = defineEmits<{ deleted: [UUID] }>();
 </script>
 
 <template>
   <Entity
     v-if="exerciseInfo"
     class="card"
-    @deleted="
-      emit('deleted', exerciseInfo.id);
-      destroy();
-    "
+    @deleted="exerciseInfos.destroy(props.id)"
   >
     <h3>{{ exerciseInfo.name }}</h3>
 
@@ -73,10 +65,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
       <template #dialog="{ closeDialog }">
         <CreateExerciseInfoStepForm
           :exercise-info-id="exerciseInfo.id"
-          @created="
-            update();
-            closeDialog();
-          "
+          @created="closeDialog()"
         />
       </template>
     </ButtonDialog>
@@ -96,10 +85,7 @@ const emit = defineEmits<{ deleted: [UUID] }>();
               ? `${apiClient.getUri()}/${exerciseInfo.thumbnailUrl}`
               : null,
         }"
-        @edited="
-          update();
-          closeDialog();
-        "
+        @edited="closeDialog()"
       />
     </template>
   </Entity>
