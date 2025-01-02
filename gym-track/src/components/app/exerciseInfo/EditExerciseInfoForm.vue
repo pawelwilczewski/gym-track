@@ -1,27 +1,18 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import {
-  createExerciseInfoSchema,
+  EditExerciseInfoInitialValues,
   editExerciseInfoSchema,
+  EditExerciseInfoValues,
 } from '@/app/schema/Schemas';
 import { toTypedSchema } from '@vee-validate/zod';
 import ExerciseInfoForm from './ExerciseInfoForm.vue';
 import { UUID } from 'crypto';
-import { z } from 'zod';
-import { Override } from '@/app/utils/TypeUtils';
 import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
 const props = defineProps<{
   id: UUID;
-  initialValues:
-    | Override<
-        z.infer<typeof createExerciseInfoSchema>,
-        {
-          allowedMetricTypes: string[] | undefined;
-          thumbnailImage: string | null | undefined;
-        }
-      >
-    | undefined;
+  initialValues: EditExerciseInfoInitialValues | undefined;
 }>();
 
 const exerciseInfos = useExerciseInfos();
@@ -42,16 +33,7 @@ const onSubmit = form.handleSubmit(async values => {
 if (props.initialValues) {
   let values = props.initialValues;
   delete values.thumbnailImage;
-  form.setValues(
-    values as Override<
-      z.infer<typeof createExerciseInfoSchema>,
-      {
-        allowedMetricTypes: string[] | undefined;
-        thumbnailImage: undefined;
-      }
-    >,
-    false
-  );
+  form.setValues(values as EditExerciseInfoValues, false);
 }
 // TODO Pawel: antiforgery tokens! here and everywhere else in forms!
 </script>

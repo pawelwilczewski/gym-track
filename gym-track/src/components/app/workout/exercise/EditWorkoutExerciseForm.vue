@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
 
-import { createWorkoutExerciseSchema } from '@/app/schema/Schemas';
+import { editWorkoutExerciseSchema } from '@/app/schema/Schemas';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { toTypedSchema } from '@vee-validate/zod';
@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 const props = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
-  initialValues: z.infer<typeof createWorkoutExerciseSchema>;
+  initialValues: z.infer<typeof editWorkoutExerciseSchema>;
 }>();
 
 const emit = defineEmits<{
@@ -20,7 +20,7 @@ const emit = defineEmits<{
 }>();
 
 const form = useForm({
-  validationSchema: toTypedSchema(createWorkoutExerciseSchema),
+  validationSchema: toTypedSchema(editWorkoutExerciseSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

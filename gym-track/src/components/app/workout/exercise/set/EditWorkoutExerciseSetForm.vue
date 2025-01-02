@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
 import { apiClient } from '@/app/http/Clients';
-import { createWorkoutExerciseSetSchema } from '@/app/schema/Schemas';
+import {
+  EditWorkoutExerciseSetInitialValues,
+  editWorkoutExerciseSetSchema,
+} from '@/app/schema/Schemas';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import {
@@ -11,22 +14,11 @@ import {
 import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseSetForm from './WorkoutExerciseSetForm.vue';
 import { createWorkoutExerciseSchemaToRequest } from '@/app/schema/Converters';
-import { z } from 'zod';
-import { Override } from '@/app/utils/TypeUtils';
 
 const props = defineProps<{
   workoutExerciseSetKey: WorkoutExerciseSetKey;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
-  initialValues: // override because model bindings require string values
-  | Override<
-        z.infer<typeof createWorkoutExerciseSetSchema>,
-        {
-          metricType: string;
-          weightUnits: string | undefined;
-          distanceUnits: string | undefined;
-        }
-      >
-    | undefined;
+  initialValues: EditWorkoutExerciseSetInitialValues | undefined;
 }>();
 
 const emit = defineEmits<{
@@ -34,7 +26,7 @@ const emit = defineEmits<{
 }>();
 
 const form = useForm({
-  validationSchema: toTypedSchema(createWorkoutExerciseSetSchema),
+  validationSchema: toTypedSchema(editWorkoutExerciseSetSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

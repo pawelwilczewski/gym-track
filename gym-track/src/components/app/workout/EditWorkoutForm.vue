@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { createWorkoutSchema } from '@/app/schema/Schemas';
+import { editWorkoutSchema } from '@/app/schema/Schemas';
 import { toTypedSchema } from '@vee-validate/zod';
 import { z } from 'zod';
 import { UUID } from 'crypto';
@@ -11,11 +11,11 @@ const workouts = useWorkouts();
 
 const props = defineProps<{
   workoutId: UUID;
-  initialValues: z.infer<typeof createWorkoutSchema>;
+  initialValues: z.infer<typeof editWorkoutSchema>;
 }>();
 
 const form = useForm({
-  validationSchema: toTypedSchema(createWorkoutSchema),
+  validationSchema: toTypedSchema(editWorkoutSchema),
 });
 
 const emit = defineEmits<{

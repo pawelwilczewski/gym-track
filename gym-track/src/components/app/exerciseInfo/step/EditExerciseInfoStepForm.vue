@@ -6,23 +6,15 @@ import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { toTypedSchema } from '@vee-validate/zod';
 import ExerciseInfoStepForm from './ExerciseInfoStepForm.vue';
 import {
-  createExerciseInfoStepSchema,
   editExerciseInfoStepSchema,
+  EditExerciseInfoStepInitialValues,
+  EditExerciseInfoStepValues,
 } from '@/app/schema/Schemas';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
-import { Override } from '@/app/utils/TypeUtils';
-import { z } from 'zod';
 
 const props = defineProps<{
   stepKey: ExerciseInfoStepKey;
-  initialValues:
-    | Override<
-        z.infer<typeof createExerciseInfoStepSchema>,
-        {
-          image: string | null | undefined;
-        }
-      >
-    | undefined;
+  initialValues: EditExerciseInfoStepInitialValues | undefined;
 }>();
 
 const form = useForm({
@@ -62,15 +54,7 @@ const onSubmit = form.handleSubmit(async values => {
 if (props.initialValues) {
   let values = props.initialValues;
   delete values.image;
-  form.setValues(
-    values as Override<
-      z.infer<typeof createExerciseInfoStepSchema>,
-      {
-        thumbnailImage: undefined;
-      }
-    >,
-    false
-  );
+  form.setValues(values as EditExerciseInfoStepValues, false);
 }
 // TODO Pawel: antiforgery tokens! here and everywhere else in forms!
 </script>
