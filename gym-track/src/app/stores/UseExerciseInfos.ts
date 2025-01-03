@@ -32,8 +32,8 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
     return true;
   }
 
-  async function fetchById(id: UUID): Promise<boolean> {
-    const response = await apiClient.get(`/api/v1/exerciseInfos/${id}`);
+  async function fetchByUrl(url: string): Promise<boolean> {
+    const response = await apiClient.get(url);
 
     if (
       ErrorHandler.forResponse(response)
@@ -43,9 +43,14 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       return false;
     }
 
-    exerciseInfos.value[id] = response.data;
+    const exerciseInfo: GetExerciseInfoResponse = response.data;
+    exerciseInfos.value[exerciseInfo.id] = exerciseInfo;
 
     return true;
+  }
+
+  async function fetchById(id: UUID): Promise<boolean> {
+    return fetchByUrl(`/api/v1/exerciseInfos/${id}`);
   }
 
   async function create(
@@ -71,12 +76,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       return false;
     }
 
-    const exerciseInfo: GetExerciseInfoResponse = await apiClient.get(
-      response.headers.location
-    );
-    exerciseInfos.value[exerciseInfo.id] = exerciseInfo;
-
-    return true;
+    return fetchByUrl(response.headers.location);
   }
 
   async function update(

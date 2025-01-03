@@ -8,26 +8,18 @@ import Entity from '../Entity.vue';
 import ExerciseInfoStepsList from './step/ExerciseInfoStepsList.vue';
 import { useExerciseInfoStepKeys } from '@/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
-import { computed } from 'vue';
 import EditExerciseInfoForm from './EditExerciseInfoForm.vue';
-import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
+import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 
-const props = defineProps<{
-  id: UUID;
-}>();
+const { id } = defineProps<{ id: UUID }>();
 
-const exerciseInfos = useExerciseInfos();
-const exerciseInfo = computed(() => exerciseInfos.all[props.id]);
+const { exerciseInfo, destroy } = useExerciseInfo(id);
 
 const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 </script>
 
 <template>
-  <Entity
-    v-if="exerciseInfo"
-    class="card"
-    @deleted="exerciseInfos.destroy(props.id)"
-  >
+  <Entity v-if="exerciseInfo" class="card" @deleted="destroy()">
     <h3>{{ exerciseInfo.name }}</h3>
 
     <picture v-if="exerciseInfo.thumbnailUrl">

@@ -8,14 +8,14 @@ import {
 import { toTypedSchema } from '@vee-validate/zod';
 import ExerciseInfoForm from './ExerciseInfoForm.vue';
 import { UUID } from 'crypto';
-import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
+import { useExerciseInfo } from '@/composables/UseExerciseInfo';
 
 const props = defineProps<{
   id: UUID;
   initialValues: EditExerciseInfoInitialValues | undefined;
 }>();
 
-const exerciseInfos = useExerciseInfos();
+const exerciseInfo = useExerciseInfo(props.id);
 
 const form = useForm({
   validationSchema: toTypedSchema(editExerciseInfoSchema),
@@ -26,7 +26,7 @@ const emit = defineEmits<{
 }>();
 
 const onSubmit = form.handleSubmit(async values => {
-  await exerciseInfos.update(props.id, values, form);
+  await exerciseInfo.update(values, form);
   emit('edited');
 });
 
