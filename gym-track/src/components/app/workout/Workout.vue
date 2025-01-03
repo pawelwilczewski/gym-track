@@ -6,26 +6,21 @@ import ButtonDialog from '../misc/ButtonDialog.vue';
 import { UUID } from 'crypto';
 import { useWorkoutExerciseKeys } from '@/composables/UseWorkoutExerciseKeys';
 import EditWorkoutForm from './EditWorkoutForm.vue';
-import { useWorkouts } from '@/app/stores/UseWorkouts';
-import { computed } from 'vue';
+import { useWorkout } from '@/composables/UseWorkout';
 
-const props = defineProps<{
-  id: UUID;
-}>();
+const { id } = defineProps<{ id: UUID }>();
 
-const workouts = useWorkouts();
-const workout = computed(() => workouts.all[props.id]);
+const { workout, destroy } = useWorkout(id);
 
 const { exerciseKeys } = useWorkoutExerciseKeys(workout);
 </script>
 
 <template>
-  <Entity v-if="workout" class="card" @deleted="workouts.destroy(id)">
+  <Entity v-if="workout" class="card" @deleted="destroy()">
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
     <WorkoutExercisesList
       v-if="exerciseKeys"
-      ref="exercisesList"
       :exercise-keys="exerciseKeys"
       @exercise-deleted="
         key => {

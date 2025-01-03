@@ -34,8 +34,8 @@ export const useWorkouts = defineStore('workouts', () => {
     return true;
   }
 
-  async function fetchById(id: UUID): Promise<boolean> {
-    const response = await apiClient.get(`/api/v1/workouts/${id}`);
+  async function fetchByUrl(url: string): Promise<boolean> {
+    const response = await apiClient.get(url);
 
     if (
       ErrorHandler.forResponse(response)
@@ -45,9 +45,14 @@ export const useWorkouts = defineStore('workouts', () => {
       return false;
     }
 
-    workouts.value[id] = response.data;
+    const workout = response.data;
+    workouts.value[workout.id] = workout;
 
     return true;
+  }
+
+  async function fetchById(id: UUID): Promise<boolean> {
+    return fetchByUrl(`/api/v1/workouts/${id}`);
   }
 
   async function create(
@@ -65,12 +70,7 @@ export const useWorkouts = defineStore('workouts', () => {
       return false;
     }
 
-    const workout: GetWorkoutResponse = await apiClient.get(
-      response.headers.location
-    );
-    workouts.value[workout.id] = workout;
-
-    return true;
+    return fetchByUrl(response.headers.location);
   }
 
   async function update(
