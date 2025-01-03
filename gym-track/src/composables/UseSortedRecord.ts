@@ -3,7 +3,7 @@ import { computed, ComputedRef, Ref } from 'vue';
 
 type RecordKey = string | symbol | number | UUID;
 
-export function useSorted<T>(
+export function useSortedRecord<T>(
   record: Ref<Record<RecordKey, T>>,
   compareFn: (a: T, b: T) => number
 ): ComputedRef<T[]> {

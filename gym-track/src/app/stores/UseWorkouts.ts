@@ -9,12 +9,12 @@ import { z } from 'zod';
 import { createWorkoutSchema, editWorkoutSchema } from '../schema/Schemas';
 import { FormContext } from 'vee-validate';
 import { toRecord } from '../utils/ConversionUtils';
-import { useSorted } from '@/composables/UseSorted';
+import { useSortedRecord } from '@/composables/UseSortedRecord';
 
 export const useWorkouts = defineStore('workouts', () => {
   const workouts = ref<Record<UUID, GetWorkoutResponse>>({});
 
-  const allSorted = useSorted(workouts, (a, b) => {
+  const allSorted = useSortedRecord(workouts, (a, b) => {
     return a.name.localeCompare(b.name);
   });
 
