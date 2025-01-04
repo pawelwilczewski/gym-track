@@ -36,10 +36,6 @@ export type EditExerciseInfoStepRequest = {
   description: string;
 };
 
-export type EditWorkoutExerciseRequest = {
-  index: number;
-};
-
 export type EditWorkoutExerciseSetRequest = {
   metric: ExerciseMetric;
   reps: number;
@@ -97,6 +93,14 @@ export type WorkoutExerciseKey = {
   workoutId: UUID;
   index: number;
 };
+
+export function hashWorkoutExerciseKey(
+  key: WorkoutExerciseKey
+): WorkoutExerciseKeyHash {
+  return `${key.workoutId}_${key.index}`;
+}
+
+export type WorkoutExerciseKeyHash = `${UUID}_${number}`;
 
 export type WorkoutExerciseSetKey = {
   workoutId: UUID;

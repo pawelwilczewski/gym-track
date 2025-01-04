@@ -4,44 +4,35 @@ import { WorkoutExerciseKey } from '@/app/schema/Types';
 import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
 import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import EditWorkoutExerciseForm from './EditWorkoutExerciseForm.vue';
 import CreateWorkoutExerciseSetForm from './set/CreateWorkoutExerciseSetForm.vue';
 import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
-const props = defineProps<{
-  exerciseKey: WorkoutExerciseKey;
-}>();
+const { exerciseKey } = defineProps<{ exerciseKey: WorkoutExerciseKey }>();
 
-const { workoutExercise, update, destroy } = useWorkoutExercise(
-  props.exerciseKey,
-  {
-    immediate: true,
-  }
-);
+const { workoutExercise, fetch, destroy } = useWorkoutExercise(exerciseKey);
+fetch();
 
 const exerciseInfos = useExerciseInfos();
+watch(workoutExercise, () => {
+  if (
+    workoutExercise.value &&
+    !exerciseInfos.all[workoutExercise.value.exerciseInfoId]
+  ) {
+    exerciseInfos.fetchById(workoutExercise.value.exerciseInfoId);
+  }
+});
+
 const exerciseInfo = computed(() =>
   workoutExercise.value
     ? exerciseInfos.all[workoutExercise.value.exerciseInfoId]
     : null
 );
-
-const emit = defineEmits<{
-  deleted: [WorkoutExerciseKey];
-}>();
 </script>
 
 <template>
-  <Entity
-    is="li"
-    v-if="workoutExercise"
-    :editable="false"
-    @deleted="
-      destroy();
-      emit('deleted', props.exerciseKey);
-    "
-  >
+  <Entity is="li" v-if="workoutExercise" :editable="false" @deleted="destroy()">
     <div class="flex flex-col gap-6 py-8 px-4">
       <h5>{{ exerciseInfo?.name }}</h5>
 
@@ -73,10 +64,7 @@ const emit = defineEmits<{
           <CreateWorkoutExerciseSetForm
             :workout-exercise-key="exerciseKey"
             :exercise-info="exerciseInfo"
-            @created="
-              update();
-              closeDialog();
-            "
+            @created="closeDialog()"
           />
         </template>
       </ButtonDialog>
@@ -87,10 +75,7 @@ const emit = defineEmits<{
         :initial-values="{
           exerciseInfoId: workoutExercise.exerciseInfoId,
         }"
-        @edited="
-          update();
-          closeDialog();
-        "
+        @edited="closeDialog()"
       />
     </template>
   </Entity>

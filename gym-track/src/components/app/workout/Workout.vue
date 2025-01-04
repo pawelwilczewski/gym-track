@@ -19,17 +19,7 @@ const { exerciseKeys } = useWorkoutExerciseKeys(workout);
   <Entity v-if="workout" class="card" @deleted="destroy()">
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
-    <WorkoutExercisesList
-      v-if="exerciseKeys"
-      :exercise-keys="exerciseKeys"
-      @exercise-deleted="
-        key => {
-          exerciseKeys = exerciseKeys.filter(
-            exerciseKey => exerciseKey !== key
-          );
-        }
-      "
-    />
+    <WorkoutExercisesList v-if="exerciseKeys" :exercise-keys="exerciseKeys" />
     <ButtonDialog dialog-title="Create Workout Exercise">
       <template #button>Add Exercise</template>
       <template #dialog="{ closeDialog }">
