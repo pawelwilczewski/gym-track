@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { roundToMultiple } from '@/app/utils/MathUtils';
-import Timer from '@/app/time/Timer';
+import Timer from '@/app/utils/time/Timer';
 import { ref } from 'vue';
 
 const props = defineProps<{
