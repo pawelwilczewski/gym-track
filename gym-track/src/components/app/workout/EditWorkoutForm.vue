@@ -6,9 +6,9 @@ import { UUID } from 'crypto';
 import WorkoutForm from './WorkoutForm.vue';
 import { useWorkout } from '@/composables/UseWorkout';
 
-const props = defineProps<{ workoutId: UUID }>();
+const { workoutId } = defineProps<{ workoutId: UUID }>();
 
-const { workout, update } = useWorkout(props.workoutId);
+const { workout, update } = useWorkout(workoutId);
 
 const form = useForm({
   validationSchema: toTypedSchema(editWorkoutSchema),

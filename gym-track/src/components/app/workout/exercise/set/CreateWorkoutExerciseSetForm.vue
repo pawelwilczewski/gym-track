@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
 import { createWorkoutExerciseSetSchema } from '@/app/schema/Schemas';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import {
   GetExerciseInfoResponse,
   WorkoutExerciseKey,
 } from '@/app/schema/Types';
 import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseSetForm from './WorkoutExerciseSetForm.vue';
-import { createWorkoutExerciseSchemaToRequest } from '@/app/schema/Converters';
+import { useWorkoutExerciseSets } from '@/app/stores/UseWorkoutExerciseSets';
+import { createWorkoutExerciseSetSchemaToRequest } from '@/app/schema/Converters';
 
-const props = defineProps<{
+const { workoutExerciseKey, exerciseInfo } = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
 }>();
+
+const sets = useWorkoutExerciseSets();
 
 const emit = defineEmits<{
   created: [];
@@ -26,25 +26,11 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const request = createWorkoutExerciseSchemaToRequest(values);
-
-  if (!request.metric) {
-    throw new Error(`Invalid request metric type: ${values.metricType}`);
-  }
-
-  const response = await apiClient.post(
-    `/api/v1/workouts/${props.workoutExerciseKey.workoutId}/exercises/${props.workoutExerciseKey.index}/sets`,
-    request
+  await sets.create(
+    workoutExerciseKey,
+    createWorkoutExerciseSetSchemaToRequest(values),
+    form
   );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
-    return;
-  }
 
   emit('created');
 });

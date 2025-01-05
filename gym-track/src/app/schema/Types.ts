@@ -59,20 +59,22 @@ export type GetExerciseInfoResponse = {
 };
 
 export type GetExerciseInfoStepResponse = {
-  index: number;
+  index: ExerciseInfoStepIndex;
   description: string;
   imageUrl?: string | null;
   displayOrder: number;
 };
 
+export type ExerciseInfoStepIndex = number;
+
 export type GetWorkoutExerciseResponse = {
-  index: number;
+  index: WorkoutExerciseIndex;
   exerciseInfoId: UUID;
   sets: WorkoutExerciseSetKey[];
 };
 
 export type GetWorkoutExerciseSetResponse = {
-  index: number;
+  index: WorkoutExerciseSetIndex;
   metric: ExerciseMetric;
   reps: number;
   displayOrder: number;
@@ -90,8 +92,12 @@ export type GetWorkoutsResponse = {
 
 export type WorkoutExerciseKey = {
   workoutId: UUID;
-  index: number;
+  index: WorkoutExerciseIndex;
 };
+
+export type WorkoutExerciseIndex = number;
+
+export type WorkoutExerciseKeyHash = `${UUID}_${WorkoutExerciseIndex}`;
 
 export function hashWorkoutExerciseKey(
   key: WorkoutExerciseKey
@@ -99,13 +105,25 @@ export function hashWorkoutExerciseKey(
   return `${key.workoutId}_${key.index}`;
 }
 
-export type WorkoutExerciseKeyHash = `${UUID}_${number}`;
-
 export type WorkoutExerciseSetKey = {
   workoutId: UUID;
-  exerciseIndex: number;
-  index: number;
+  exerciseIndex: WorkoutExerciseIndex;
+  index: WorkoutExerciseSetIndex;
 };
+
+// TODO Pawel: improve strongly typed indices:
+// https://stackoverflow.com/questions/71486513/how-to-accomplish-stongly-typed-ids-in-typescript
+// - not sure how it plays out with fetched data though
+export type WorkoutExerciseSetIndex = number;
+
+export type WorkoutExerciseSetKeyHash =
+  `${UUID}_${WorkoutExerciseIndex}_${WorkoutExerciseSetIndex}`;
+
+export function hashWorkoutExerciseSetKey(
+  key: WorkoutExerciseSetKey
+): WorkoutExerciseSetKeyHash {
+  return `${key.workoutId}_${key.exerciseIndex}_${key.index}`;
+}
 
 export type ExerciseMetric = Weight | Duration | Distance;
 
@@ -137,3 +155,5 @@ export enum DistanceUnit {
 }
 
 export type Amount = number;
+
+// TODO Pawel: strongly typed ids

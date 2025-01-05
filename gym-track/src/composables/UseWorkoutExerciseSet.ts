@@ -1,61 +1,39 @@
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { toastErrorHandler } from '@/app/errors/Handlers';
-import { apiClient } from '@/app/http/Clients';
 import {
+  EditWorkoutExerciseSetRequest,
   GetWorkoutExerciseSetResponse,
+  hashWorkoutExerciseSetKey,
   WorkoutExerciseSetKey,
 } from '@/app/schema/Types';
-import { ref, Ref } from 'vue';
+import { computed, ComputedRef } from 'vue';
+import { useWorkoutExerciseSets } from '@/app/stores/UseWorkoutExerciseSets';
+import { FormContext } from 'vee-validate';
 
-export function useWorkoutExerciseSet(
-  key: WorkoutExerciseSetKey,
-  options?: { immediate?: boolean }
-): {
-  workoutExerciseSet: Ref<GetWorkoutExerciseSetResponse | undefined | null>;
-  update: () => Promise<void>;
-  destroy: () => Promise<void>;
+export function useWorkoutExerciseSet(key: WorkoutExerciseSetKey): {
+  set: ComputedRef<GetWorkoutExerciseSetResponse>;
+  fetch: () => Promise<boolean>;
+  update: (
+    data: EditWorkoutExerciseSetRequest,
+    form: FormContext
+  ) => Promise<boolean>;
+  destroy: () => Promise<boolean>;
 } {
-  const set = ref<GetWorkoutExerciseSetResponse | undefined | null>(undefined);
+  const sets = useWorkoutExerciseSets();
+  const set = computed(() => sets.all[hashWorkoutExerciseSetKey(key)]);
 
-  if (options?.immediate) {
-    update();
+  async function fetch(): Promise<boolean> {
+    return sets.fetchByKey(key);
   }
 
-  async function update(): Promise<void> {
-    const response = await apiClient.get(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`
-    );
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    set.value = response.data;
+  async function update(
+    data: EditWorkoutExerciseSetRequest,
+    form: FormContext
+  ): Promise<boolean> {
+    return sets.update(key, data, form);
   }
 
-  async function destroy(): Promise<void> {
-    if (!set.value) {
-      return;
-    }
-
-    const response = await apiClient.delete(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`
-    );
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    set.value = null;
+  async function destroy(): Promise<boolean> {
+    return sets.destroy(key);
   }
 
-  return { workoutExerciseSet: set, update, destroy };
+  return { set, fetch, update, destroy };
 }
