@@ -5,13 +5,12 @@ import { apiClient } from '@/app/http/Clients';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
 import EditExerciseInfoStepForm from './EditExerciseInfoStepForm.vue';
 
-const props = defineProps<{
+const { stepKey } = defineProps<{
   stepKey: ExerciseInfoStepKey;
 }>();
 
-const { step, update, destroy } = useExerciseInfoStep(props.stepKey, {
-  immediate: true,
-});
+const { step, fetch, destroy } = useExerciseInfoStep(stepKey);
+fetch();
 
 const emit = defineEmits<{
   deleted: [ExerciseInfoStepKey];
@@ -25,7 +24,7 @@ const emit = defineEmits<{
     class="my-4"
     @deleted="
       destroy();
-      emit('deleted', props.stepKey);
+      emit('deleted', stepKey);
     "
   >
     <p class="mb-2">{{ step.description }}</p>
@@ -34,20 +33,7 @@ const emit = defineEmits<{
       <img class="step-image mx-auto" />
     </picture>
     <template #edit="{ closeDialog }">
-      <EditExerciseInfoStepForm
-        :step-key="stepKey"
-        :initial-values="{
-          description: step.description,
-          image:
-            step.imageUrl != null
-              ? `${apiClient.getUri()}/${step.imageUrl}`
-              : null,
-        }"
-        @edited="
-          update();
-          closeDialog();
-        "
-      />
+      <EditExerciseInfoStepForm :step-key="stepKey" @edited="closeDialog()" />
     </template>
   </Entity>
 </template>

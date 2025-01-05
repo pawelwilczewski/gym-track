@@ -1,21 +1,15 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { toTypedSchema } from '@vee-validate/zod';
 import ExerciseInfoStepForm from './ExerciseInfoStepForm.vue';
-import {
-  editExerciseInfoStepSchema,
-  EditExerciseInfoStepInitialValues,
-  EditExerciseInfoStepValues,
-} from '@/app/schema/Schemas';
+import { editExerciseInfoStepSchema } from '@/app/schema/Schemas';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
+import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
+import { apiClient } from '@/app/http/Clients';
 
-const props = defineProps<{
-  stepKey: ExerciseInfoStepKey;
-  initialValues: EditExerciseInfoStepInitialValues | undefined;
-}>();
+const { stepKey } = defineProps<{ stepKey: ExerciseInfoStepKey }>();
+
+const { step, update } = useExerciseInfoStep(stepKey);
 
 const form = useForm({
   validationSchema: toTypedSchema(editExerciseInfoStepSchema),
@@ -26,35 +20,12 @@ const emit = defineEmits<{
 }>();
 
 const onSubmit = form.handleSubmit(async values => {
-  const formData = new FormData();
-  formData.append('_method', 'PUT');
-  formData.append('description', values.description);
-  formData.append('replaceImage', values.replaceImage.toString());
-  if (values.image) {
-    formData.append('image', values.image);
-  }
-
-  const response = await apiClient.put(
-    `/api/v1/exerciseInfos/${props.stepKey.exerciseInfoId}/steps/${props.stepKey.index}`,
-    formData
-  );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
-    return;
-  }
-
+  update(values, form);
   emit('edited');
 });
 
-if (props.initialValues) {
-  let values = props.initialValues;
-  delete values.image;
-  form.setValues(values as EditExerciseInfoStepValues, false);
+if (step.value) {
+  form.setValues({ description: step.value.description }, false);
 }
 // TODO Pawel: antiforgery tokens! here and everywhere else in forms!
 </script>
@@ -62,7 +33,13 @@ if (props.initialValues) {
 <template>
   <ExerciseInfoStepForm
     :form="form"
-    :image-section="{ type: 'replace', currentImageUrl: initialValues?.image }"
+    :image-section="{
+      type: 'replace',
+      currentImageUrl:
+        step?.imageUrl != null
+          ? `${apiClient.getUri()}/${step.imageUrl}`
+          : null,
+    }"
     submit-label="Save"
     :on-submit="onSubmit"
   />

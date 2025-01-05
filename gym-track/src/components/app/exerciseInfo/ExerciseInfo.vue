@@ -42,14 +42,7 @@ const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
     <div>
       <h4>Steps</h4>
-      <ExerciseInfoStepsList
-        :step-keys="stepKeys"
-        @step-deleted="
-          key => {
-            stepKeys = stepKeys.filter(stepKey => stepKey !== key);
-          }
-        "
-      />
+      <ExerciseInfoStepsList :step-keys="stepKeys" />
     </div>
 
     <ButtonDialog dialog-title="Add Exercise Step">

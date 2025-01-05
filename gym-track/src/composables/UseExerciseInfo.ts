@@ -7,7 +7,7 @@ import { computed, ComputedRef } from 'vue';
 import { z } from 'zod';
 
 export function useExerciseInfo(id: UUID): {
-  exerciseInfo: ComputedRef<GetExerciseInfoResponse>;
+  exerciseInfo: ComputedRef<GetExerciseInfoResponse | undefined>;
   fetch: () => Promise<boolean>;
   update: (
     data: z.infer<typeof editExerciseInfoSchema>,

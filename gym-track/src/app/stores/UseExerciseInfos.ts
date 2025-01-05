@@ -16,20 +16,8 @@ import { toRecord } from '../utils/ConversionUtils';
 export const useExerciseInfos = defineStore('exerciseInfos', () => {
   const exerciseInfos = ref<Record<UUID, GetExerciseInfoResponse>>({});
 
-  async function fetchAll(): Promise<boolean> {
-    const response = await apiClient.get('/api/v1/exerciseInfos');
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return false;
-    }
-
-    exerciseInfos.value = toRecord(response.data, item => item.id);
-
-    return true;
+  async function fetchById(id: UUID): Promise<boolean> {
+    return fetchByUrl(`/api/v1/exerciseInfos/${id}`);
   }
 
   async function fetchByUrl(url: string): Promise<boolean> {
@@ -49,8 +37,20 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
     return true;
   }
 
-  async function fetchById(id: UUID): Promise<boolean> {
-    return fetchByUrl(`/api/v1/exerciseInfos/${id}`);
+  async function fetchAll(): Promise<boolean> {
+    const response = await apiClient.get('/api/v1/exerciseInfos');
+
+    if (
+      ErrorHandler.forResponse(response)
+        .handleFully(toastErrorHandler)
+        .wasError()
+    ) {
+      return false;
+    }
+
+    exerciseInfos.value = toRecord(response.data, item => item.id);
+
+    return true;
   }
 
   async function create(
