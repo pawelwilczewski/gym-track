@@ -4,9 +4,8 @@ import {
   Router,
   RouteRecordNormalized,
 } from 'vue-router';
-import { getCurrentUser } from '../auth/Auth';
 import router from '@/Router';
-import { currentUser } from '../state/AuthState';
+import { useAuth } from '../stores/UseAuth';
 
 let resolvedAuthAndRedirect = false;
 
@@ -19,6 +18,8 @@ export async function handleAuthAndRedirectBefore(
   }
   resolvedAuthAndRedirect = true;
 
+  const auth = useAuth();
+
   let evaluatedUser = false;
   if (from.query.redirect) {
     const redirectRoute = getRouteByFullPath(
@@ -28,38 +29,38 @@ export async function handleAuthAndRedirectBefore(
 
     if (redirectRoute) {
       if (redirectRoute.meta.requiresAuth) {
-        currentUser.value = await getCurrentUser();
+        await auth.fetchCurrentUser();
         evaluatedUser = true;
-        if (currentUser.value) {
+        if (auth.currentUser) {
           return { path: from.query.redirect.toString() };
         }
       } else {
-        getCurrentUser().then(user => (currentUser.value = user));
+        auth.fetchCurrentUser();
         return { path: from.query.redirect.toString() };
       }
     }
   }
 
   if (!to.meta.requiresAuth) {
-    getCurrentUser().then(user => (currentUser.value = user));
+    auth.fetchCurrentUser();
     return;
   }
 
   if (!evaluatedUser) {
-    currentUser.value = await getCurrentUser();
+    await auth.fetchCurrentUser();
   }
 
-  if (!currentUser.value) {
+  if (!auth.currentUser) {
     return {
       name: 'Log In',
       query: { redirect: to.path },
     };
   }
 
-  if (!currentUser.value.isEmailConfirmed) {
+  if (!auth.currentUser.isEmailConfirmed) {
     return {
       name: 'Confirm Email',
-      query: { email: currentUser.value.email, redirect: to.path },
+      query: { email: auth.currentUser.email, redirect: to.path },
     };
   }
 }

@@ -1,14 +1,19 @@
 import { z } from 'zod';
 import { DistanceUnit, ExerciseMetricType, WeightUnit } from './Types';
 import { zodEnumFlagsAsStringArray } from './ZodUtils';
+import { Override } from '../utils/TypeUtils';
 
 export const createWorkoutSchema = z.object({
   name: z.string().trim().min(1),
 });
 
+export const editWorkoutSchema = createWorkoutSchema;
+
 export const createWorkoutExerciseSchema = z.object({
   exerciseInfoId: z.string().uuid(),
 });
+
+export const editWorkoutExerciseSchema = createWorkoutExerciseSchema;
 
 export const createWorkoutExerciseSetSchema = z
   .object({
@@ -44,6 +49,18 @@ export const createWorkoutExerciseSetSchema = z
     }
   }, 'All values are required.');
 
+export const editWorkoutExerciseSetSchema = createWorkoutExerciseSetSchema;
+
+export type EditWorkoutExerciseSetInitialValues = Override<
+  // override because model bindings require string values
+  z.infer<typeof editWorkoutExerciseSetSchema>,
+  {
+    metricType: string;
+    weightUnits: string | undefined;
+    distanceUnits: string | undefined;
+  }
+>;
+
 export const createExerciseInfoSchema = z.object({
   name: z.string().trim().min(1),
   description: z.string().trim().min(1),
@@ -64,6 +81,22 @@ export const editExerciseInfoSchema = createExerciseInfoSchema.merge(
   })
 );
 
+export type EditExerciseInfoInitialValues = Override<
+  z.infer<typeof createExerciseInfoSchema>,
+  {
+    allowedMetricTypes: string[] | undefined;
+    thumbnailImage: string | null | undefined;
+  }
+>;
+
+export type EditExerciseInfoValues = Override<
+  z.infer<typeof createExerciseInfoSchema>,
+  {
+    allowedMetricTypes: string[] | undefined;
+    thumbnailImage: undefined;
+  }
+>;
+
 export const createExerciseInfoStepSchema = z.object({
   description: z.string().trim().min(1),
   image: z
@@ -81,6 +114,20 @@ export const editExerciseInfoStepSchema = createExerciseInfoStepSchema.merge(
     replaceImage: z.boolean().default(false),
   })
 );
+
+export type EditExerciseInfoStepInitialValues = Override<
+  z.infer<typeof createExerciseInfoStepSchema>,
+  {
+    image: string | null | undefined;
+  }
+>;
+
+export type EditExerciseInfoStepValues = Override<
+  z.infer<typeof createExerciseInfoStepSchema>,
+  {
+    thumbnailImage: undefined;
+  }
+>;
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),

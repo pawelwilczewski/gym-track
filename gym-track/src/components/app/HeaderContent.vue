@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import TabButton from './misc/TabButton.vue';
-import { isLoggedIn } from '@/app/state/AuthState';
+import { useAuth } from '@/app/stores/UseAuth';
+
+const auth = useAuth();
 </script>
 
 <template>
@@ -10,19 +12,19 @@ import { isLoggedIn } from '@/app/state/AuthState';
       <RouterLink to="/" class="font-bold">Gym Track</RouterLink>
     </h1>
     <div class="flex gap-6 flex-wrap">
-      <div v-if="isLoggedIn" class="flex gap-2">
+      <div v-if="auth.isLoggedIn" class="flex gap-2">
         <TabButton path="/dashboard" name="Dashboard"></TabButton>
         <TabButton path="/workouts" name="Workouts"></TabButton>
         <TabButton path="/exercises" name="Exercises"></TabButton>
       </div>
       <div class="flex gap-2">
-        <Button asChild>
-          <RouterLink v-if="!isLoggedIn" to="/logIn">Log In</RouterLink>
+        <Button as-child>
+          <RouterLink v-if="!auth.isLoggedIn" to="/logIn">Log In</RouterLink>
         </Button>
-        <Button v-if="!isLoggedIn" asChild variant="outline">
+        <Button v-if="!auth.isLoggedIn" as-child variant="outline">
           <RouterLink to="/signUp">Sign Up</RouterLink>
         </Button>
-        <Button v-if="isLoggedIn" asChild variant="outline">
+        <Button v-if="auth.isLoggedIn" as-child variant="outline">
           <RouterLink to="/logOut">Log Out</RouterLink>
         </Button>
       </div>

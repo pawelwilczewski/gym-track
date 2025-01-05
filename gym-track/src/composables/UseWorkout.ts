@@ -1,57 +1,37 @@
-import { apiClient } from '@/app/http/Clients';
+import { editWorkoutSchema } from '@/app/schema/Schemas';
 import { GetWorkoutResponse } from '@/app/schema/Types';
-import { Ref, ref } from 'vue';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { toastErrorHandler } from '@/app/errors/Handlers';
+import { useWorkouts } from '@/app/stores/UseWorkouts';
 import { UUID } from 'crypto';
+import { FormContext } from 'vee-validate';
+import { computed, ComputedRef } from 'vue';
+import { z } from 'zod';
 
-export function useWorkout(
-  id: UUID,
-  options?: { immediate?: boolean; initialValue?: GetWorkoutResponse }
-): {
-  workout: Ref<GetWorkoutResponse | undefined | null>;
-  update: () => Promise<void>;
-  destroy: () => Promise<void>;
+export function useWorkout(id: UUID): {
+  workout: ComputedRef<GetWorkoutResponse>;
+  fetch: () => Promise<boolean>;
+  update: (
+    data: z.infer<typeof editWorkoutSchema>,
+    form: FormContext
+  ) => Promise<boolean>;
+  destroy: () => Promise<boolean>;
 } {
-  const workout = ref<GetWorkoutResponse | undefined | null>(
-    options?.initialValue
-  );
+  const workouts = useWorkouts();
+  const workout = computed(() => workouts.all[id]);
 
-  if (options?.immediate && !options?.initialValue) {
-    update();
+  async function fetch(): Promise<boolean> {
+    return workouts.fetchById(id);
   }
 
-  async function update(): Promise<void> {
-    const response = await apiClient.get(`/api/v1/workouts/${id}`);
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    workout.value = response.data;
+  async function update(
+    data: z.infer<typeof editWorkoutSchema>,
+    form: FormContext
+  ): Promise<boolean> {
+    return workouts.update(id, data, form);
   }
 
-  async function destroy(): Promise<void> {
-    const response = await apiClient.delete(`/api/v1/workouts/${id}`);
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    workout.value = null;
+  async function destroy(): Promise<boolean> {
+    return workouts.destroy(id);
   }
 
-  return {
-    workout,
-    update,
-    destroy,
-  };
+  return { workout, fetch, update, destroy };
 }

@@ -13,7 +13,6 @@ export enum ExerciseMetricType {
 }
 
 export type CreateWorkoutExerciseRequest = {
-  index: number;
   exerciseInfoId: UUID;
 };
 
@@ -36,10 +35,6 @@ export type EditExerciseInfoStepRequest = {
   description: string;
 };
 
-export type EditWorkoutExerciseRequest = {
-  index: number;
-};
-
 export type EditWorkoutExerciseSetRequest = {
   metric: ExerciseMetric;
   reps: number;
@@ -51,8 +46,16 @@ export type EditWorkoutRequest = {
 
 export type ExerciseInfoStepKey = {
   exerciseInfoId: UUID;
-  index: number;
+  index: ExerciseInfoStepIndex;
 };
+
+export type ExerciseInfoStepKeyHash = `${UUID}_${ExerciseInfoStepIndex}`;
+
+export function hashExerciseInfoStepKey(
+  key: ExerciseInfoStepKey
+): ExerciseInfoStepKeyHash {
+  return `${key.exerciseInfoId}_${key.index}`;
+}
 
 export type GetExerciseInfoResponse = {
   id: UUID;
@@ -64,20 +67,22 @@ export type GetExerciseInfoResponse = {
 };
 
 export type GetExerciseInfoStepResponse = {
-  index: number;
+  index: ExerciseInfoStepIndex;
   description: string;
   imageUrl?: string | null;
   displayOrder: number;
 };
 
+export type ExerciseInfoStepIndex = number;
+
 export type GetWorkoutExerciseResponse = {
-  index: number;
+  index: WorkoutExerciseIndex;
   exerciseInfoId: UUID;
   sets: WorkoutExerciseSetKey[];
 };
 
 export type GetWorkoutExerciseSetResponse = {
-  index: number;
+  index: WorkoutExerciseSetIndex;
   metric: ExerciseMetric;
   reps: number;
   displayOrder: number;
@@ -95,14 +100,38 @@ export type GetWorkoutsResponse = {
 
 export type WorkoutExerciseKey = {
   workoutId: UUID;
-  index: number;
+  index: WorkoutExerciseIndex;
 };
+
+export type WorkoutExerciseIndex = number;
+
+export type WorkoutExerciseKeyHash = `${UUID}_${WorkoutExerciseIndex}`;
+
+export function hashWorkoutExerciseKey(
+  key: WorkoutExerciseKey
+): WorkoutExerciseKeyHash {
+  return `${key.workoutId}_${key.index}`;
+}
 
 export type WorkoutExerciseSetKey = {
   workoutId: UUID;
-  exerciseIndex: number;
-  index: number;
+  exerciseIndex: WorkoutExerciseIndex;
+  index: WorkoutExerciseSetIndex;
 };
+
+// TODO Pawel: improve strongly typed indices:
+// https://stackoverflow.com/questions/71486513/how-to-accomplish-stongly-typed-ids-in-typescript
+// - not sure how it plays out with fetched data though
+export type WorkoutExerciseSetIndex = number;
+
+export type WorkoutExerciseSetKeyHash =
+  `${UUID}_${WorkoutExerciseIndex}_${WorkoutExerciseSetIndex}`;
+
+export function hashWorkoutExerciseSetKey(
+  key: WorkoutExerciseSetKey
+): WorkoutExerciseSetKeyHash {
+  return `${key.workoutId}_${key.exerciseIndex}_${key.index}`;
+}
 
 export type ExerciseMetric = Weight | Duration | Distance;
 
@@ -134,3 +163,5 @@ export enum DistanceUnit {
 }
 
 export type Amount = number;
+
+// TODO Pawel: strongly typed ids

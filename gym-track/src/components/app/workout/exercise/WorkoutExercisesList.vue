@@ -5,10 +5,6 @@ import WorkoutExercise from '@/components/app/workout/exercise/WorkoutExercise.v
 defineProps<{
   exerciseKeys: WorkoutExerciseKey[];
 }>();
-
-const emit = defineEmits<{
-  exerciseDeleted: [WorkoutExerciseKey];
-}>();
 </script>
 
 <template>
@@ -17,7 +13,6 @@ const emit = defineEmits<{
       v-for="key in exerciseKeys"
       :key="key.index"
       :exercise-key="key"
-      @deleted="emit('exerciseDeleted', key)"
     />
   </ol>
 </template>

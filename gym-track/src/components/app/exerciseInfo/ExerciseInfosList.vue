@@ -1,27 +1,17 @@
 <script setup lang="ts">
 import ExerciseInfo from './ExerciseInfo.vue';
-import { useExerciseInfos } from '@/composables/UseExerciseInfos';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
-const { exerciseInfos, update } = useExerciseInfos({ immediate: true });
-
-defineExpose({
-  update,
-});
+const exerciseInfos = useExerciseInfos();
+exerciseInfos.fetchAll();
 </script>
 
 <template>
-  <div v-if="exerciseInfos" class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4">
     <ExerciseInfo
-      v-for="exerciseInfo in exerciseInfos"
+      v-for="exerciseInfo in exerciseInfos.all"
+      :id="exerciseInfo.id"
       :key="exerciseInfo.id"
-      :initial-exercise-info="exerciseInfo"
-      @deleted="
-        id => {
-          exerciseInfos = exerciseInfos.filter(
-            exerciseInfo => exerciseInfo.id !== id
-          );
-        }
-      "
     />
   </div>
 </template>

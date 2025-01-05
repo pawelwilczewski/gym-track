@@ -1,68 +1,85 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
-import { createWorkoutExerciseSetSchema } from '@/app/schema/Schemas';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
+import { editWorkoutExerciseSetSchema } from '@/app/schema/Schemas';
 import {
+  Distance,
+  Duration,
+  ExerciseMetricType,
   GetExerciseInfoResponse,
+  Weight,
   WorkoutExerciseSetKey,
 } from '@/app/schema/Types';
 import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseSetForm from './WorkoutExerciseSetForm.vue';
-import { createWorkoutExerciseSchemaToRequest } from '@/app/schema/Converters';
-import { z } from 'zod';
-import { Override } from '@/app/utils/TypeUtils';
+import { createWorkoutExerciseSetSchemaToRequest } from '@/app/schema/Converters';
+import { useWorkoutExerciseSet } from '@/composables/UseWorkoutExerciseSet';
 
-const props = defineProps<{
+const { workoutExerciseSetKey, exerciseInfo } = defineProps<{
   workoutExerciseSetKey: WorkoutExerciseSetKey;
   exerciseInfo: GetExerciseInfoResponse | undefined | null;
-  initialValues: // override because model bindings require string values
-  | Override<
-        z.infer<typeof createWorkoutExerciseSetSchema>,
-        {
-          metricType: string;
-          weightUnits: string | undefined;
-          distanceUnits: string | undefined;
-        }
-      >
-    | undefined;
 }>();
+
+const { set, update } = useWorkoutExerciseSet(workoutExerciseSetKey);
 
 const emit = defineEmits<{
   edited: [];
 }>();
 
 const form = useForm({
-  validationSchema: toTypedSchema(createWorkoutExerciseSetSchema),
+  validationSchema: toTypedSchema(editWorkoutExerciseSetSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const request = createWorkoutExerciseSchemaToRequest(values);
-
-  if (!request.metric) {
-    throw new Error(`Invalid request metric type: ${values.metricType}`);
-  }
-
-  const response = await apiClient.put(
-    `/api/v1/workouts/${props.workoutExerciseSetKey.workoutId}/exercises/${props.workoutExerciseSetKey.exerciseIndex}/sets/${props.workoutExerciseSetKey.index}`,
-    request
-  );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
-    return;
-  }
+  await update(createWorkoutExerciseSetSchemaToRequest(values), form);
 
   emit('edited');
 });
 
-if (props.initialValues) {
-  form.setValues(props.initialValues, false);
+if (set.value) {
+  const base = {
+    reps: set.value.reps,
+    metricType: set.value.metric.$type.toString(),
+    distanceValue: undefined,
+    distanceUnits: undefined,
+    weightValue: undefined,
+    weightUnits: undefined,
+    time: undefined,
+  };
+
+  switch (set.value.metric.$type) {
+    case ExerciseMetricType.Weight: {
+      const weight = set.value.metric as Weight;
+      form.setValues(
+        {
+          ...base,
+          weightUnits: weight.units.toString(),
+          weightValue: weight.value,
+        },
+        false
+      );
+      break;
+    }
+    case ExerciseMetricType.Duration: {
+      const duration = set.value.metric as Duration;
+      form.setValues({ ...base, time: duration.time }, false);
+      break;
+    }
+    case ExerciseMetricType.Distance: {
+      const distance = set.value.metric as Distance;
+      form.setValues(
+        {
+          ...base,
+          distanceUnits: distance.units.toString(),
+          distanceValue: distance.value,
+        },
+        false
+      );
+      break;
+    }
+    default: {
+      throw Error('Unreachable code');
+    }
+  }
 }
 </script>
 

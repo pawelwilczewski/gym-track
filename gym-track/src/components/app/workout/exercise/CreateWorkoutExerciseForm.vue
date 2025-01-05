@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
 
 import { createWorkoutExerciseSchema } from '@/app/schema/Schemas';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
 import { UUID } from 'crypto';
 import { toTypedSchema } from '@vee-validate/zod';
 import WorkoutExerciseForm from '@/components/app/workout/exercise/WorkoutExerciseForm.vue';
+import { useWorkoutExercises } from '@/app/stores/UseWorkoutExercises';
 
-const props = defineProps<{
+const { workoutId } = defineProps<{
   workoutId: UUID;
 }>();
+
+const workoutExercises = useWorkoutExercises();
 
 const emit = defineEmits<{
   created: [];
@@ -22,21 +22,13 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const response = await apiClient.post(
-    `/api/v1/workouts/${props.workoutId}/exercises`,
+  await workoutExercises.create(
+    workoutId,
     {
-      exerciseInfoId: values.exerciseInfoId,
-    }
+      exerciseInfoId: values.exerciseInfoId as UUID,
+    },
+    form
   );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
-    return;
-  }
 
   emit('created');
 });

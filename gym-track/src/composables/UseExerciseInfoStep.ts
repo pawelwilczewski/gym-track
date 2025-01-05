@@ -1,61 +1,40 @@
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { toastErrorHandler } from '@/app/errors/Handlers';
-import { apiClient } from '@/app/http/Clients';
+import { editExerciseInfoStepSchema } from '@/app/schema/Schemas';
 import {
   ExerciseInfoStepKey,
   GetExerciseInfoStepResponse,
+  hashExerciseInfoStepKey,
 } from '@/app/schema/Types';
-import { ref, Ref } from 'vue';
+import { useExerciseInfoSteps } from '@/app/stores/UseExerciseInfoSteps';
+import { FormContext } from 'vee-validate';
+import { computed, ComputedRef } from 'vue';
+import { z } from 'zod';
 
-export function useExerciseInfoStep(
-  key: ExerciseInfoStepKey,
-  options?: { immediate: boolean }
-): {
-  step: Ref<GetExerciseInfoStepResponse | undefined | null>;
-  update: () => Promise<void>;
-  destroy: () => Promise<void>;
+export function useExerciseInfoStep(key: ExerciseInfoStepKey): {
+  step: ComputedRef<GetExerciseInfoStepResponse | undefined>;
+  fetch: () => Promise<boolean>;
+  update: (
+    data: z.infer<typeof editExerciseInfoStepSchema>,
+    form: FormContext
+  ) => Promise<boolean>;
+  destroy: () => Promise<boolean>;
 } {
-  const step = ref<GetExerciseInfoStepResponse | undefined | null>(undefined);
+  const steps = useExerciseInfoSteps();
+  const step = computed(() => steps.all[hashExerciseInfoStepKey(key)]);
 
-  if (options?.immediate) {
-    update();
+  async function fetch(): Promise<boolean> {
+    return steps.fetchByKey(key);
   }
 
-  async function update(): Promise<void> {
-    const response = await apiClient.get(
-      `/api/v1/exerciseInfos/${key.exerciseInfoId}/steps/${key.index}`
-    );
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    step.value = response.data;
+  async function update(
+    data: z.infer<typeof editExerciseInfoStepSchema>,
+    form: FormContext
+  ): Promise<boolean> {
+    return steps.update(key, data, form);
   }
 
-  async function destroy(): Promise<void> {
-    if (!step.value) {
-      return;
-    }
-
-    const response = await apiClient.delete(
-      `/api/v1/exerciseInfos/${key.exerciseInfoId}/steps/${key.index}`
-    );
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    step.value = null;
+  async function destroy(): Promise<boolean> {
+    return steps.destroy(key);
   }
 
-  return { step, update, destroy };
+  return { step, fetch, update, destroy };
 }

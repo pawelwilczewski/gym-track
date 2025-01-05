@@ -1,67 +1,37 @@
-import { apiClient } from '@/app/http/Clients';
+import { editExerciseInfoSchema } from '@/app/schema/Schemas';
 import { GetExerciseInfoResponse } from '@/app/schema/Types';
-import { Ref, ref } from 'vue';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
-import { toastErrorHandler } from '@/app/errors/Handlers';
+import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 import { UUID } from 'crypto';
+import { FormContext } from 'vee-validate';
+import { computed, ComputedRef } from 'vue';
+import { z } from 'zod';
 
-export function useExerciseInfo(
-  id: Ref<UUID | undefined>,
-  options?: { immediate?: boolean; initialValue?: GetExerciseInfoResponse }
-): {
-  exerciseInfo: Ref<GetExerciseInfoResponse | undefined | null>;
-  update: () => Promise<void>;
-  destroy: () => Promise<void>;
+export function useExerciseInfo(id: UUID): {
+  exerciseInfo: ComputedRef<GetExerciseInfoResponse | undefined>;
+  fetch: () => Promise<boolean>;
+  update: (
+    data: z.infer<typeof editExerciseInfoSchema>,
+    form: FormContext
+  ) => Promise<boolean>;
+  destroy: () => Promise<boolean>;
 } {
-  const exerciseInfo = ref<GetExerciseInfoResponse | undefined | null>(
-    options?.initialValue
-  );
+  const exerciseInfos = useExerciseInfos();
+  const exerciseInfo = computed(() => exerciseInfos.all[id]);
 
-  if (options?.immediate && !options?.initialValue) {
-    update();
+  async function fetch(): Promise<boolean> {
+    return exerciseInfos.fetchById(id);
   }
 
-  async function update(): Promise<void> {
-    if (!id.value) {
-      return;
-    }
-
-    const response = await apiClient.get(`/api/v1/exerciseInfos/${id.value}`);
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    exerciseInfo.value = response.data;
+  async function update(
+    data: z.infer<typeof editExerciseInfoSchema>,
+    form: FormContext
+  ): Promise<boolean> {
+    return exerciseInfos.update(id, data, form);
   }
 
-  async function destroy(): Promise<void> {
-    if (!id.value) {
-      return;
-    }
-
-    const response = await apiClient.delete(
-      `/api/v1/exerciseInfos/${id.value}`
-    );
-
-    if (
-      ErrorHandler.forResponse(response)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return;
-    }
-
-    exerciseInfo.value = null;
+  async function destroy(): Promise<boolean> {
+    return exerciseInfos.destroy(id);
   }
 
-  return {
-    exerciseInfo,
-    update,
-    destroy,
-  };
+  return { exerciseInfo, fetch, update, destroy };
 }
