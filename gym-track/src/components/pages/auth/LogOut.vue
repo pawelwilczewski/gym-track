@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useAuth } from '@/app/stores/UseAuth';
 import { Alert, AlertTitle } from '@/components/ui/alert';
-import { logOut } from '@/app/auth/Auth';
 
-logOut();
+const auth = useAuth();
+auth.logOut();
 </script>
 
 <template>
