@@ -13,7 +13,6 @@ export enum ExerciseMetricType {
 }
 
 export type CreateWorkoutExerciseRequest = {
-  index: number;
   exerciseInfoId: UUID;
 };
 

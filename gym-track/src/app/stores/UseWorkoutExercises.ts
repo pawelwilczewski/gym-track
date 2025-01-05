@@ -12,11 +12,14 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { UUID } from 'crypto';
 import { FormContext } from 'vee-validate';
+import { useWorkouts } from './UseWorkouts';
 
 export const useWorkoutExercises = defineStore('workoutExercises', () => {
   const exercises = ref<
     Record<WorkoutExerciseKeyHash, GetWorkoutExerciseResponse>
   >({});
+
+  const workouts = useWorkouts();
 
   const keyRegex = new RegExp(/api\/v1\/workouts\/(.+?)\/exercises\/(\d+?)/);
 
@@ -46,8 +49,8 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
       return false;
     }
 
-    const workoutId: UUID = match[0] as UUID;
-    const exerciseIndex: number = Number.parseInt(match[1]);
+    const workoutId: UUID = match[1] as UUID;
+    const exerciseIndex: number = Number.parseInt(match[2]);
 
     return fetchByKey({ workoutId, index: exerciseIndex });
   }
@@ -78,7 +81,10 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
       return false;
     }
 
-    return fetchByUrl(response.headers.location);
+    const result = fetchByUrl(response.headers.location);
+    workouts.fetchById(workoutId);
+
+    return result;
   }
 
   async function destroy(key: WorkoutExerciseKey): Promise<boolean> {
