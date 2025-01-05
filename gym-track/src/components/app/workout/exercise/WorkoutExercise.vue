@@ -5,7 +5,6 @@ import { useWorkoutExercise } from '@/composables/UseWorkoutExercise';
 import ButtonDialog from '../../misc/ButtonDialog.vue';
 import WorkoutExerciseSet from './set/WorkoutExerciseSet.vue';
 import { computed, watch } from 'vue';
-import EditWorkoutExerciseForm from './EditWorkoutExerciseForm.vue';
 import CreateWorkoutExerciseSetForm from './set/CreateWorkoutExerciseSetForm.vue';
 import { useExerciseInfos } from '@/app/stores/UseExerciseInfos';
 
@@ -69,14 +68,5 @@ const exerciseInfo = computed(() =>
         </template>
       </ButtonDialog>
     </div>
-    <template #edit="{ closeDialog }">
-      <EditWorkoutExerciseForm
-        :workout-exercise-key="exerciseKey"
-        :initial-values="{
-          exerciseInfoId: workoutExercise.exerciseInfoId,
-        }"
-        @edited="closeDialog()"
-      />
-    </template>
   </Entity>
 </template>
