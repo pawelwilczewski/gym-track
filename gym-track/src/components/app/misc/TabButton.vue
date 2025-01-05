@@ -13,7 +13,7 @@ const props = defineProps<{
     :variant="
       router.currentRoute.value.path === props.path ? 'secondary' : 'ghost'
     "
-    asChild
+    as-child
   >
     <RouterLink :to="props.path">{{ props.name }}</RouterLink>
   </Button>

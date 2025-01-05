@@ -38,7 +38,7 @@ export default [
       '@typescript-eslint/no-var-requires': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'prefer-promise-reject-errors': 'off',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'off',
       // eslint-disable-next-line no-undef
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
       'vue/script-setup-uses-vars': 'error',
