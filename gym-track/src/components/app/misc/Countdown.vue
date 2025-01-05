@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { roundToMultiple } from '@/app/math/RoundingExtensions';
+import { roundToMultiple } from '@/app/utils/MathUtils';
 import Timer from '@/app/time/Timer';
 import { ref } from 'vue';
 
