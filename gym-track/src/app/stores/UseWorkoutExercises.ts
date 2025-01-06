@@ -49,8 +49,8 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
       return false;
     }
 
-    const workoutId: UUID = match[1] as UUID;
-    const exerciseIndex: number = Number.parseInt(match[2]);
+    const workoutId = match[1] as UUID;
+    const exerciseIndex = Number.parseInt(match[2]);
 
     return fetchByKey({ workoutId, index: exerciseIndex });
   }
