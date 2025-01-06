@@ -2,7 +2,18 @@ import { defineStore } from 'pinia';
 import { apiClient } from '@/features/shared/http/ApiClient';
 import { computed, ref } from 'vue';
 import router from '@/Router';
-import { UserInfo } from '@/features/auth/types/AuthTypes';
+import {
+  LogInRequest,
+  SignUpRequest,
+  UserInfo,
+} from '@/features/auth/types/AuthTypes';
+import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
+import {
+  formErrorHandler,
+  invalidCredentialsErrorHandler,
+  toastErrorHandler,
+} from '@/features/shared/errors/Handlers';
+import { FormContext } from 'vee-validate';
 
 export const useAuth = defineStore('auth', () => {
   const currentUser = ref<UserInfo | null>(null);
@@ -18,6 +29,42 @@ export const useAuth = defineStore('auth', () => {
     currentUser.value = response.data;
 
     return true;
+  }
+
+  async function signUp(
+    request: SignUpRequest,
+    form: FormContext
+  ): Promise<boolean> {
+    const response = await apiClient.post('/auth/register', {
+      email: request.email,
+      password: request.password,
+    });
+
+    if (
+      ErrorHandler.forResponse(response)
+        .handlePartially(formErrorHandler, form)
+        .handleFully(toastErrorHandler)
+        .wasError()
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async function logIn(request: LogInRequest): Promise<boolean> {
+    const response = await apiClient.post(
+      `/auth/login?useCookies=true&useSessionCookies=${!request.rememberMe}`,
+      {
+        email: request.email,
+        password: request.password,
+      }
+    );
+
+    return ErrorHandler.forResponse(response)
+      .handlePartially(invalidCredentialsErrorHandler)
+      .handleFully(toastErrorHandler)
+      .wasSuccess();
   }
 
   async function logOut(): Promise<boolean> {
@@ -36,6 +83,8 @@ export const useAuth = defineStore('auth', () => {
     currentUser,
     isLoggedIn,
     fetchCurrentUser,
+    signUp,
+    logIn,
     logOut,
   };
 });

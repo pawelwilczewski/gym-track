@@ -11,36 +11,21 @@ import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import Button from '@/features/shared/components/ui/button/Button.vue';
 import Input from '@/features/shared/components/ui/input/Input.vue';
 import Label from '@/features/shared/components/ui/label/Label.vue';
-import { apiClient } from '@/features/shared/http/ApiClient';
 import router from '@/Router';
 import { Checkbox } from '@/features/shared/components/ui/checkbox';
 import { logInSchema } from '@/features/auth/schemas/LogInSchema';
-import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
-import {
-  invalidCredentialsErrorHandler,
-  toastErrorHandler,
-} from '@/features/shared/errors/Handlers';
+
 import { toTypedSchema } from '@vee-validate/zod';
+import { useAuth } from '@/features/auth/stores/UseAuth';
+
+const auth = useAuth();
 
 const form = useForm({
   validationSchema: toTypedSchema(logInSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const response = await apiClient.post(
-    `/auth/login?useCookies=true&useSessionCookies=${!values.rememberMe}`,
-    {
-      email: values.email,
-      password: values.password,
-    }
-  );
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(invalidCredentialsErrorHandler)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
+  if (!(await auth.logIn(values))) {
     return;
   }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/features/shared/http/ApiClient';
 import {
   FormControl,
   FormField,
@@ -13,30 +12,19 @@ import Button from '@/features/shared/components/ui/button/Button.vue';
 import Input from '@/features/shared/components/ui/input/Input.vue';
 import Label from '@/features/shared/components/ui/label/Label.vue';
 import { signUpSchema } from '@/features/auth/schemas/SignUpSchema';
-import {
-  formErrorHandler,
-  toastErrorHandler,
-} from '@/features/shared/errors/Handlers';
-import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
+
 import router from '@/Router';
 import { toTypedSchema } from '@vee-validate/zod';
+import { useAuth } from '@/features/auth/stores/UseAuth';
+
+const auth = useAuth();
 
 const form = useForm({
   validationSchema: toTypedSchema(signUpSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  const response = await apiClient.post('/auth/register', {
-    email: values.email,
-    password: values.password,
-  });
-
-  if (
-    ErrorHandler.forResponse(response)
-      .handlePartially(formErrorHandler, form)
-      .handleFully(toastErrorHandler)
-      .wasError()
-  ) {
+  if (!(await auth.signUp(values, form))) {
     return;
   }
 
