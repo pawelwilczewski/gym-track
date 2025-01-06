@@ -40,16 +40,10 @@ export const useAuth = defineStore('auth', () => {
       password: request.password,
     });
 
-    if (
-      ErrorHandler.forResponse(response)
-        .handlePartially(formErrorHandler, form)
-        .handleFully(toastErrorHandler)
-        .wasError()
-    ) {
-      return false;
-    }
-
-    return true;
+    return ErrorHandler.forResponse(response)
+      .handlePartially(formErrorHandler, form)
+      .handleFully(toastErrorHandler)
+      .wasSuccess();
   }
 
   async function logIn(request: LogInRequest): Promise<boolean> {
