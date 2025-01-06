@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useExerciseInfos } from '@/features/exerciseInfo/stores/UseExerciseInfos';
-import { cn } from '@/lib/utils';
+import { cn } from '@/features/shared/utils/cnUtils';
 import { GetExerciseInfoResponse } from '@/app/schema/Types';
 import { UUID } from 'crypto';
 import { Check, ChevronsUpDown } from 'lucide-vue-next';
