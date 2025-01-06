@@ -5,7 +5,7 @@ import ExerciseInfoStepForm from './ExerciseInfoStepForm.vue';
 import { editExerciseInfoStepSchema } from '@/app/schema/Schemas';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
 import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 
 const { stepKey } = defineProps<{ stepKey: ExerciseInfoStepKey }>();
 

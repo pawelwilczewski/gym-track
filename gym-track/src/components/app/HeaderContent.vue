@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import TabButton from './misc/TabButton.vue';
-import { useAuth } from '@/app/stores/UseAuth';
+import { useAuth } from '@/features/auth/stores/UseAuth';
 
 const auth = useAuth();
 </script>

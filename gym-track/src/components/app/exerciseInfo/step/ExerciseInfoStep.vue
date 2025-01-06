@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useExerciseInfoStep } from '@/composables/UseExerciseInfoStep';
 import Entity from '../../Entity.vue';
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import { ExerciseInfoStepKey } from '@/app/schema/Types';
 import EditExerciseInfoStepForm from './EditExerciseInfoStepForm.vue';
 

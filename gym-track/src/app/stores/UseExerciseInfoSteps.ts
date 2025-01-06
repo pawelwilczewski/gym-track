@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { apiClient } from '../http/Clients';
+import { apiClient } from '../../shared/http/ApiClient';
 import { ErrorHandler } from '../errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '../errors/Handlers';
 import {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import {
   FormControl,
   FormField,

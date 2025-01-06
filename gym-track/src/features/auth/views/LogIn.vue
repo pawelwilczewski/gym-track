@@ -11,7 +11,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
 import { logInRequestSchema } from '@/app/schema/Schemas';

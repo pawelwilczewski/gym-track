@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth } from '@/app/stores/UseAuth';
+import { useAuth } from '@/features/auth/stores/UseAuth';
 import { Alert, AlertTitle } from '@/components/ui/alert';
 
 const auth = useAuth();

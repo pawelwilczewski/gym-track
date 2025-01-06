@@ -1,4 +1,4 @@
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import { GetWorkoutResponse } from '@/app/schema/Types';
 import { ErrorHandler } from '@/app/errors/ErrorHandler';
 import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';

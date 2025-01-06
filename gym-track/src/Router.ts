@@ -1,21 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LogIn from './components/pages/auth/LogIn.vue';
+import LogIn from './features/auth/views/LogIn.vue';
 import Home from './components/pages/Home.vue';
-import SignUp from './components/pages/auth/SignUp.vue';
-import ConfirmEmail from './components/pages/auth/ConfirmEmail.vue';
-import ConfirmedEmail from './components/pages/auth/ConfirmedEmail.vue';
-import ForgotPassword from './components/pages/auth/ForgotPassword.vue';
-import ConfirmEmailChange from './components/pages/auth/ConfirmEmailChange.vue';
-import ResetPasswordSuccess from './components/pages/auth/ResetPasswordSuccess.vue';
-import Lockout from './components/pages/auth/Lockout.vue';
-import ResetPasswordFailure from './components/pages/auth/ResetPasswordFailure.vue';
-import LogOut from './components/pages/auth/LogOut.vue';
+import SignUp from './features/auth/views/SignUp.vue';
+import ConfirmEmail from './features/auth/views/ConfirmEmail.vue';
+import ConfirmedEmail from './features/auth/views/ConfirmedEmail.vue';
+import ForgotPassword from './features/auth/views/ForgotPassword.vue';
+import ConfirmEmailChange from './features/auth/views/ConfirmEmailChange.vue';
+import ResetPasswordSuccess from './features/auth/views/ResetPasswordSuccess.vue';
+import Lockout from './features/auth/views/Lockout.vue';
+import ResetPasswordFailure from './features/auth/views/ResetPasswordFailure.vue';
+import LogOut from './features/auth/views/LogOut.vue';
 import Workouts from './components/pages/app/Workouts.vue';
 import NotFound from './components/pages/NotFound.vue';
 import {
   handleAuthAndRedirectBefore,
   handleAuthAndRedirectAfter,
-} from './app/middleware/AuthAndRedirect';
+} from './features/auth/middleware/AuthAndRedirect';
 import Dashboard from './components/pages/app/Dashboard.vue';
 import ExerciseInfos from './components/pages/app/ExerciseInfos.vue';
 

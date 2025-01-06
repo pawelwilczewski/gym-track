@@ -1,4 +1,4 @@
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import {
   CreateWorkoutExerciseRequest,
   GetWorkoutExerciseResponse,

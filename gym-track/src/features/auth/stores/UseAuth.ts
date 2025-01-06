@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { apiClient } from '../http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import { computed, ref } from 'vue';
 import router from '@/Router';
 import { UserInfo } from '@/app/schema/Types';

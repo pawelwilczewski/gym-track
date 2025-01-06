@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { apiClient } from '@/app/http/Clients';
+import { apiClient } from '@/shared/http/ApiClient';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
 import { enumFlagsValueToStringArray } from '@/app/schema/ZodUtils';
 import ButtonDialog from '../misc/ButtonDialog.vue';
