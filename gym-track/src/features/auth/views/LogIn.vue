@@ -6,14 +6,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/features/shared/components/ui/form';
 import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
-import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
-import Label from '@/components/ui/label/Label.vue';
+import Button from '@/features/shared/components/ui/button/Button.vue';
+import Input from '@/features/shared/components/ui/input/Input.vue';
+import Label from '@/features/shared/components/ui/label/Label.vue';
 import { apiClient } from '@/features/shared/http/ApiClient';
 import router from '@/Router';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@/features/shared/components/ui/checkbox';
 import { logInSchema } from '@/features/auth/schemas/LogInSchema';
 import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
 import {

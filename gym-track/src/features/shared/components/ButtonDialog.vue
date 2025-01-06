@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Button, ButtonVariants } from '@/components/ui/button';
+import { Button, ButtonVariants } from '@/features/shared/components/ui/button';
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
-} from '@/components/ui/dialog';
-import DialogDescription from '@/components/ui/dialog/DialogDescription.vue';
+} from '@/features/shared/components/ui/dialog';
+import DialogDescription from '@/features/shared/components/ui/dialog/DialogDescription.vue';
 const open = defineModel<boolean>();
 const { variant = 'outline' } = defineProps<{
   dialogTitle: string;

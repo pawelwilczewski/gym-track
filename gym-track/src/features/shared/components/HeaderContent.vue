@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
+import { Button } from '@/features/shared/components/ui/button';
 import TabButton from '@/features/shared/components/TabButton.vue';
 import { useAuth } from '@/features/auth/stores/UseAuth';
 

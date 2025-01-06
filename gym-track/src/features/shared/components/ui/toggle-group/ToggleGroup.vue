@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { toggleVariants } from '@/components/ui/toggle';
+import type { toggleVariants } from '@/features/shared/components/ui/toggle';
 import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@/features/shared/utils/cnUtils';
 import {

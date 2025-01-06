@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from '@/features/auth/stores/UseAuth';
-import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertTitle } from '@/features/shared/components/ui/alert';
 
 const auth = useAuth();
 auth.logOut();

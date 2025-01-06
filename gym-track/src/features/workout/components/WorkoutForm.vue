@@ -5,9 +5,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
+} from '@/features/shared/components/ui/form';
+import Button from '@/features/shared/components/ui/button/Button.vue';
+import Input from '@/features/shared/components/ui/input/Input.vue';
 
 defineProps<{
   submitLabel: string;

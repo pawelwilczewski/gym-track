@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/features/shared/components/ui/alert';
 import { Info } from 'lucide-vue-next';
 </script>
 

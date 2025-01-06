@@ -1,4 +1,4 @@
-import { toast } from '@/components/ui/toast';
+import { toast } from '@/features/shared/components/ui/toast';
 import { ResponseResult } from './ResponseResult';
 import { match, P } from 'ts-pattern';
 import { FormContext, Path } from 'vee-validate';

@@ -7,11 +7,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/features/shared/components/ui/form';
 import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
-import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
-import Label from '@/components/ui/label/Label.vue';
+import Button from '@/features/shared/components/ui/button/Button.vue';
+import Input from '@/features/shared/components/ui/input/Input.vue';
+import Label from '@/features/shared/components/ui/label/Label.vue';
 import { signUpSchema } from '@/features/auth/schemas/SignUpSchema';
 import {
   formErrorHandler,

@@ -5,8 +5,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import Button from '@/components/ui/button/Button.vue';
+} from '@/features/shared/components/ui/form';
+import Button from '@/features/shared/components/ui/button/Button.vue';
 import ExerciseInfosCombobox from '@/features/exerciseInfo/components/ExerciseInfosCombobox.vue';
 
 defineProps<{

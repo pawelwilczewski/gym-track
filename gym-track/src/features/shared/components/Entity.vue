@@ -12,8 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button, buttonVariants } from '@/components/ui/button';
+} from '@/features/shared/components/ui/alert-dialog';
+import { Button, buttonVariants } from '@/features/shared/components/ui/button';
 
 const {
   is = 'div',

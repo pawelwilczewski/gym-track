@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { LabelProps } from 'radix-vue';
 import type { HTMLAttributes } from 'vue';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/features/shared/components/ui/label';
 import { cn } from '@/features/shared/utils/cnUtils';
 import { useFormField } from './useFormField';
 

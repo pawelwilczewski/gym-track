@@ -5,12 +5,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import Button from '@/components/ui/button/Button.vue';
-import Input from '@/components/ui/input/Input.vue';
-import Textarea from '@/components/ui/textarea/Textarea.vue';
+} from '@/features/shared/components/ui/form';
+import Button from '@/features/shared/components/ui/button/Button.vue';
+import Input from '@/features/shared/components/ui/input/Input.vue';
+import Textarea from '@/features/shared/components/ui/textarea/Textarea.vue';
 import ExerciseMetricTypeToggleGroup from './ExerciseMetricTypeToggleGroup.vue';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
+import Checkbox from '@/features/shared/components/ui/checkbox/Checkbox.vue';
 import { FormContext } from 'vee-validate';
 
 defineProps<{

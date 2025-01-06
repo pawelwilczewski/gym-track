@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
-import Button from '@/components/ui/button/Button.vue';
+import Button from '@/features/shared/components/ui/button/Button.vue';
 import { useRoute } from 'vue-router';
 
 const email = useRoute().query.email;

@@ -5,8 +5,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import Button from '@/components/ui/button/Button.vue';
+} from '@/features/shared/components/ui/form';
+import Button from '@/features/shared/components/ui/button/Button.vue';
 import {
   DistanceUnit,
   ExerciseMetricType,
@@ -14,12 +14,12 @@ import {
   WeightUnit,
 } from '@/features/exerciseInfo/types/ExerciseInfoTypes';
 import ExerciseMetricTypeToggleGroup from '@/features/exerciseInfo/components/ExerciseMetricTypeToggleGroup.vue';
-import Input from '@/components/ui/input/Input.vue';
-import Select from '@/components/ui/select/Select.vue';
-import SelectItem from '@/components/ui/select/SelectItem.vue';
-import SelectContent from '@/components/ui/select/SelectContent.vue';
-import SelectValue from '@/components/ui/select/SelectValue.vue';
-import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
+import Input from '@/features/shared/components/ui/input/Input.vue';
+import Select from '@/features/shared/components/ui/select/Select.vue';
+import SelectItem from '@/features/shared/components/ui/select/SelectItem.vue';
+import SelectContent from '@/features/shared/components/ui/select/SelectContent.vue';
+import SelectValue from '@/features/shared/components/ui/select/SelectValue.vue';
+import SelectTrigger from '@/features/shared/components/ui/select/SelectTrigger.vue';
 import { FormContext } from 'vee-validate';
 
 defineProps<{

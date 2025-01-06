@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
+import { Button } from '@/features/shared/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@/features/shared/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/features/shared/components/ui/popover';
 import { useExerciseInfos } from '@/features/exerciseInfo/stores/UseExerciseInfos';
 import { cn } from '@/features/shared/utils/cnUtils';
 import { GetExerciseInfoResponse } from '@/app/schema/Types';
