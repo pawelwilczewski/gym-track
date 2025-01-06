@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 </script>
 
 <template>

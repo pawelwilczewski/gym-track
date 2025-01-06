@@ -7,23 +7,23 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { apiClient } from '@/shared/http/ApiClient';
+import { apiClient } from '@/features/shared/http/ApiClient';
 import router from '@/Router';
 import { Checkbox } from '@/components/ui/checkbox';
-import { logInRequestSchema } from '@/app/schema/Schemas';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
+import { logInSchema } from '@/features/auth/schemas/LogInSchema';
+import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
 import {
   invalidCredentialsErrorHandler,
   toastErrorHandler,
-} from '@/app/errors/Handlers';
+} from '@/features/shared/errors/Handlers';
 import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({
-  validationSchema: toTypedSchema(logInRequestSchema),
+  validationSchema: toTypedSchema(logInSchema),
 });
 
 const onSubmit = form.handleSubmit(async values => {

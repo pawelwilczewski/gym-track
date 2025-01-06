@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-vue-next';
 </script>
@@ -10,10 +10,9 @@ import { AlertCircle } from 'lucide-vue-next';
       <Alert variant="destructive">
         <AlertCircle class="w-4 h-4" />
         <AlertTitle>Locked out</AlertTitle>
-        <AlertDescription
-          >This account has been locked out. Please try again
-          later.</AlertDescription
-        >
+        <AlertDescription>
+          This account has been locked out. Please try again later.
+        </AlertDescription>
       </Alert>
     </div>
   </DefaultLayout>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-vue-next';
 </script>
@@ -13,7 +13,8 @@ import { Info } from 'lucide-vue-next';
         <AlertTitle>Success</AlertTitle>
         <AlertDescription>
           Your password has been reset. You can now return to
-          <RouterLink to="/logIn">the log in page</RouterLink>.
+          <RouterLink to="/logIn">the log in page</RouterLink>
+          .
         </AlertDescription>
       </Alert>
     </div>

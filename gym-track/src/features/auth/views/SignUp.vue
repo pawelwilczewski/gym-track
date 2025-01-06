@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-import { apiClient } from '@/shared/http/ApiClient';
+import { apiClient } from '@/features/shared/http/ApiClient';
 import {
   FormControl,
   FormField,
@@ -8,13 +8,16 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { signUpSchema } from '@/app/schema/Schemas';
-import { formErrorHandler, toastErrorHandler } from '@/app/errors/Handlers';
-import { ErrorHandler } from '@/app/errors/ErrorHandler';
+import { signUpSchema } from '@/features/auth/schemas/SignUpSchema';
+import {
+  formErrorHandler,
+  toastErrorHandler,
+} from '@/features/shared/errors/Handlers';
+import { ErrorHandler } from '@/features/shared/errors/ErrorHandler';
 import router from '@/Router';
 import { toTypedSchema } from '@vee-validate/zod';
 

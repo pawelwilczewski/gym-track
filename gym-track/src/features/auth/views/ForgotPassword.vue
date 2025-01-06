@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate';
-
 import {
   FormControl,
   FormField,
@@ -8,14 +7,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import FormDescription from '@/components/ui/form/FormDescription.vue';
 import { Mail } from 'lucide-vue-next';
 import { ref } from 'vue';
-import Countdown from '@/components/app/misc/Countdown.vue';
-import { forgotPasswordSchema } from '@/app/schema/Schemas';
+import Countdown from '@/features/shared/components/Countdown.vue';
+import { forgotPasswordSchema } from '@/features/auth/schemas/ForgotPasswordSchema';
 import { toTypedSchema } from '@vee-validate/zod';
 
 const form = useForm({

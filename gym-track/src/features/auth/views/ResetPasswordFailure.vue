@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-vue-next';
 </script>
@@ -11,7 +11,7 @@ import { AlertCircle } from 'lucide-vue-next';
       <Alert variant="destructive">
         <AlertCircle class="w-4 h-4" />
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription> Invalid password reset link. </AlertDescription>
+        <AlertDescription>Invalid password reset link.</AlertDescription>
       </Alert>
     </div>
   </DefaultLayout>
