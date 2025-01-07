@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import Entity from '@/features/shared/components/Entity.vue';
 import { useWorkoutExerciseSet } from '@/features/workout/composables/UseWorkoutExerciseSet';
-import {
-  GetExerciseInfoResponse,
-  WorkoutExerciseSetKey,
-} from '@/app/schema/Types';
+import { GetExerciseInfoResponse } from '@/features/exerciseInfo/types/ExerciseInfoTypes';
+import { WorkoutExerciseSetKey } from '@/features/workout/types/WorkoutTypes';
 import { computed } from 'vue';
 import ExerciseMetric from '../../../../../features/workout/components/exercise/ExerciseMetric.vue';
 import { Tally5 } from 'lucide-vue-next';
@@ -12,7 +10,7 @@ import EditWorkoutExerciseSetForm from './EditWorkoutExerciseSetForm.vue';
 
 const props = defineProps<{
   exerciseSetKey: WorkoutExerciseSetKey;
-  exerciseInfo: GetExerciseInfoResponse | undefined | null;
+  exerciseInfo: GetExerciseInfoResponse | null;
 }>();
 
 const { set, fetch, destroy } = useWorkoutExerciseSet(props.exerciseSetKey);

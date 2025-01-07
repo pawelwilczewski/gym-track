@@ -16,7 +16,7 @@ import { useWorkoutExerciseSet } from '@/features/workout/composables/UseWorkout
 
 const { workoutExerciseSetKey, exerciseInfo } = defineProps<{
   workoutExerciseSetKey: WorkoutExerciseSetKey;
-  exerciseInfo: GetExerciseInfoResponse | undefined | null;
+  exerciseInfo: GetExerciseInfoResponse | null;
 }>();
 
 const { set, update } = useWorkoutExerciseSet(workoutExerciseSetKey);

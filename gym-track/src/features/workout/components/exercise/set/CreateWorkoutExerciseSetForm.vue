@@ -10,7 +10,7 @@ import { createWorkoutExerciseSetSchemaToRequest } from '@/features/workout/sche
 
 const { workoutExerciseKey, exerciseInfo } = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
-  exerciseInfo: GetExerciseInfoResponse | undefined | null;
+  exerciseInfo: GetExerciseInfoResponse | null;
 }>();
 
 const sets = useWorkoutExerciseSets();

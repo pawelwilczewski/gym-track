@@ -24,7 +24,7 @@ import { FormContext } from 'vee-validate';
 
 defineProps<{
   form: FormContext;
-  exerciseInfo: GetExerciseInfoResponse | undefined | null;
+  exerciseInfo: GetExerciseInfoResponse | null;
   submitLabel: string;
   onSubmit: () => void;
 }>();

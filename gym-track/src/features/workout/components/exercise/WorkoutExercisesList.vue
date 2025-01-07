@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { WorkoutExerciseKey } from '@/app/schema/Types';
+import { WorkoutExerciseKey } from '@/features/workout/types/WorkoutTypes';
 import WorkoutExercise from '@/features/workout/components/exercise/WorkoutExercise.vue';
 
 defineProps<{

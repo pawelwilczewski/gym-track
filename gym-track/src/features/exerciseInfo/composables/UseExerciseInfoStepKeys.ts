@@ -5,7 +5,7 @@ import {
 import { Ref, ref, watch } from 'vue';
 
 export function useExerciseInfoStepKeys(
-  exerciseInfo: Ref<GetExerciseInfoResponse | undefined | null>
+  exerciseInfo: Ref<GetExerciseInfoResponse | null>
 ): {
   stepKeys: Ref<ExerciseInfoStepKey[]>;
 } {

@@ -1,8 +1,11 @@
-import { GetWorkoutResponse, WorkoutExerciseKey } from '@/app/schema/Types';
+import {
+  GetWorkoutResponse,
+  WorkoutExerciseKey,
+} from '@/features/workout/types/WorkoutTypes';
 import { Ref, ref, watch } from 'vue';
 
 export function useWorkoutExerciseKeys(
-  workout: Ref<GetWorkoutResponse | undefined | null>
+  workout: Ref<GetWorkoutResponse | null>
 ): {
   exerciseKeys: Ref<WorkoutExerciseKey[]>;
 } {
