@@ -42,7 +42,7 @@ internal sealed class WorkoutExerciseSetTests
 			.ConfigureAwait(false);
 
 		const int index = 0;
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
+		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await CreateWorkoutExerciseSet.Handler(
@@ -82,7 +82,7 @@ internal sealed class WorkoutExerciseSetTests
 		const int exerciseIndex = 0;
 		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
 
-		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
+		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		exercise.Sets.Add(new Workout.Exercise.Set(exercise, addedSetIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
@@ -131,7 +131,7 @@ internal sealed class WorkoutExerciseSetTests
 		const int setIndex = 0;
 		if (!PositiveCount.TryCreate(2, out var originalReps)) throw new Exception("Invalid test case");
 
-		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
+		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
@@ -174,7 +174,7 @@ internal sealed class WorkoutExerciseSetTests
 		const int index = 0;
 		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
 
-		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id);
+		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		exercise.Sets.Add(new Workout.Exercise.Set(exercise, index, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);

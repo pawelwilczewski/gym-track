@@ -26,7 +26,7 @@ public class Workout
 		return workout;
 	}
 
-	public class Exercise : IIndexed
+	public class Exercise : IIndexed, IDisplayOrdered
 	{
 		public Id<Workout> WorkoutId { get; private set; }
 		public int Index { get; private set; }
@@ -36,16 +36,19 @@ public class Workout
 		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
 		public virtual ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
+		public int DisplayOrder { get; set; }
+
 		public virtual List<Set> Sets { get; private set; } = [];
 
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo> exerciseInfoId)
+		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo> exerciseInfoId, int displayOrder)
 		{
 			WorkoutId = workoutId;
 			Index = index;
 			ExerciseInfoId = exerciseInfoId;
+			DisplayOrder = displayOrder;
 		}
 
 		public class Set : IIndexed, IDisplayOrdered

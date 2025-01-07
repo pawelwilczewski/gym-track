@@ -39,7 +39,6 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 
 		var index = exerciseInfo.Steps.GetNextIndex();
 		var displayOrder = exerciseInfo.Steps.GetNextDisplayOrder();
-
 		var exerciseInfoStep = new ExerciseInfo.Step(id, index, exerciseInfoStepDescription, null, displayOrder);
 
 		var imagePath = await image.SaveOrOverrideImage(

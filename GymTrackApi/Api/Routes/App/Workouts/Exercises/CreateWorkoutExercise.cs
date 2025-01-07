@@ -39,7 +39,8 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
 		var index = workout.Exercises.GetNextIndex();
-		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId);
+		var displayOrder = workout.Exercises.GetNextDisplayOrder();
+		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId, displayOrder);
 
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

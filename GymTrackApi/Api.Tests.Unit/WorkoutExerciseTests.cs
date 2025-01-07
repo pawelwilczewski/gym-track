@@ -60,7 +60,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id));
+		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await GetWorkoutExercise.Handler(
@@ -96,7 +96,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		const int index = 0;
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id));
+		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
 		var result = await DeleteWorkoutExercise.Handler(
