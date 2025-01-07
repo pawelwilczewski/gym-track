@@ -70,10 +70,8 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
   async function fetchMultiple(
     keys: WorkoutExerciseSetKey[]
   ): Promise<boolean> {
-    return (await Promise.all(keys.map(key => fetchByKey(key)))).reduce(
-      (previous, current) => previous && current,
-      true
-    );
+    const results = await Promise.all(keys.map(key => fetchByKey(key)));
+    return results.every(Boolean);
   }
 
   async function create(

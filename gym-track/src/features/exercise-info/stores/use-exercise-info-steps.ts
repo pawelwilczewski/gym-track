@@ -61,11 +61,8 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
   }
 
   async function fetchMultiple(keys: ExerciseInfoStepKey[]): Promise<boolean> {
-    // eslint-disable-next-line unicorn/no-array-reduce
-    return (await Promise.all(keys.map(key => fetchByKey(key)))).reduce(
-      (previous, current) => previous && current,
-      true
-    );
+    const results = await Promise.all(keys.map(key => fetchByKey(key)));
+    return results.every(Boolean);
   }
 
   async function create(
