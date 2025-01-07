@@ -6,9 +6,7 @@ import { Ref, ref, watch } from 'vue';
 
 export function useWorkoutExerciseKeys(
   workout: Ref<GetWorkoutResponse | undefined>
-): {
-  exerciseKeys: Ref<WorkoutExerciseKey[]>;
-} {
+): Ref<WorkoutExerciseKey[]> {
   const exerciseKeys = ref<WorkoutExerciseKey[]>([]);
 
   watch(
@@ -18,7 +16,6 @@ export function useWorkoutExerciseKeys(
     },
     { immediate: true }
   );
-  return {
-    exerciseKeys,
-  };
+
+  return exerciseKeys;
 }

@@ -15,7 +15,7 @@ const { exerciseInfoId } = defineProps<{
 }>();
 
 const { exerciseInfo } = useExerciseInfo(exerciseInfoId);
-const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
+const stepKeys = useExerciseInfoStepKeys(exerciseInfo);
 const steps = useExerciseInfoSteps();
 
 const sortedStepKeys = asyncComputed<ExerciseInfoStepKey[]>(async () => {

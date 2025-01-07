@@ -3,9 +3,9 @@ import Entity from '@/features/shared/components/Entity.vue';
 import { WorkoutExerciseKey } from '@/features/workout/types/WorkoutTypes';
 import { useWorkoutExercise } from '@/features/workout/composables/UseWorkoutExercise';
 import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
-import WorkoutExerciseSet from '@/features/workout/components/exercise/set/WorkoutExerciseSet.vue';
 import CreateWorkoutExerciseSetForm from '@/features/workout/components/exercise/set/CreateWorkoutExerciseSetForm.vue';
 import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/UseWorkoutExerciseExerciseInfo';
+import WorkoutExerciseSetsList from '@/features/workout/components/exercise/set/WorkoutExerciseSetsList.vue';
 
 const { exerciseKey } = defineProps<{ exerciseKey: WorkoutExerciseKey }>();
 
@@ -20,14 +20,7 @@ const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
 
       <div>
         <h6 class="mb-2">Sets</h6>
-        <ol class="list-decimal flex flex-col gap-6">
-          <WorkoutExerciseSet
-            v-for="key in workoutExercise.sets"
-            :key="key.index"
-            :exercise-set-key="key"
-            :exercise-info="exerciseInfo"
-          />
-        </ol>
+        <WorkoutExerciseSetsList :workout-exercise-key="exerciseKey" />
       </div>
 
       <ButtonDialog dialog-title="Create Exercise Set">
@@ -35,7 +28,6 @@ const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
         <template #dialog="{ closeDialog }">
           <CreateWorkoutExerciseSetForm
             :workout-exercise-key="exerciseKey"
-            :exercise-info="exerciseInfo"
             @created="closeDialog()"
           />
         </template>

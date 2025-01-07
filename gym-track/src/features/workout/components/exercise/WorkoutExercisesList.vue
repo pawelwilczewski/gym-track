@@ -15,7 +15,7 @@ const { workoutId } = defineProps<{
 }>();
 
 const { workout } = useWorkout(workoutId);
-const { exerciseKeys } = useWorkoutExerciseKeys(workout);
+const exerciseKeys = useWorkoutExerciseKeys(workout);
 const exercises = useWorkoutExercises();
 
 const sortedExerciseKeys = asyncComputed<WorkoutExerciseKey[]>(async () => {

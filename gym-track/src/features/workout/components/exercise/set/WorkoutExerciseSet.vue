@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import Entity from '@/features/shared/components/Entity.vue';
 import { useWorkoutExerciseSet } from '@/features/workout/composables/UseWorkoutExerciseSet';
-import { GetExerciseInfoResponse } from '@/features/exerciseInfo/types/ExerciseInfoTypes';
 import { WorkoutExerciseSetKey } from '@/features/workout/types/WorkoutTypes';
 import { computed } from 'vue';
 import ExerciseMetric from '../../../../../features/workout/components/exercise/ExerciseMetric.vue';
 import { Tally5 } from 'lucide-vue-next';
 import EditWorkoutExerciseSetForm from './EditWorkoutExerciseSetForm.vue';
+import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/UseWorkoutExerciseExerciseInfo';
+import { useWorkoutExercise } from '@/features/workout/composables/UseWorkoutExercise';
 
-const props = defineProps<{
-  exerciseSetKey: WorkoutExerciseSetKey;
-  exerciseInfo: GetExerciseInfoResponse | null;
+const { setKey } = defineProps<{
+  setKey: WorkoutExerciseSetKey;
 }>();
 
-const { set, fetch, destroy } = useWorkoutExerciseSet(props.exerciseSetKey);
-fetch();
+const { set, destroy } = useWorkoutExerciseSet(setKey);
+const { workoutExercise } = useWorkoutExercise(setKey);
+const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
 
 const exerciseMetric = computed(() => set.value?.metric);
 </script>
@@ -30,7 +31,7 @@ const exerciseMetric = computed(() => set.value?.metric);
     </div>
     <template #edit="{ closeDialog }">
       <EditWorkoutExerciseSetForm
-        :workout-exercise-set-key="exerciseSetKey"
+        :workout-exercise-set-key="setKey"
         :exercise-info="exerciseInfo"
         @edited="closeDialog()"
       />
