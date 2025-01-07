@@ -1,5 +1,5 @@
-import { editWorkoutSchema } from '@/app/schema/Schemas';
-import { GetWorkoutResponse } from '@/app/schema/Types';
+import { editWorkoutSchema } from '@/features/workout/schemas/EditWorkoutSchema';
+import { GetWorkoutResponse } from '@/features/workout/types/WorkoutTypes';
 import { useWorkouts } from '@/features/workout/stores/UseWorkouts';
 import { UUID } from 'crypto';
 import { FormContext } from 'vee-validate';
@@ -7,7 +7,7 @@ import { computed, ComputedRef } from 'vue';
 import { z } from 'zod';
 
 export function useWorkout(id: UUID): {
-  workout: ComputedRef<GetWorkoutResponse>;
+  workout: ComputedRef<GetWorkoutResponse | undefined>;
   fetch: () => Promise<boolean>;
   update: (
     data: z.infer<typeof editWorkoutSchema>,

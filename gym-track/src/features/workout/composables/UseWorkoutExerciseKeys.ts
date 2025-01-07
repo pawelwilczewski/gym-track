@@ -5,7 +5,7 @@ import {
 import { Ref, ref, watch } from 'vue';
 
 export function useWorkoutExerciseKeys(
-  workout: Ref<GetWorkoutResponse | null>
+  workout: Ref<GetWorkoutResponse | undefined>
 ): {
   exerciseKeys: Ref<WorkoutExerciseKey[]>;
 } {

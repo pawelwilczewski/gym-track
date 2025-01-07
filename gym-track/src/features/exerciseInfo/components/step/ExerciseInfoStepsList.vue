@@ -25,7 +25,7 @@ const sortedStepKeys = asyncComputed<ExerciseInfoStepKey[]>(async () => {
       steps.all[hashExerciseInfoStepKey(a)].displayOrder -
       steps.all[hashExerciseInfoStepKey(b)].displayOrder
   );
-});
+}, []);
 </script>
 
 <template>

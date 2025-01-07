@@ -4,30 +4,13 @@ import { WorkoutExerciseKey } from '@/features/workout/types/WorkoutTypes';
 import { useWorkoutExercise } from '@/features/workout/composables/UseWorkoutExercise';
 import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
 import WorkoutExerciseSet from '@/features/workout/components/exercise/set/WorkoutExerciseSet.vue';
-import { computed, watch } from 'vue';
 import CreateWorkoutExerciseSetForm from '@/features/workout/components/exercise/set/CreateWorkoutExerciseSetForm.vue';
-import { useExerciseInfos } from '@/features/exerciseInfo/stores/UseExerciseInfos';
+import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/UseWorkoutExerciseExerciseInfo';
 
 const { exerciseKey } = defineProps<{ exerciseKey: WorkoutExerciseKey }>();
 
-const { workoutExercise, fetch, destroy } = useWorkoutExercise(exerciseKey);
-fetch();
-
-const exerciseInfos = useExerciseInfos();
-watch(workoutExercise, () => {
-  if (
-    workoutExercise.value &&
-    !exerciseInfos.all[workoutExercise.value.exerciseInfoId]
-  ) {
-    exerciseInfos.fetchById(workoutExercise.value.exerciseInfoId);
-  }
-});
-
-const exerciseInfo = computed(() =>
-  workoutExercise.value
-    ? exerciseInfos.all[workoutExercise.value.exerciseInfoId]
-    : null
-);
+const { workoutExercise, destroy } = useWorkoutExercise(exerciseKey);
+const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
 </script>
 
 <template>

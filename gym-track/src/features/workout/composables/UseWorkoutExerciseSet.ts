@@ -9,7 +9,7 @@ import { useWorkoutExerciseSets } from '@/features/workout/stores/UseWorkoutExer
 import { FormContext } from 'vee-validate';
 
 export function useWorkoutExerciseSet(key: WorkoutExerciseSetKey): {
-  set: ComputedRef<GetWorkoutExerciseSetResponse>;
+  set: ComputedRef<GetWorkoutExerciseSetResponse | undefined>;
   fetch: () => Promise<boolean>;
   update: (
     data: EditWorkoutExerciseSetRequest,

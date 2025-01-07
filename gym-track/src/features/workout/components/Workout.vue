@@ -4,22 +4,19 @@ import CreateWorkoutExerciseForm from '@/features/workout/components/exercise/Cr
 import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
 import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
 import { UUID } from 'crypto';
-import { useWorkoutExerciseKeys } from '@/features/workout/composables/UseWorkoutExerciseKeys';
 import EditWorkoutForm from './EditWorkoutForm.vue';
 import { useWorkout } from '@/features/workout/composables/UseWorkout';
 
 const { id } = defineProps<{ id: UUID }>();
 
 const { workout, destroy } = useWorkout(id);
-
-const { exerciseKeys } = useWorkoutExerciseKeys(workout);
 </script>
 
 <template>
   <Entity v-if="workout" class="card" @deleted="destroy()">
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
-    <WorkoutExercisesList v-if="exerciseKeys" :exercise-keys="exerciseKeys" />
+    <WorkoutExercisesList :workout-id="id" />
     <ButtonDialog dialog-title="Create Workout Exercise">
       <template #button>Add Exercise</template>
       <template #dialog="{ closeDialog }">

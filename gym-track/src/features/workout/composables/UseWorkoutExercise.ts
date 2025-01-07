@@ -7,7 +7,7 @@ import { useWorkoutExercises } from '@/features/workout/stores/UseWorkoutExercis
 import { computed, ComputedRef } from 'vue';
 
 export function useWorkoutExercise(key: WorkoutExerciseKey): {
-  workoutExercise: ComputedRef<GetWorkoutExerciseResponse>;
+  workoutExercise: ComputedRef<GetWorkoutExerciseResponse | undefined>;
   fetch: () => Promise<boolean>;
   destroy: () => Promise<boolean>;
 } {
