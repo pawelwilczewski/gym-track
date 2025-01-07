@@ -30,7 +30,7 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
 
   async function fetchByKey(key: ExerciseInfoStepKey): Promise<boolean> {
     const response = await apiClient.get(
-      `/api/v1/exerciseInfos/${key.exerciseInfoId}/steps/${key.index}`
+      `/api/v1/exercise-infos/${key.exerciseInfoId}/steps/${key.index}`
     );
 
     if (
@@ -77,7 +77,7 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
     }
 
     const response = await apiClient.post(
-      `/api/v1/exerciseInfos/${exerciseInfoId}/steps`,
+      `/api/v1/exercise-infos/${exerciseInfoId}/steps`,
       formData
     );
 
@@ -110,7 +110,7 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
     }
 
     const response = await apiClient.put(
-      `/api/v1/exerciseInfos/${key.exerciseInfoId}/steps/${key.index}`,
+      `/api/v1/exercise-infos/${key.exerciseInfoId}/steps/${key.index}`,
       formData
     );
 
@@ -128,7 +128,7 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
 
   async function destroy(key: ExerciseInfoStepKey): Promise<boolean> {
     const response = await apiClient.delete(
-      `/api/v1/exerciseInfos/${key.exerciseInfoId}/steps/${key.index}`
+      `/api/v1/exercise-infos/${key.exerciseInfoId}/steps/${key.index}`
     );
 
     if (

@@ -18,7 +18,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
   const exerciseInfos = ref<Record<UUID, GetExerciseInfoResponse>>({});
 
   async function fetchById(id: UUID): Promise<boolean> {
-    return fetchByUrl(`/api/v1/exerciseInfos/${id}`);
+    return fetchByUrl(`/api/v1/exercise-infos/${id}`);
   }
 
   async function fetchByUrl(url: string): Promise<boolean> {
@@ -39,7 +39,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
   }
 
   async function fetchAll(): Promise<boolean> {
-    const response = await apiClient.get('/api/v1/exerciseInfos');
+    const response = await apiClient.get('/api/v1/exercise-infos');
 
     if (
       ErrorHandler.forResponse(response)
@@ -66,7 +66,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       formData.append('thumbnailImage', data.thumbnailImage);
     }
 
-    const response = await apiClient.post('/api/v1/exerciseInfos', formData);
+    const response = await apiClient.post('/api/v1/exercise-infos', formData);
 
     if (
       ErrorHandler.forResponse(response)
@@ -99,7 +99,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
     }
 
     const response = await apiClient.put(
-      `/api/v1/exerciseInfos/${id}`,
+      `/api/v1/exercise-infos/${id}`,
       formData
     );
 
@@ -116,7 +116,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
   }
 
   async function destroy(id: UUID): Promise<boolean> {
-    const response = await apiClient.delete(`/api/v1/exerciseInfos/${id}`);
+    const response = await apiClient.delete(`/api/v1/exercise-infos/${id}`);
 
     if (
       ErrorHandler.forResponse(response)

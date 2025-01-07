@@ -47,7 +47,7 @@ internal static class FunctionalTestWebApplicationFactoryExtensions
 		var code = await userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
 		var encodedCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-		var query = QueryHelpers.AddQueryString("auth/confirmEmail", new Dictionary<string, string?>
+		var query = QueryHelpers.AddQueryString("auth/confirm-email", new Dictionary<string, string?>
 		{
 			{ "userId", user.Id.ToString() },
 			{ "code", encodedCode }

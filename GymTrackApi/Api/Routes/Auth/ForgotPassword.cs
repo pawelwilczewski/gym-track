@@ -13,7 +13,7 @@ internal sealed class ForgotPassword : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/forgotPassword", async Task<Results<Ok, ValidationProblem>> (
+		builder.MapPost("/forgot-password", async Task<Results<Ok, ValidationProblem>> (
 			[FromBody] ForgotPasswordRequest resetRequest,
 			[FromServices] UserManager<User> userManager,
 			[FromServices] IEmailSender<User> emailSender) =>

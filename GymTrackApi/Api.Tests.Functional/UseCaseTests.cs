@@ -69,7 +69,7 @@ internal sealed class UseCaseTests
 		await Assert.That(workout).IsNotNull();
 		await Assert.That(workout!.Name).IsEqualTo(workoutName);
 
-		response = await httpClient.PostAsync("api/v1/exerciseInfos", content).ConfigureAwait(false);
+		response = await httpClient.PostAsync("api/v1/exercise-infos", content).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var exerciseInfoUri = response.Headers.Location!;
 		var exerciseInfoUriString = exerciseInfoUri.ToString();

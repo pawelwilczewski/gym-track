@@ -1,7 +1,7 @@
 ﻿GymTrackApi/GymTrackApi.sln.DotSettings.user
-GymTrackApi/Api/wwwroot/images/exerciseInfo/thumbnails
-GymTrackApi/Api/wwwroot/images/exerciseInfo/stepInfo
-GymTrackApi/Api/wwwroot/images/exerciseInfo/step
+GymTrackApi/Api/wwwroot/images/exercise-info/thumbnails
+GymTrackApi/Api/wwwroot/images/exercise-info/stepInfo
+GymTrackApi/Api/wwwroot/images/exercise-info/step
 GymTrackApi/Api/appsettings.Development.json
 GymTrackApi/Api/appsettings.Production.json
 GymTrackApi/Api/appsettings.Test.json

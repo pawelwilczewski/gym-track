@@ -61,7 +61,7 @@ internal sealed class ConfirmEmail : IEndpoint
 			.Add(endpointBuilder =>
 			{
 				var finalPattern = ((RouteEndpointBuilder)endpointBuilder).RoutePattern.RawText;
-				AuthRoutes.ConfirmEmailEndpointName = $"confirmEmail-{finalPattern}";
+				AuthRoutes.ConfirmEmailEndpointName = $"confirm-email-{finalPattern}";
 				endpointBuilder.Metadata.Add(new EndpointNameMetadata(AuthRoutes.ConfirmEmailEndpointName));
 			});
 

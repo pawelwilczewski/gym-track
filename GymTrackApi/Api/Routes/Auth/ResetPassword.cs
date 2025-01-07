@@ -12,7 +12,7 @@ internal sealed class ResetPassword : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/resetPassword", async Task<Results<Ok, ValidationProblem>> (
+		builder.MapPost("/reset-password", async Task<Results<Ok, ValidationProblem>> (
 			[FromBody] ResetPasswordRequest resetRequest,
 			[FromServices] UserManager<User> userManager) =>
 		{

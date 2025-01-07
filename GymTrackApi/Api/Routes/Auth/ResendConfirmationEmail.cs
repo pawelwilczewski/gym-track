@@ -10,7 +10,7 @@ internal sealed class ResendConfirmationEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/resendConfirmationEmail", async Task<Ok> (
+		builder.MapPost("/resend-confirmation-email", async Task<Ok> (
 			[FromBody] ResendConfirmationEmailRequest resendRequest,
 			HttpContext context,
 			[FromServices] UserManager<User> userManager,

@@ -48,7 +48,7 @@ internal sealed class Info : IEndpoint
 				{
 					return AuthRoutes.CreateValidationProblem("OldPasswordRequired",
 						"The old password is required to set a new password. "
-						+ "If the old password is forgotten, use /resetPassword.");
+						+ "If the old password is forgotten, use /reset-password.");
 				}
 
 				var changePasswordResult = await userManager.ChangePasswordAsync(

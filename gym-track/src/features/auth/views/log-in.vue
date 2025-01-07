@@ -83,7 +83,7 @@ const onSubmit = form.handleSubmit(async values => {
             </FormItem>
           </FormField>
 
-          <RouterLink to="/forgotPassword" class="text-sm hover:underline">
+          <RouterLink to="/forgot-password" class="text-sm hover:underline">
             Forgot Password?
           </RouterLink>
         </div>
@@ -94,7 +94,7 @@ const onSubmit = form.handleSubmit(async values => {
       <Label class="block text-center text-lg mt-16 font-bold">
         No account?
       </Label>
-      <RouterLink to="/signUp" class="block text-center hover:underline">
+      <RouterLink to="/sign-up" class="block text-center hover:underline">
         Sign Up
       </RouterLink>
     </div>
