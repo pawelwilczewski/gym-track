@@ -6,7 +6,6 @@ import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
 import CreateExerciseInfoStepForm from '@/features/exerciseInfo/components/step/CreateExerciseInfoStepForm.vue';
 import Entity from '@/features/shared/components/Entity.vue';
 import ExerciseInfoStepsList from '@/features/exerciseInfo/components/step/ExerciseInfoStepsList.vue';
-import { useExerciseInfoStepKeys } from '@/features/exerciseInfo/composables/UseExerciseInfoStepKeys';
 import { UUID } from 'crypto';
 import EditExerciseInfoForm from './EditExerciseInfoForm.vue';
 import { useExerciseInfo } from '@/features/exerciseInfo/composables/UseExerciseInfo';
@@ -14,8 +13,6 @@ import { useExerciseInfo } from '@/features/exerciseInfo/composables/UseExercise
 const { id } = defineProps<{ id: UUID }>();
 
 const { exerciseInfo, destroy } = useExerciseInfo(id);
-
-const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 </script>
 
 <template>
@@ -42,7 +39,7 @@ const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
 
     <div>
       <h4>Steps</h4>
-      <ExerciseInfoStepsList :step-keys="stepKeys" />
+      <ExerciseInfoStepsList :exercise-info-id="id" />
     </div>
 
     <ButtonDialog dialog-title="Add Exercise Step">

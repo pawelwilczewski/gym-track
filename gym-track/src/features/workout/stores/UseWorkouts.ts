@@ -93,9 +93,7 @@ export const useWorkouts = defineStore('workouts', () => {
       return false;
     }
 
-    fetchById(id);
-
-    return true;
+    return fetchById(id);
   }
 
   async function destroy(id: UUID): Promise<boolean> {

@@ -112,9 +112,7 @@ export const useExerciseInfos = defineStore('exerciseInfos', () => {
       return false;
     }
 
-    fetchById(id);
-
-    return true;
+    return fetchById(id);
   }
 
   async function destroy(id: UUID): Promise<boolean> {

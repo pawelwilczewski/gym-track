@@ -9,24 +9,11 @@ const { stepKey } = defineProps<{
   stepKey: ExerciseInfoStepKey;
 }>();
 
-const { step, fetch, destroy } = useExerciseInfoStep(stepKey);
-fetch();
-
-const emit = defineEmits<{
-  deleted: [ExerciseInfoStepKey];
-}>();
+const { step, destroy } = useExerciseInfoStep(stepKey);
 </script>
 
 <template>
-  <Entity
-    is="li"
-    v-if="step"
-    class="my-4"
-    @deleted="
-      destroy();
-      emit('deleted', stepKey);
-    "
-  >
+  <Entity is="li" v-if="step" class="my-4" @deleted="destroy()">
     <p class="mb-2">{{ step.description }}</p>
     <picture v-if="step.imageUrl" class="mb-2">
       <source :srcset="`${apiClient.getUri()}/${step.imageUrl}`" />

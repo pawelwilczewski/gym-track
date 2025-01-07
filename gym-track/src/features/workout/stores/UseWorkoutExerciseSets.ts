@@ -120,8 +120,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
       return false;
     }
 
-    fetchByKey(key);
-    return true;
+    return fetchByKey(key);
   }
 
   async function destroy(key: WorkoutExerciseSetKey): Promise<boolean> {
@@ -138,6 +137,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     }
 
     delete sets.value[hashWorkoutExerciseSetKey(key)];
+
     return true;
   }
 

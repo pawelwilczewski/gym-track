@@ -1,23 +1,39 @@
 <script setup lang="ts">
-import { ExerciseInfoStepKey } from '@/features/exerciseInfo/types/ExerciseInfoTypes';
+import {
+  ExerciseInfoStepKey,
+  hashExerciseInfoStepKey,
+} from '@/features/exerciseInfo/types/ExerciseInfoTypes';
 import ExerciseInfoStep from './ExerciseInfoStep.vue';
+import { useExerciseInfoSteps } from '@/features/exerciseInfo/stores/UseExerciseInfoSteps';
+import { asyncComputed } from '@vueuse/core';
+import { UUID } from 'crypto';
+import { useExerciseInfoStepKeys } from '@/features/exerciseInfo/composables/UseExerciseInfoStepKeys';
+import { useExerciseInfo } from '@/features/exerciseInfo/composables/UseExerciseInfo';
 
-defineProps<{
-  stepKeys: ExerciseInfoStepKey[];
+const { exerciseInfoId } = defineProps<{
+  exerciseInfoId: UUID;
 }>();
 
-const emit = defineEmits<{
-  stepDeleted: [ExerciseInfoStepKey];
-}>();
+const { exerciseInfo } = useExerciseInfo(exerciseInfoId);
+const { stepKeys } = useExerciseInfoStepKeys(exerciseInfo);
+const steps = useExerciseInfoSteps();
+
+const sortedStepKeys = asyncComputed<ExerciseInfoStepKey[]>(async () => {
+  await steps.fetchMultiple(stepKeys.value);
+  return [...stepKeys.value].sort(
+    (a, b) =>
+      steps.all[hashExerciseInfoStepKey(a)].displayOrder -
+      steps.all[hashExerciseInfoStepKey(b)].displayOrder
+  );
+});
 </script>
 
 <template>
   <ol class="list-decimal">
     <ExerciseInfoStep
-      v-for="key in stepKeys"
+      v-for="key in sortedStepKeys"
       :key="key.index"
       :step-key="key"
-      @deleted="emit('stepDeleted', key)"
     />
   </ol>
 </template>
