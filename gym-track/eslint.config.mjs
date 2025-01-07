@@ -5,12 +5,14 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import vueEslintParser from 'vue-eslint-parser';
 import unusedImports from 'eslint-plugin-unused-imports';
 import typescriptEslint from 'typescript-eslint';
+import unicorn from 'eslint-plugin-unicorn';
 import eslint from '@eslint/js';
 
 export default [
   eslint.configs.recommended,
   ...typescriptEslint.configs.recommended,
   ...vuePlugin.configs['flat/recommended'],
+  unicorn.configs['flat/recommended'],
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.vue'],
     languageOptions: {
