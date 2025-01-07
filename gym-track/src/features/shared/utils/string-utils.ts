@@ -1,3 +1,3 @@
-export function uncapitalize(str: string): string {
-  return str.charAt(0).toLowerCase() + str.slice(1);
+export function uncapitalize(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
 }

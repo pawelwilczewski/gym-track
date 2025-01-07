@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
-import { ErrorHandler } from '../../app/errors/ErrorHandler';
-import { toastErrorHandler } from '../../app/errors/Handlers';
+import { ErrorHandler } from '@/features/shared/errors/error-handler';
+import { toastErrorHandler } from '@/features/shared/errors/handlers';
 
 export function getImageMimeType(
   path: string
@@ -31,7 +31,7 @@ export async function getImageFileFromUrl(
   }
 
   const data = await response.data.blob();
-  const name = url.substring(url.lastIndexOf('/') + 1);
+  const name = url.slice(Math.max(0, url.lastIndexOf('/') + 1));
   const metadata = {
     type: mimeType,
   };
