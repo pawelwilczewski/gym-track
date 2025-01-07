@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import Entity from '@/features/shared/components/Entity.vue';
-import CreateWorkoutExerciseForm from '@/features/workout/components/exercise/CreateWorkoutExerciseForm.vue';
-import WorkoutExercisesList from './exercise/WorkoutExercisesList.vue';
-import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
-import { UUID } from 'crypto';
-import EditWorkoutForm from './EditWorkoutForm.vue';
-import { useWorkout } from '@/features/workout/composables/UseWorkout';
+import Entity from '@/features/shared/components/entity.vue';
+import CreateWorkoutExerciseForm from '@/features/workout/components/exercise/create-workout-exercise-form.vue';
+import WorkoutExercisesList from './exercise/workout-exercises-list.vue';
+import ButtonDialog from '@/features/shared/components/button-dialog.vue';
+import { UUID } from 'node:crypto';
+import EditWorkoutForm from './edit-workout-form.vue';
+import { useWorkout } from '@/features/workout/composables/use-workout';
 
 const { id } = defineProps<{ id: UUID }>();
 

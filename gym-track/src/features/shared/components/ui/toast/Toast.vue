@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import {
   ToastRoot,
   type ToastRootEmits,
   useForwardPropsEmits,
 } from 'radix-vue';
 import { computed } from 'vue';
-import { type ToastProps, toastVariants } from '.';
+import { type ToastProps as ToastProperties, toastVariants } from '.';
 
-const props = defineProps<ToastProps>();
+const props = defineProps<ToastProperties>();
 
 const emits = defineEmits<ToastRootEmits>();
 
-const delegatedProps = computed(() => {
+const delegatedProperties = computed(() => {
   const { class: _, ...delegated } = props;
 
   return delegated;
 });
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits);
+const forwarded = useForwardPropsEmits(delegatedProperties, emits);
 </script>
 
 <template>

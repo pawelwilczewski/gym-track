@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { roundToMultiple } from '@/features/shared/utils/MathUtils';
-import Timer from '@/features/shared/utils/time/Timer';
+import { roundToMultiple } from '@/features/shared/utils/math-utils';
+import Timer from '@/features/shared/utils/time/timer';
 import { ref } from 'vue';
 
-const props = defineProps<{
+const { totalDurationSeconds, tickIntervalSeconds } = defineProps<{
   totalDurationSeconds: number;
   tickIntervalSeconds: number;
 }>();
@@ -12,16 +12,16 @@ const emit = defineEmits<{
   complete: [];
 }>();
 
-const timeLeft = ref(props.totalDurationSeconds);
+const timeLeft = ref(totalDurationSeconds);
 
 const timer: Timer = new Timer(
-  props.totalDurationSeconds,
-  props.tickIntervalSeconds,
+  totalDurationSeconds,
+  tickIntervalSeconds,
   (timeLeftRaw: number) => {
-    timeLeft.value = roundToMultiple(timeLeftRaw, props.tickIntervalSeconds);
+    timeLeft.value = roundToMultiple(timeLeftRaw, tickIntervalSeconds);
   },
   () => {
-    timeLeft.value = props.totalDurationSeconds;
+    timeLeft.value = totalDurationSeconds;
     emit('complete');
   }
 );

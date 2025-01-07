@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import OneColumnLayout from '@/features/shared/layouts/OneColumnLayout.vue';
-import WorkoutsList from '@/features/workout/components/WorkoutsList.vue';
-import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
-import CreateWorkoutForm from '@/features/workout/components/CreateWorkoutForm.vue';
+import OneColumnLayout from '@/features/shared/layouts/one-column-layout.vue';
+import WorkoutsList from '@/features/workout/components/workouts-list.vue';
+import ButtonDialog from '@/features/shared/components/button-dialog.vue';
+import CreateWorkoutForm from '@/features/workout/components/create-workout-form.vue';
 </script>
 
 <template>

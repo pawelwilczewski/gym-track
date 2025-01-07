@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Pencil, Trash2 } from 'lucide-vue-next';
-import ButtonDialog from '@/features/shared/components/ButtonDialog.vue';
-import { type IsComponentType } from '@/features/shared/utils/ComponentTypes';
+import ButtonDialog from '@/features/shared/components/button-dialog.vue';
+import { type IsComponentType } from '@/features/shared/utils/component-types';
 import {
   AlertDialog,
   AlertDialogAction,

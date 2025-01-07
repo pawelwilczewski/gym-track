@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ComboboxEmptyProps } from 'radix-vue';
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { ComboboxEmpty } from 'radix-vue';
 import { computed, type HTMLAttributes } from 'vue';
 

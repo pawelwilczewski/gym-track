@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { X } from 'lucide-vue-next';
 import {
   DialogClose,
@@ -17,13 +17,13 @@ const props = defineProps<
 >();
 const emits = defineEmits<DialogContentEmits>();
 
-const delegatedProps = computed(() => {
+const delegatedProperties = computed(() => {
   const { class: _, ...delegated } = props;
 
   return delegated;
 });
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits);
+const forwarded = useForwardPropsEmits(delegatedProperties, emits);
 </script>
 
 <template>

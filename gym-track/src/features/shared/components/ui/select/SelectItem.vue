@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { Check } from 'lucide-vue-next';
 import {
   SelectItem,
@@ -14,13 +14,13 @@ const props = defineProps<
   SelectItemProps & { class?: HTMLAttributes['class'] }
 >();
 
-const delegatedProps = computed(() => {
+const delegatedProperties = computed(() => {
   const { class: _, ...delegated } = props;
 
   return delegated;
 });
 
-const forwardedProps = useForwardProps(delegatedProps);
+const forwardedProps = useForwardProps(delegatedProperties);
 </script>
 
 <template>

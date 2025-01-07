@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ComboboxContentEmits, ComboboxContentProps } from 'radix-vue';
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { ComboboxContent, useForwardPropsEmits } from 'radix-vue';
 import { computed, type HTMLAttributes } from 'vue';
 

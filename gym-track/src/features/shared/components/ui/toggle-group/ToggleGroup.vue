@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { toggleVariants } from '@/features/shared/components/ui/toggle';
 import type { VariantProps } from 'class-variance-authority';
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import {
   ToggleGroupRoot,
   type ToggleGroupRootEmits,
@@ -26,12 +26,12 @@ provide('toggleGroup', {
   size: props.size,
 });
 
-const delegatedProps = computed(() => {
+const delegatedProperties = computed(() => {
   const { class: _, ...delegated } = props;
   return delegated;
 });
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits);
+const forwarded = useForwardPropsEmits(delegatedProperties, emits);
 </script>
 
 <template>

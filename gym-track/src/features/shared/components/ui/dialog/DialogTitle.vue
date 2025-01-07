@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { DialogTitle, type DialogTitleProps, useForwardProps } from 'radix-vue';
 import { computed, type HTMLAttributes } from 'vue';
 

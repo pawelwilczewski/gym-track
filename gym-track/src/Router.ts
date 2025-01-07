@@ -1,23 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LogIn from './features/auth/views/LogIn.vue';
-import Home from './features/shared/views/Home.vue';
-import SignUp from './features/auth/views/SignUp.vue';
-import ConfirmEmail from './features/auth/views/ConfirmEmail.vue';
-import ConfirmedEmail from './features/auth/views/ConfirmedEmail.vue';
-import ForgotPassword from './features/auth/views/ForgotPassword.vue';
-import ConfirmEmailChange from './features/auth/views/ConfirmEmailChange.vue';
-import ResetPasswordSuccess from './features/auth/views/ResetPasswordSuccess.vue';
-import Lockout from './features/auth/views/Lockout.vue';
-import ResetPasswordFailure from './features/auth/views/ResetPasswordFailure.vue';
-import LogOut from './features/auth/views/LogOut.vue';
-import Workouts from './features/workout/views/Workouts.vue';
-import NotFound from './features/shared/views/NotFound.vue';
+import LogIn from './features/auth/views/log-in.vue';
+import Home from './features/shared/views/home.vue';
+import SignUp from './features/auth/views/sign-up.vue';
+import ConfirmEmail from './features/auth/views/confirm-email.vue';
+import ConfirmedEmail from './features/auth/views/confirmed-email.vue';
+import ForgotPassword from './features/auth/views/forgot-password.vue';
+import ConfirmEmailChange from './features/auth/views/confirm-email-change.vue';
+import ResetPasswordSuccess from './features/auth/views/reset-password-success.vue';
+import Lockout from './features/auth/views/lockout.vue';
+import ResetPasswordFailure from './features/auth/views/reset-password-failure.vue';
+import LogOut from './features/auth/views/log-out.vue';
+import Workouts from './features/workout/views/workouts.vue';
+import NotFound from './features/shared/views/not-found.vue';
 import {
   handleAuthAndRedirectBefore,
   handleAuthAndRedirectAfter,
-} from './features/auth/middleware/AuthAndRedirect';
-import Dashboard from './features/dashboard/views/Dashboard.vue';
-import ExerciseInfos from './features/exerciseInfo/views/ExerciseInfos.vue';
+} from './features/auth/middleware/auth-and-redirect';
+import Dashboard from './features/dashboard/views/dashboard.vue';
+import ExerciseInfos from './features/exercise-info/views/exercise-infos.vue';
 
 declare module 'vue-router' {
   enum UserRole {

@@ -1,4 +1,4 @@
-import { getCurrentTimeSeconds } from '@/features/shared/utils/time/TimeUtils';
+import { getCurrentTimeSeconds } from '@/features/shared/utils/time/time-utils';
 
 export default class Timer {
   private totalDurationSeconds: number;

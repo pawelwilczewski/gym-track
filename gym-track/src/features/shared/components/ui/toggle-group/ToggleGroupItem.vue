@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VariantProps } from 'class-variance-authority';
 import { toggleVariants } from '@/features/shared/components/ui/toggle';
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import {
   ToggleGroupItem,
   type ToggleGroupItemProps,

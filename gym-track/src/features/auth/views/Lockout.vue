@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultLayout from '@/features/shared/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/features/shared/layouts/default-layout.vue';
 import {
   Alert,
   AlertDescription,

@@ -1,7 +1,7 @@
 import {
   DistanceUnit,
   WeightUnit,
-} from '@/features/exerciseInfo/types/ExerciseInfoTypes';
+} from '@/features/exercise-info/types/exercise-info-types';
 
 export function formatWeight(weight: number, unit: WeightUnit): string {
   let unitText;

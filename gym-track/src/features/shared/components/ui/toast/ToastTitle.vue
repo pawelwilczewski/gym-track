@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/features/shared/utils/cnUtils';
+import { cn } from '@/features/shared/utils/cn-utils';
 import { ToastTitle, type ToastTitleProps } from 'radix-vue';
 import { computed, type HTMLAttributes } from 'vue';
 

@@ -1,12 +1,12 @@
 import { toast } from '@/features/shared/components/ui/toast';
-import { ResponseResult } from './ResponseResult';
+import { ResponseResult } from './response-result';
 import { match, P } from 'ts-pattern';
 import { FormContext, Path } from 'vee-validate';
 import {
   FullyHandledErrorInfo,
   HandlerType,
   PartiallyHandledErrorInfo,
-} from './ErrorHandler';
+} from './error-handler';
 
 export function toastErrorHandler(
   result: ResponseResult
@@ -28,13 +28,13 @@ export function toastErrorHandler(
       })
     )
     .with({ type: 'validation', errors: P.select() }, errors => {
-      errors.forEach(error => {
+      for (const error of errors) {
         toast({
           title: `Validation Error for '${error.field}'`,
           description: error.error,
           variant: 'destructive',
         });
-      });
+      }
     })
     .with({ type: 'auth' }, () => {
       toast({
@@ -59,12 +59,12 @@ export function formErrorHandler(
       handled = true;
     })
     .with({ type: 'validation', errors: P.select() }, errors => {
-      errors.forEach(error => {
+      for (const error of errors) {
         form.setFieldError(
           error.field as Path<typeof form.values>,
           error.error
         );
-      });
+      }
       handled = true;
     });
 
