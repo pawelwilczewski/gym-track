@@ -31,6 +31,7 @@ export const useAuth = defineStore('auth', () => {
     return true;
   }
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   async function signUp(
     request: SignUpRequest,
     form: FormContext
@@ -46,6 +47,7 @@ export const useAuth = defineStore('auth', () => {
       .wasSuccess();
   }
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   async function logIn(request: LogInRequest): Promise<boolean> {
     const response = await apiClient.post(
       `/auth/login?useCookies=true&useSessionCookies=${!request.rememberMe}`,
