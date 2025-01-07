@@ -2,7 +2,7 @@
 import router from '@/router';
 import { Button } from '@/features/shared/components/ui/button';
 
-const props = defineProps<{
+const { path, name } = defineProps<{
   path: string;
   name: string;
 }>();
@@ -10,11 +10,9 @@ const props = defineProps<{
 
 <template>
   <Button
-    :variant="
-      router.currentRoute.value.path === props.path ? 'secondary' : 'ghost'
-    "
+    :variant="router.currentRoute.value.path === path ? 'secondary' : 'ghost'"
     as-child
   >
-    <RouterLink :to="props.path">{{ props.name }}</RouterLink>
+    <RouterLink :to="path">{{ name }}</RouterLink>
   </Button>
 </template>
