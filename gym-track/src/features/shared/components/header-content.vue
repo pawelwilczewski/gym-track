@@ -19,13 +19,13 @@ const auth = useAuth();
       </div>
       <div class="flex gap-2">
         <Button as-child>
-          <RouterLink v-if="!auth.isLoggedIn" to="/log-in">Log In</RouterLink>
+          <RouterLink v-if="!auth.isLoggedIn" to="/login">Log In</RouterLink>
         </Button>
         <Button v-if="!auth.isLoggedIn" as-child variant="outline">
-          <RouterLink to="/sign-up">Sign Up</RouterLink>
+          <RouterLink to="/signup">Sign Up</RouterLink>
         </Button>
         <Button v-if="auth.isLoggedIn" as-child variant="outline">
-          <RouterLink to="/log-out">Log Out</RouterLink>
+          <RouterLink to="/logout">Log Out</RouterLink>
         </Button>
       </div>
     </div>

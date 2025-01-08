@@ -17,7 +17,7 @@ import { Info } from 'lucide-vue-next';
         <AlertTitle>Success</AlertTitle>
         <AlertDescription>
           Your password has been reset. You can now return to
-          <RouterLink to="/log-in">the log in page</RouterLink>
+          <RouterLink to="/login">the log in page</RouterLink>
           .
         </AlertDescription>
       </Alert>

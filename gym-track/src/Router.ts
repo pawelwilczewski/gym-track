@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LogIn from './features/auth/views/log-in.vue';
+import LogIn from './features/auth/views/login.vue';
 import Home from './features/shared/views/home.vue';
-import SignUp from './features/auth/views/sign-up.vue';
+import SignUp from './features/auth/views/signup.vue';
 import ConfirmEmail from './features/auth/views/confirm-email.vue';
 import ConfirmedEmail from './features/auth/views/confirmed-email.vue';
 import ForgotPassword from './features/auth/views/forgot-password.vue';
@@ -9,7 +9,7 @@ import ConfirmEmailChange from './features/auth/views/confirm-email-change.vue';
 import ResetPasswordSuccess from './features/auth/views/reset-password-success.vue';
 import Lockout from './features/auth/views/lockout.vue';
 import ResetPasswordFailure from './features/auth/views/reset-password-failure.vue';
-import LogOut from './features/auth/views/log-out.vue';
+import LogOut from './features/auth/views/logout.vue';
 import Workouts from './features/workout/views/workouts.vue';
 import NotFound from './features/shared/views/not-found.vue';
 import {
@@ -41,17 +41,17 @@ const routes = [
     redirect: { name: 'Home' },
   },
   {
-    path: '/log-in',
+    path: '/login',
     name: 'Log In',
     component: LogIn,
   },
   {
-    path: '/log-out',
+    path: '/logout',
     name: 'Log Out',
     component: LogOut,
   },
   {
-    path: '/sign-up',
+    path: '/signup',
     name: 'Sign Up',
     component: SignUp,
   },

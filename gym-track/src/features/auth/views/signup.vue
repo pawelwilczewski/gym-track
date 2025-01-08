@@ -87,7 +87,7 @@ const onSubmit = form.handleSubmit(async values => {
       <Label class="block text-center text-lg mt-16 font-bold">
         Already have an Account?
       </Label>
-      <RouterLink to="/log-in" class="block text-center hover:underline">
+      <RouterLink to="/login" class="block text-center hover:underline">
         Log In
       </RouterLink>
     </div>
