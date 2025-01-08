@@ -16,7 +16,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int exerciseIndex,
-		[FromRoute] int index,
+		[FromRoute] int setIndex,
 		[FromBody] EditWorkoutExerciseSetRequest request,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
-		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
+		var set = exercise.Sets.FirstOrDefault(set => set.Index == setIndex);
 		if (set is null) return TypedResults.NotFound("Set not found.");
 
 		if (!exercise.ExerciseInfo.AllowedMetricTypes.HasFlag(request.Metric.Type))
@@ -55,7 +55,7 @@ internal sealed class EditWorkoutExerciseSet : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{index:int}", Handler);
+		builder.MapPut("{setIndex:int}", Handler);
 		return builder;
 	}
 }

@@ -15,7 +15,7 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
-		[FromRoute] int index,
+		[FromRoute] int stepIndex,
 		[FromForm] string description,
 		[FromForm] bool replaceImage,
 		IFormFile? image,
@@ -26,7 +26,7 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos
 			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
+			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == stepIndex))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 			.ConfigureAwait(false);
 
@@ -57,7 +57,7 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{index:int}", Handler)
+		builder.MapPut("{stepIndex:int}", Handler)
 			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
 		return builder;
 	}

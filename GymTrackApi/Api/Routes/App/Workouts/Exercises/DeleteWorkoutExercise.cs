@@ -13,7 +13,7 @@ internal sealed class DeleteWorkoutExercise : IEndpoint
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
-		[FromRoute] int index,
+		[FromRoute] int exerciseIndex,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
@@ -26,7 +26,7 @@ internal sealed class DeleteWorkoutExercise : IEndpoint
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
 
-		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
+		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
 		workout.Exercises.Remove(exercise);
@@ -36,7 +36,7 @@ internal sealed class DeleteWorkoutExercise : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{index:int}", Handler);
+		builder.MapDelete("{exerciseIndex:int}", Handler);
 		return builder;
 	}
 }

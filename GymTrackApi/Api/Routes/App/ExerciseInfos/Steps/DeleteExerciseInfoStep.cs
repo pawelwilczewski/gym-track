@@ -15,7 +15,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
-		[FromRoute] int index,
+		[FromRoute] int stepIndex,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 			.Include(exerciseInfoStep => exerciseInfoStep.ExerciseInfo)
 			.ThenInclude(exerciseInfo => exerciseInfo.Users)
 			.FirstOrDefaultAsync(exerciseInfoStep => exerciseInfoStep.ExerciseInfoId == id
-				&& exerciseInfoStep.Index == index, cancellationToken)
+				&& exerciseInfoStep.Index == stepIndex, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found");
@@ -47,7 +47,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{index:int}", Handler);
+		builder.MapDelete("{stepIndex:int}", Handler);
 		return builder;
 	}
 }

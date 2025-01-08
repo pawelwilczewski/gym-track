@@ -13,15 +13,15 @@ internal sealed class GetWorkout : IEndpoint
 {
 	public static async Task<Results<Ok<GetWorkoutResponse>, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
-		[FromRoute] Guid id,
+		[FromRoute] Guid workoutId,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
-		var workoutId = new Id<Workout>(id);
+		var typedWorkoutId = new Id<Workout>(workoutId);
 		var workout = await dataContext.Workouts.AsNoTracking()
 			.Include(workout => workout.Users)
 			.Include(workout => workout.Exercises)
-			.FirstOrDefaultAsync(workout => workout.Id == workoutId, cancellationToken);
+			.FirstOrDefaultAsync(workout => workout.Id == typedWorkoutId, cancellationToken);
 
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
@@ -29,13 +29,13 @@ internal sealed class GetWorkout : IEndpoint
 		return TypedResults.Ok(new GetWorkoutResponse(
 			workout.Id.Value,
 			workout.Name.ToString(),
-			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workoutId.Value, exercise.Index))
+			workout.Exercises.Select(exercise => new WorkoutExerciseKey(typedWorkoutId.Value, exercise.Index))
 				.ToList()));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{id:guid}", Handler);
+		builder.MapGet("{workoutId:guid}", Handler);
 		return builder;
 	}
 }

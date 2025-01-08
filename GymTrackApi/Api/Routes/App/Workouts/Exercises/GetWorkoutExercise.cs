@@ -14,7 +14,7 @@ internal sealed class GetWorkoutExercise : IEndpoint
 	public static async Task<Results<Ok<GetWorkoutExerciseResponse>, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
-		[FromRoute] int index,
+		[FromRoute] int exerciseIndex,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
@@ -28,7 +28,7 @@ internal sealed class GetWorkoutExercise : IEndpoint
 		if (workout is null) return TypedResults.NotFound("Workout not found.");
 		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
 
-		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == index);
+		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
 		return TypedResults.Ok(new GetWorkoutExerciseResponse(
@@ -36,13 +36,13 @@ internal sealed class GetWorkoutExercise : IEndpoint
 			exercise.ExerciseInfoId.Value,
 			exercise.DisplayOrder,
 			exercise.Sets
-				.Select(set => new WorkoutExerciseSetKey(workoutId, index, set.Index))
+				.Select(set => new WorkoutExerciseSetKey(workoutId, exerciseIndex, set.Index))
 				.ToList()));
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{index:int}", Handler);
+		builder.MapGet("{exerciseIndex:int}", Handler);
 
 		return builder;
 	}

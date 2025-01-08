@@ -14,7 +14,7 @@ internal sealed class EditExerciseInfo : IEndpoint
 {
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
-		[FromRoute] Guid id,
+		[FromRoute] Guid exerciseInfoId,
 		[FromForm] string name,
 		[FromForm] string description,
 		[FromForm] ExerciseMetricType allowedMetricTypes,
@@ -32,9 +32,9 @@ internal sealed class EditExerciseInfo : IEndpoint
 			});
 		}
 
-		var exerciseInfoId = new Id<ExerciseInfo>(id);
+		var typedExerciseInfoId = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
-			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
+			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == typedExerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
@@ -68,7 +68,7 @@ internal sealed class EditExerciseInfo : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{id:guid}", Handler)
+		builder.MapPut("{exerciseInfoId:guid}", Handler)
 			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
 		return builder;
 	}

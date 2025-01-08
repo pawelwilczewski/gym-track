@@ -14,14 +14,14 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
-		[FromRoute] int index,
+		[FromRoute] int stepIndex,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
 			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == index))
+			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == stepIndex))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
@@ -39,7 +39,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{index:int}", Handler);
+		builder.MapGet("{stepIndex:int}", Handler);
 		return builder;
 	}
 }

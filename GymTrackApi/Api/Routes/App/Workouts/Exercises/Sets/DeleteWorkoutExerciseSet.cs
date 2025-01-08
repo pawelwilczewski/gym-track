@@ -14,7 +14,7 @@ internal sealed class DeleteWorkoutExerciseSet : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int exerciseIndex,
-		[FromRoute] int index,
+		[FromRoute] int setIndex,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
@@ -32,7 +32,7 @@ internal sealed class DeleteWorkoutExerciseSet : IEndpoint
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
-		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
+		var set = exercise.Sets.FirstOrDefault(set => set.Index == setIndex);
 		if (set is null) return TypedResults.NotFound("Set not found.");
 
 		exercise.Sets.Remove(set);
@@ -42,7 +42,7 @@ internal sealed class DeleteWorkoutExerciseSet : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{index:int}", Handler);
+		builder.MapDelete("{setIndex:int}", Handler);
 		return builder;
 	}
 }

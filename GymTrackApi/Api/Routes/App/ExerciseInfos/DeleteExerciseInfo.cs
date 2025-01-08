@@ -14,14 +14,14 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 {
 	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
 		HttpContext httpContext,
-		[FromRoute] Guid id,
+		[FromRoute] Guid exerciseInfoId,
 		[FromServices] IDataContext dataContext,
 		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
 		CancellationToken cancellationToken)
 	{
-		var exerciseInfoId = new Id<ExerciseInfo>(id);
+		var typedExerciseInfoId = new Id<ExerciseInfo>(exerciseInfoId);
 		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
-			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
+			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == typedExerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
@@ -41,7 +41,7 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{id:guid}", Handler);
+		builder.MapDelete("{exerciseInfoId:guid}", Handler);
 		return builder;
 	}
 }

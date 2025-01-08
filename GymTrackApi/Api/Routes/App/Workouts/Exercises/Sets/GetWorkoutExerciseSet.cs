@@ -15,7 +15,7 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int exerciseIndex,
-		[FromRoute] int index,
+		[FromRoute] int setIndex,
 		[FromServices] IDataContext dataContext,
 		CancellationToken cancellationToken)
 	{
@@ -33,7 +33,7 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
 		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
 
-		var set = exercise.Sets.FirstOrDefault(set => set.Index == index);
+		var set = exercise.Sets.FirstOrDefault(set => set.Index == setIndex);
 		if (set is null) return TypedResults.NotFound("Set not found.");
 
 		return TypedResults.Ok(new GetWorkoutExerciseSetResponse(
@@ -45,7 +45,7 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{index:int}", Handler);
+		builder.MapGet("{setIndex:int}", Handler);
 		return builder;
 	}
 }
