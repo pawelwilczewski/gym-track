@@ -20,10 +20,6 @@ internal static class EntityImage
 		// _GUID to fix image caching issues (same url, image wouldn't refresh on page)
 		var fileName = $"{baseName}_{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
 
-		var localPath = Path.Combine(
-			directoryUrl.UrlToLocalPath(fileStoragePathProvider),
-			fileName);
-
 		if (!FilePath.TryCreate(Path.Combine(directoryUrl, fileName),
 			out var dbPath, out var error))
 		{
@@ -32,7 +28,12 @@ internal static class EntityImage
 				+ $"{directoryUrl}\nError: {error}");
 		}
 
-		await imageFile.SaveToFile(localPath, cancellationToken)
+		var localDirectoryPath = directoryUrl.UrlToLocalPath(fileStoragePathProvider);
+		Directory.CreateDirectory(localDirectoryPath);
+
+		var localFilePath = Path.Combine(localDirectoryPath, fileName);
+
+		await imageFile.SaveToFile(localFilePath, cancellationToken)
 			.ConfigureAwait(false);
 
 		return dbPath;
@@ -43,8 +44,11 @@ internal static class EntityImage
 		string directoryUrl,
 		IFileStoragePathProvider fileStoragePathProvider)
 	{
+		var localDirectory = directoryUrl.UrlToLocalPath(fileStoragePathProvider);
+		if (!Directory.Exists(localDirectory)) return;
+
 		var matchingFiles = Directory.EnumerateFiles(
-			directoryUrl.UrlToLocalPath(fileStoragePathProvider),
+			localDirectory,
 			$"{baseName}*.*", SearchOption.TopDirectoryOnly);
 
 		foreach (var path in matchingFiles)

@@ -11,7 +11,7 @@ internal sealed class ConfirmEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("/confirmEmail", async Task<Results<ContentHttpResult, UnauthorizedHttpResult>> (
+		builder.MapGet("/confirm-email", async Task<Results<ContentHttpResult, UnauthorizedHttpResult>> (
 				[FromQuery] string userId,
 				[FromQuery] string code,
 				[FromQuery] string? changedEmail,
