@@ -1,3 +1,4 @@
+using Api.Routes.App.Workouts.Exercises.DisplayOrder;
 using Api.Routes.App.Workouts.Exercises.Sets;
 
 namespace Api.Routes.App.Workouts.Exercises;
@@ -9,8 +10,8 @@ internal static class WorkoutExerciseRoutes
 		builder.MapGroup("{workoutId:guid}/exercises")
 			.Map(new CreateWorkoutExercise())
 			.Map(new GetWorkoutExercise())
-			// .Map(new EditWorkoutExercise())
 			.Map(new DeleteWorkoutExercise())
+			.MapWorkoutExerciseDisplayOrderRoutes()
 			.MapWorkoutExerciseSetRoutes();
 
 		return builder;

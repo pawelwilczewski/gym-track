@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.ExerciseInfos.Steps;
+using Api.Routes.App.ExerciseInfos.Steps.DisplayOrder;
 using Api.Tests.Unit.Mocks;
 using Domain.Models;
 using Domain.Models.Workout;
@@ -146,6 +147,58 @@ internal sealed class ExerciseInfoStepTests
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)> EditExerciseInfoStepDisplayOrderData() =>
+	[
+		new([Users.Admin1], Users.Admin1, 4, typeof(NoContent)),
+		new([Users.Admin1], Users.User1, 6, typeof(ForbidHttpResult)),
+		new([Users.User1], Users.User1, 2, typeof(NoContent)),
+		new([Users.User1], Users.User1, 7, typeof(NoContent))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(EditExerciseInfoStepDisplayOrderData))]
+	public async Task EditExerciseInfoStepDisplayOrder_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		if (!Description.TryCreate("Test Description", out var originalDescription, out _)) throw new Exception("Invalid test case");
+
+		const int stepIndex = 0;
+
+		var originalStep = new ExerciseInfo.Step(exerciseInfo.Id, stepIndex, originalDescription, null, 0);
+		exerciseInfo.Steps.Add(originalStep);
+		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+
+		var result = await EditExerciseInfoStepDisplayOrder.Handler(
+				editor.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				stepIndex,
+				new EditDisplayOrderRequest(displayOrder),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+		if (result.Result is not Ok or NoContent) return;
+
+		await GetExerciseInfoStep.Handler(
+				editor.GetHttpContext(),
+				exerciseInfo.Id.Value,
+				stepIndex,
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(typeof(Ok));
+
+		var response = (Ok<GetWorkoutExerciseSetResponse>)result.Result;
+		await Assert.That(response.Value!.DisplayOrder).IsEqualTo(displayOrder);
 	}
 
 	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, int deletedIndex, Type responseType)> DeleteExerciseInfoData() =>

@@ -1,5 +1,6 @@
 using Api.Dtos;
 using Api.Routes.App.Workouts.Exercises.Sets;
+using Api.Routes.App.Workouts.Exercises.Sets.DisplayOrder;
 using Api.Tests.Unit.Mocks;
 using Domain.Models;
 using Domain.Models.Workout;
@@ -147,6 +148,62 @@ internal sealed class WorkoutExerciseSetTests
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Result).IsTypeOf(responseType);
+	}
+
+	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)> EditWorkoutExerciseSetDisplayOrderData() =>
+	[
+		new([Users.Admin1], Users.Admin1, 4, typeof(NoContent)),
+		new([Users.Admin1], Users.User1, 6, typeof(ForbidHttpResult)),
+		new([Users.User1], Users.User1, 2, typeof(NoContent)),
+		new([Users.User1], Users.User1, 7, typeof(NoContent))
+	];
+
+	[Test]
+	[MethodDataSource(nameof(EditWorkoutExerciseSetDisplayOrderData))]
+	public async Task EditWorkoutExerciseSetDisplayOrder_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)
+	{
+		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+			.WithAllUsers()
+			.WithWorkout(out var workout, owners)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, owners)
+			.Build()
+			.ConfigureAwait(false);
+
+		const int exerciseIndex = 0;
+		const int setIndex = 0;
+		if (!PositiveCount.TryCreate(2, out var originalReps)) throw new Exception("Invalid test case");
+
+		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		workout.Exercises.Add(exercise);
+		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
+		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+
+		var result = await EditWorkoutExerciseSetDisplayOrder.Handler(
+				editor.GetHttpContext(),
+				workout.Id.Value,
+				exerciseIndex,
+				setIndex,
+				new EditDisplayOrderRequest(displayOrder),
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(responseType);
+		if (result.Result is not Ok or NoContent) return;
+
+		await GetWorkoutExerciseSet.Handler(
+				editor.GetHttpContext(),
+				workout.Id.Value,
+				exerciseIndex,
+				setIndex,
+				dataContext,
+				CancellationToken.None)
+			.ConfigureAwait(false);
+
+		await Assert.That(result.Result).IsTypeOf(typeof(Ok));
+
+		var response = (Ok<GetWorkoutExerciseSetResponse>)result.Result;
+		await Assert.That(response.Value!.DisplayOrder).IsEqualTo(displayOrder);
 	}
 
 	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>

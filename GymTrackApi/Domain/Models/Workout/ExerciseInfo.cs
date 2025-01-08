@@ -69,7 +69,7 @@ public class ExerciseInfo
 		public Description Description { get; private set; }
 		public FilePath? ImageFile { get; set; }
 
-		public int DisplayOrder { get; private set; }
+		public int DisplayOrder { get; set; }
 
 		private Step() { }
 

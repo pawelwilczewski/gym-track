@@ -16,6 +16,9 @@ public sealed record class EditWorkoutExerciseSetRequest(
 	ExerciseMetric Metric,
 	int Reps);
 
+public sealed record class EditDisplayOrderRequest(
+	int DisplayOrder);
+
 public sealed record class EditWorkoutRequest(
 	string Name);
 

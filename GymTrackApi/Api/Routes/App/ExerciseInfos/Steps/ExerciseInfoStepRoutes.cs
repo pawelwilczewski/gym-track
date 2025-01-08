@@ -1,3 +1,5 @@
+using Api.Routes.App.ExerciseInfos.Steps.DisplayOrder;
+
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
 internal static class ExerciseInfoStepRoutes
@@ -8,7 +10,8 @@ internal static class ExerciseInfoStepRoutes
 			.Map(new CreateExerciseInfoStep())
 			.Map(new GetExerciseInfoStep())
 			.Map(new EditExerciseInfoStep())
-			.Map(new DeleteExerciseInfoStep());
+			.Map(new DeleteExerciseInfoStep())
+			.MapExerciseInfoStepDisplayOrderRoutes();
 
 		return builder;
 	}
