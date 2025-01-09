@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Workout from '@/features/workout/components/Workout.vue';
+import Workout from '@/features/workout/components/workout.vue';
 import { useWorkouts } from '@/features/workout/stores/use-workouts';
 
 const workouts = useWorkouts();
