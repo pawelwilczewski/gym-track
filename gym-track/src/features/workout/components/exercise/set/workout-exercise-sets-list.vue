@@ -8,7 +8,7 @@ import {
   WorkoutExerciseKey,
   WorkoutExerciseSetKey,
 } from '@/features/workout/types/workout-types';
-import { asyncComputed } from '@vueuse/core';
+import { ref, watch } from 'vue';
 
 const { workoutExerciseKey } = defineProps<{
   workoutExerciseKey: WorkoutExerciseKey;
@@ -18,14 +18,25 @@ const { workoutExercise } = useWorkoutExercise(workoutExerciseKey);
 const setKeys = useWorkoutExerciseSetKeys(workoutExercise);
 const sets = useWorkoutExerciseSets();
 
-const sortedSetKeys = asyncComputed<WorkoutExerciseSetKey[]>(async () => {
-  await sets.fetchMultiple(setKeys.value);
-  return [...setKeys.value].sort(
+const sortedSetKeys = ref<WorkoutExerciseSetKey[]>([]);
+
+watch(sets.all, async () => {
+  if (
+    setKeys.value.some(
+      key => sets.all[hashWorkoutExerciseSetKey(key)] == undefined
+    )
+  ) {
+    return;
+  }
+
+  sortedSetKeys.value = [...setKeys.value].sort(
     (a, b) =>
       sets.all[hashWorkoutExerciseSetKey(a)].displayOrder -
       sets.all[hashWorkoutExerciseSetKey(b)].displayOrder
   );
-}, []);
+});
+
+watch(setKeys, () => sets.fetchMultiple(setKeys.value), { immediate: true });
 </script>
 
 <template>

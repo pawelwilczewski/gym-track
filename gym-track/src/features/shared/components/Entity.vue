@@ -34,6 +34,8 @@ const emit = defineEmits<{
   <component :is="is" class="relative">
     <slot />
     <div class="absolute top-0 right-0 flex">
+      <slot name="left" />
+
       <ButtonDialog
         v-if="editable === undefined || editable"
         dialog-title="Edit"

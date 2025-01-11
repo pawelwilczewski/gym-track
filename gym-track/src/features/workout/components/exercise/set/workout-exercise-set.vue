@@ -8,6 +8,7 @@ import { Tally5 } from 'lucide-vue-next';
 import EditWorkoutExerciseSetForm from './edit-workout-exercise-set-form.vue';
 import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/use-workout-exercise-exercise-info';
 import { useWorkoutExercise } from '@/features/workout/composables/use-workout-exercise';
+import WorkoutExerciseSetReorderControls from '@/features/workout/components/exercise/set/workout-exercise-set-reorder-controls.vue';
 
 const { setKey } = defineProps<{
   setKey: WorkoutExerciseSetKey;
@@ -22,6 +23,9 @@ const exerciseMetric = computed(() => set.value?.metric);
 
 <template>
   <Entity is="li" v-if="set" @deleted="destroy()">
+    <template #left>
+      <WorkoutExerciseSetReorderControls :set-key="setKey" />
+    </template>
     <div class="flex flex-col gap-2 px-4">
       <span class="flex gap-1">
         <Tally5 class="w-4 h-4 my-auto" />
