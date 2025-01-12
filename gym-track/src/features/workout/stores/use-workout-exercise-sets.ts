@@ -121,6 +121,44 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     return fetchByKey(key);
   }
 
+  async function swapDisplayOrders(
+    key1: WorkoutExerciseSetKey,
+    key2: WorkoutExerciseSetKey
+  ): Promise<boolean> {
+    const hash1 = hashWorkoutExerciseSetKey(key1);
+    const hash2 = hashWorkoutExerciseSetKey(key2);
+
+    const promise = Promise.allSettled([
+      apiClient.put(
+        `/api/v1/workouts/${key1.workoutId}/exercises/${key1.exerciseIndex}/sets/${key1.index}/display-order`,
+        { displayOrder: sets.value[hash2].displayOrder }
+      ),
+      apiClient.put(
+        `/api/v1/workouts/${key2.workoutId}/exercises/${key2.exerciseIndex}/sets/${key2.index}/display-order`,
+        { displayOrder: sets.value[hash1].displayOrder }
+      ),
+    ]);
+
+    swap();
+
+    const result = await promise;
+
+    if (result.some(settled => settled.status === 'rejected')) {
+      // revert if something went wrong
+      swap();
+      return false;
+    }
+
+    return true;
+
+    function swap(): void {
+      [sets.value[hash1], sets.value[hash2]] = [
+        { ...sets.value[hash1], displayOrder: sets.value[hash2].displayOrder },
+        { ...sets.value[hash2], displayOrder: sets.value[hash1].displayOrder },
+      ];
+    }
+  }
+
   async function destroy(key: WorkoutExerciseSetKey): Promise<boolean> {
     const response = await apiClient.delete(
       `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`
@@ -145,6 +183,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     fetchMultiple,
     create,
     update,
+    swapDisplayOrders,
     destroy,
   };
 });

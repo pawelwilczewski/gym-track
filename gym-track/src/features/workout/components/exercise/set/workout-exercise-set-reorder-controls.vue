@@ -52,10 +52,10 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
         const key2 = allKeys.find(key => sets.all[key] === swap2);
         if (!key2) return;
 
-        [sets.all[key1], sets.all[key2]] = [
-          { ...sets.all[key1], displayOrder: sets.all[key2].displayOrder },
-          { ...sets.all[key2], displayOrder: sets.all[key1].displayOrder },
-        ];
+        sets.swapDisplayOrders(
+          unhashWorkoutExerciseSetKey(key1)!,
+          unhashWorkoutExerciseSetKey(key2)!
+        );
       }
     "
     @down="
@@ -81,10 +81,10 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
         const key2 = allKeys.find(key => sets.all[key] === swap2);
         if (!key2) return;
 
-        [sets.all[key1], sets.all[key2]] = [
-          { ...sets.all[key1], displayOrder: sets.all[key2].displayOrder },
-          { ...sets.all[key2], displayOrder: sets.all[key1].displayOrder },
-        ];
+        sets.swapDisplayOrders(
+          unhashWorkoutExerciseSetKey(key1)!,
+          unhashWorkoutExerciseSetKey(key2)!
+        );
       }
     "
   />
