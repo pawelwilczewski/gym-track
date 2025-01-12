@@ -35,7 +35,6 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
           set => set.index === setKey.index
         );
 
-        console.log(index);
         if (index - 1 < 0) {
           return;
         }
@@ -46,37 +45,46 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
         const allKeys = Object.keys(
           sets.all
         ) as Array<WorkoutExerciseSetKeyHash>;
-        const key1 = allKeys.find(key => sets.all[key] === swap1);
 
+        const key1 = allKeys.find(key => sets.all[key] === swap1);
         if (!key1) return;
 
         const key2 = allKeys.find(key => sets.all[key] === swap2);
         if (!key2) return;
 
-        const temp = sets.all[key1].displayOrder;
-        sets.all[key1].displayOrder = sets.all[key2].displayOrder;
-        sets.all[key2].displayOrder = temp;
-
-        sets.all[key1] = { ...sets.all[key1] };
-        sets.all[key2] = { ...sets.all[key2] };
+        [sets.all[key1], sets.all[key2]] = [
+          { ...sets.all[key1], displayOrder: sets.all[key2].displayOrder },
+          { ...sets.all[key2], displayOrder: sets.all[key1].displayOrder },
+        ];
       }
     "
     @down="
       () => {
-        console.log(sortedByDisplayOrder);
         const index = sortedByDisplayOrder.findIndex(
           set => set.index === setKey.index
         );
-        console.log(index);
-        if (index + 1 >= sortedByDisplayOrder.length) {
+
+        if (index + 1 >= workoutExerciseSets.length) {
           return;
         }
-        console.log('swapping down');
 
-        sortedByDisplayOrder[index + 1].displayOrder,
-          (sortedByDisplayOrder[index].displayOrder =
-            sortedByDisplayOrder[index].displayOrder),
-          sortedByDisplayOrder[index + 1].displayOrder;
+        const swap1 = sortedByDisplayOrder[index + 1];
+        const swap2 = sortedByDisplayOrder[index];
+
+        const allKeys = Object.keys(
+          sets.all
+        ) as Array<WorkoutExerciseSetKeyHash>;
+
+        const key1 = allKeys.find(key => sets.all[key] === swap1);
+        if (!key1) return;
+
+        const key2 = allKeys.find(key => sets.all[key] === swap2);
+        if (!key2) return;
+
+        [sets.all[key1], sets.all[key2]] = [
+          { ...sets.all[key1], displayOrder: sets.all[key2].displayOrder },
+          { ...sets.all[key2], displayOrder: sets.all[key1].displayOrder },
+        ];
       }
     "
   />
