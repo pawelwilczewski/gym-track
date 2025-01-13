@@ -13,43 +13,25 @@ const { setKey } = defineProps<{ setKey: WorkoutExerciseSetKey }>();
 const sets = useWorkoutExerciseSets();
 const workoutExerciseSets = useSetsOfWorkoutExercise(setKey);
 const sortedSets = useSortedByDisplayOrderRecord(workoutExerciseSets);
+
+async function reorder(offset: number): Promise<boolean> {
+  const entries = Object.entries(sortedSets.value);
+  const indexInSorted = entries.findIndex(
+    ([, set]) => set.index === setKey.setIndex
+  );
+  const indexWithOffset = indexInSorted + offset;
+
+  if (indexWithOffset < 0 || indexWithOffset >= entries.length) {
+    return false;
+  }
+
+  return await sets.swapDisplayOrders(
+    entries[indexInSorted][0] as WorkoutExerciseSetKeyHash,
+    entries[indexWithOffset][0] as WorkoutExerciseSetKeyHash
+  );
+}
 </script>
 
 <template>
-  <ReorderArrows
-    @up="
-      () => {
-        const entries = Object.entries(sortedSets);
-        const index = entries.findIndex(
-          ([, set]) => set.index === setKey.setIndex
-        );
-
-        if (index - 1 < 0) {
-          return;
-        }
-
-        sets.swapDisplayOrders(
-          entries[index][0] as WorkoutExerciseSetKeyHash,
-          entries[index - 1][0] as WorkoutExerciseSetKeyHash
-        );
-      }
-    "
-    @down="
-      () => {
-        const entries = Object.entries(sortedSets);
-        const index = entries.findIndex(
-          ([, set]) => set.index === setKey.setIndex
-        );
-
-        if (index + 1 >= entries.length) {
-          return;
-        }
-
-        sets.swapDisplayOrders(
-          entries[index][0] as WorkoutExerciseSetKeyHash,
-          entries[index + 1][0] as WorkoutExerciseSetKeyHash
-        );
-      }
-    "
-  />
+  <ReorderArrows @up="reorder(-1)" @down="reorder(1)" />
 </template>
