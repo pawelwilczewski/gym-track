@@ -76,6 +76,7 @@ public class Workout
 				Exercise = exercise;
 				Metric = metric;
 				Reps = reps;
+				DisplayOrder = displayOrder;
 			}
 		}
 	}
