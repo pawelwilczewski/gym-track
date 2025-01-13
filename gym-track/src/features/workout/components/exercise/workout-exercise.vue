@@ -6,6 +6,7 @@ import ButtonDialog from '@/features/shared/components/button-dialog.vue';
 import CreateWorkoutExerciseSetForm from '@/features/workout/components/exercise/set/create-workout-exercise-set-form.vue';
 import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/use-workout-exercise-exercise-info';
 import WorkoutExerciseSetsList from '@/features/workout/components/exercise/set/workout-exercise-sets-list.vue';
+import WorkoutExerciseReorderControls from '@/features/workout/components/exercise/workout-exercise-reorder-controls.vue';
 
 const { exerciseKey } = defineProps<{ exerciseKey: WorkoutExerciseKey }>();
 
@@ -15,6 +16,10 @@ const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
 
 <template>
   <Entity is="li" v-if="workoutExercise" :editable="false" @deleted="destroy()">
+    <template #left>
+      <WorkoutExerciseReorderControls :exercise-key="exerciseKey" />
+    </template>
+
     <div class="flex flex-col gap-6 py-8 px-4">
       <h5>{{ exerciseInfo?.name }}</h5>
 

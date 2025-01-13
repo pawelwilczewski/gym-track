@@ -7,8 +7,8 @@ import WorkoutExercise from '@/features/workout/components/exercise/workout-exer
 import { UUID } from 'node:crypto';
 import { useWorkoutExerciseKeys } from '@/features/workout/composables/use-workout-exercise-keys';
 import { useWorkout } from '@/features/workout/composables/use-workout';
-import { asyncComputed } from '@vueuse/core';
 import { useWorkoutExercises } from '@/features/workout/stores/use-workout-exercises';
+import { ref, watch } from 'vue';
 
 const { workoutId } = defineProps<{
   workoutId: UUID;
@@ -18,14 +18,27 @@ const { workout } = useWorkout(workoutId);
 const exerciseKeys = useWorkoutExerciseKeys(workout);
 const exercises = useWorkoutExercises();
 
-const sortedExerciseKeys = asyncComputed<WorkoutExerciseKey[]>(async () => {
-  await exercises.fetchMultiple(exerciseKeys.value);
-  return [...exerciseKeys.value].sort(
+const sortedExerciseKeys = ref<WorkoutExerciseKey[]>([]);
+
+watch(exercises.all, async () => {
+  if (
+    exerciseKeys.value.some(
+      key => exercises.all[hashWorkoutExerciseKey(key)] == undefined
+    )
+  ) {
+    return;
+  }
+
+  sortedExerciseKeys.value = [...exerciseKeys.value].sort(
     (a, b) =>
       exercises.all[hashWorkoutExerciseKey(a)].displayOrder -
       exercises.all[hashWorkoutExerciseKey(b)].displayOrder
   );
-}, []);
+});
+
+watch(exerciseKeys, () => exercises.fetchMultiple(exerciseKeys.value), {
+  immediate: true,
+});
 </script>
 
 <template>

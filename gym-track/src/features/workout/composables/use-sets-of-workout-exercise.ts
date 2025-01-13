@@ -15,7 +15,9 @@ export function useSetsOfWorkoutExercise(
   const sets = useWorkoutExerciseSets();
   return computed(() => {
     const keys = Object.keys(sets.all).filter(hash => {
-      const key = unhashWorkoutExerciseSetKey(hash);
+      const key = unhashWorkoutExerciseSetKey(
+        hash as WorkoutExerciseSetKeyHash
+      );
       return (
         key &&
         key.workoutId === workoutExerciseKey.workoutId &&

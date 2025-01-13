@@ -62,6 +62,22 @@ export function hashWorkoutExerciseKey(
   return `${key.workoutId}_${key.exerciseIndex}`;
 }
 
+const unhashExerciseRegex = new RegExp(/(.+?)_(\d+?)/);
+export function unhashWorkoutExerciseKey(
+  hash: WorkoutExerciseKeyHash
+): WorkoutExerciseKey | undefined {
+  const match = hash.match(unhashExerciseRegex);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    workoutId: match[1] as UUID,
+    exerciseIndex: Number.parseInt(match[2]),
+  };
+}
+
 export type WorkoutExerciseSetKey = {
   workoutId: UUID;
   exerciseIndex: WorkoutExerciseIndex;
@@ -84,7 +100,7 @@ export function hashWorkoutExerciseSetKey(
 
 const unhashSetRegex = new RegExp(/(.+?)_(\d+?)_(\d+?)/);
 export function unhashWorkoutExerciseSetKey(
-  hash: string
+  hash: WorkoutExerciseSetKeyHash
 ): WorkoutExerciseSetKey | undefined {
   const match = hash.match(unhashSetRegex);
 

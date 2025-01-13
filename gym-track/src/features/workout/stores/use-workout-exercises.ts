@@ -3,6 +3,7 @@ import {
   CreateWorkoutExerciseRequest,
   GetWorkoutExerciseResponse,
   hashWorkoutExerciseKey,
+  unhashWorkoutExerciseKey,
   WorkoutExerciseKey,
   WorkoutExerciseKeyHash,
 } from '@/features/workout/types/workout-types';
@@ -88,6 +89,50 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
     return result;
   }
 
+  async function swapDisplayOrders(
+    hash1: WorkoutExerciseKeyHash,
+    hash2: WorkoutExerciseKeyHash
+  ): Promise<boolean> {
+    const key1 = unhashWorkoutExerciseKey(hash1)!;
+    const key2 = unhashWorkoutExerciseKey(hash2)!;
+
+    const promise = Promise.allSettled([
+      apiClient.put(
+        `/api/v1/workouts/${key1.workoutId}/exercises/${key1.exerciseIndex}/display-order`,
+        { displayOrder: exercises.value[hash2].displayOrder }
+      ),
+      apiClient.put(
+        `/api/v1/workouts/${key2.workoutId}/exercises/${key2.exerciseIndex}/display-order`,
+        { displayOrder: exercises.value[hash1].displayOrder }
+      ),
+    ]);
+
+    swap();
+
+    const result = await promise;
+
+    if (result.some(settled => settled.status === 'rejected')) {
+      // revert if something went wrong
+      swap();
+      return false;
+    }
+
+    return true;
+
+    function swap(): void {
+      [exercises.value[hash1], exercises.value[hash2]] = [
+        {
+          ...exercises.value[hash1],
+          displayOrder: exercises.value[hash2].displayOrder,
+        },
+        {
+          ...exercises.value[hash2],
+          displayOrder: exercises.value[hash1].displayOrder,
+        },
+      ];
+    }
+  }
+
   async function destroy(key: WorkoutExerciseKey): Promise<boolean> {
     const response = await apiClient.delete(
       `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}`
@@ -111,6 +156,7 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
     fetchByKey,
     fetchMultiple,
     create,
+    swapDisplayOrders,
     destroy,
   };
 });
