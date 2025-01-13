@@ -28,7 +28,7 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
 
   async function fetchByKey(key: WorkoutExerciseKey): Promise<boolean> {
     const response = await apiClient.get(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.index}`
+      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}`
     );
 
     if (
@@ -55,7 +55,7 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
     const workoutId = match[1] as UUID;
     const exerciseIndex = Number.parseInt(match[2]);
 
-    return fetchByKey({ workoutId, index: exerciseIndex });
+    return fetchByKey({ workoutId, exerciseIndex: exerciseIndex });
   }
 
   async function fetchMultiple(keys: WorkoutExerciseKey[]): Promise<boolean> {
@@ -90,7 +90,7 @@ export const useWorkoutExercises = defineStore('workoutExercises', () => {
 
   async function destroy(key: WorkoutExerciseKey): Promise<boolean> {
     const response = await apiClient.delete(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.index}`
+      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}`
     );
 
     if (

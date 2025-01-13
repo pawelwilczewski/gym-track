@@ -49,7 +49,7 @@ export type GetWorkoutsResponse = {
 
 export type WorkoutExerciseKey = {
   workoutId: UUID;
-  index: WorkoutExerciseIndex;
+  exerciseIndex: WorkoutExerciseIndex;
 };
 
 export type WorkoutExerciseIndex = number;
@@ -59,13 +59,13 @@ export type WorkoutExerciseKeyHash = `${UUID}_${WorkoutExerciseIndex}`;
 export function hashWorkoutExerciseKey(
   key: WorkoutExerciseKey
 ): WorkoutExerciseKeyHash {
-  return `${key.workoutId}_${key.index}`;
+  return `${key.workoutId}_${key.exerciseIndex}`;
 }
 
 export type WorkoutExerciseSetKey = {
   workoutId: UUID;
   exerciseIndex: WorkoutExerciseIndex;
-  index: WorkoutExerciseSetIndex;
+  setIndex: WorkoutExerciseSetIndex;
 };
 
 // TODO Pawel: improve strongly typed indices:
@@ -79,7 +79,7 @@ export type WorkoutExerciseSetKeyHash =
 export function hashWorkoutExerciseSetKey(
   key: WorkoutExerciseSetKey
 ): WorkoutExerciseSetKeyHash {
-  return `${key.workoutId}_${key.exerciseIndex}_${key.index}`;
+  return `${key.workoutId}_${key.exerciseIndex}_${key.setIndex}`;
 }
 
 const unhashSetRegex = new RegExp(/(.+?)_(\d+?)_(\d+?)/);
@@ -95,6 +95,6 @@ export function unhashWorkoutExerciseSetKey(
   return {
     workoutId: match[1] as UUID,
     exerciseIndex: Number.parseInt(match[2]),
-    index: Number.parseInt(match[3]),
+    setIndex: Number.parseInt(match[3]),
   };
 }

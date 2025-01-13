@@ -32,7 +32,7 @@ const sortedExerciseKeys = asyncComputed<WorkoutExerciseKey[]>(async () => {
   <ol class="list-decimal flex flex-col gap-4">
     <WorkoutExercise
       v-for="key in sortedExerciseKeys"
-      :key="key.index"
+      :key="key.exerciseIndex"
       :exercise-key="key"
     />
   </ol>

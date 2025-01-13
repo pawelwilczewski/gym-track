@@ -24,7 +24,7 @@ public sealed record class EditWorkoutRequest(
 
 public sealed record class ExerciseInfoStepKey(
 	Guid ExerciseInfoId,
-	int Index);
+	int StepIndex);
 
 public sealed record class GetExerciseInfoResponse(
 	Guid Id,
@@ -59,9 +59,9 @@ public sealed record class GetWorkoutResponse(
 
 public sealed record class WorkoutExerciseKey(
 	Guid WorkoutId,
-	int Index);
+	int ExerciseIndex);
 
 public sealed record class WorkoutExerciseSetKey(
 	Guid WorkoutId,
 	int ExerciseIndex,
-	int Index);
+	int SetIndex);

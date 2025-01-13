@@ -32,7 +32,7 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
     @up="
       () => {
         const index = sortedByDisplayOrder.findIndex(
-          set => set.index === setKey.index
+          set => set.index === setKey.setIndex
         );
 
         if (index - 1 < 0) {
@@ -61,7 +61,7 @@ const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
     @down="
       () => {
         const index = sortedByDisplayOrder.findIndex(
-          set => set.index === setKey.index
+          set => set.index === setKey.setIndex
         );
 
         if (index + 1 >= workoutExerciseSets.length) {

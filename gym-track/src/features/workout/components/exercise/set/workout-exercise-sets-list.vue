@@ -43,7 +43,7 @@ watch(setKeys, () => sets.fetchMultiple(setKeys.value), { immediate: true });
   <ol class="list-decimal flex flex-col gap-6">
     <WorkoutExerciseSet
       v-for="key in sortedSetKeys"
-      :key="key.index"
+      :key="key.setIndex"
       :set-key="key"
     />
   </ol>

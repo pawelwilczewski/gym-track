@@ -19,7 +19,7 @@ export type EditExerciseInfoStepRequest = {
 
 export type ExerciseInfoStepKey = {
   exerciseInfoId: UUID;
-  index: ExerciseInfoStepIndex;
+  stepIndex: ExerciseInfoStepIndex;
 };
 
 export type ExerciseInfoStepKeyHash = `${UUID}_${ExerciseInfoStepIndex}`;
@@ -27,7 +27,7 @@ export type ExerciseInfoStepKeyHash = `${UUID}_${ExerciseInfoStepIndex}`;
 export function hashExerciseInfoStepKey(
   key: ExerciseInfoStepKey
 ): ExerciseInfoStepKeyHash {
-  return `${key.exerciseInfoId}_${key.index}`;
+  return `${key.exerciseInfoId}_${key.stepIndex}`;
 }
 
 export type GetExerciseInfoResponse = {

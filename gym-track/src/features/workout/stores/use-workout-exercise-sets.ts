@@ -32,7 +32,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
 
   async function fetchByKey(key: WorkoutExerciseSetKey): Promise<boolean> {
     const response = await apiClient.get(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`
+      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.setIndex}`
     );
 
     if (
@@ -63,7 +63,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     return fetchByKey({
       workoutId,
       exerciseIndex: exerciseIndex,
-      index: setIndex,
+      setIndex: setIndex,
     });
   }
 
@@ -80,7 +80,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     form: FormContext
   ): Promise<boolean> {
     const response = await apiClient.post(
-      `/api/v1/workouts/${workoutExerciseKey.workoutId}/exercises/${workoutExerciseKey.index}/sets`,
+      `/api/v1/workouts/${workoutExerciseKey.workoutId}/exercises/${workoutExerciseKey.exerciseIndex}/sets`,
       data
     );
 
@@ -105,7 +105,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
     form: FormContext
   ): Promise<boolean> {
     const response = await apiClient.put(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`,
+      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.setIndex}`,
       data
     );
 
@@ -130,11 +130,11 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
 
     const promise = Promise.allSettled([
       apiClient.put(
-        `/api/v1/workouts/${key1.workoutId}/exercises/${key1.exerciseIndex}/sets/${key1.index}/display-order`,
+        `/api/v1/workouts/${key1.workoutId}/exercises/${key1.exerciseIndex}/sets/${key1.setIndex}/display-order`,
         { displayOrder: sets.value[hash2].displayOrder }
       ),
       apiClient.put(
-        `/api/v1/workouts/${key2.workoutId}/exercises/${key2.exerciseIndex}/sets/${key2.index}/display-order`,
+        `/api/v1/workouts/${key2.workoutId}/exercises/${key2.exerciseIndex}/sets/${key2.setIndex}/display-order`,
         { displayOrder: sets.value[hash1].displayOrder }
       ),
     ]);
@@ -161,7 +161,7 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
 
   async function destroy(key: WorkoutExerciseSetKey): Promise<boolean> {
     const response = await apiClient.delete(
-      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.index}`
+      `/api/v1/workouts/${key.workoutId}/exercises/${key.exerciseIndex}/sets/${key.setIndex}`
     );
 
     if (

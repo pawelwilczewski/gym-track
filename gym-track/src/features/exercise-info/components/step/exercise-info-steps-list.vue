@@ -32,7 +32,7 @@ const sortedStepKeys = asyncComputed<ExerciseInfoStepKey[]>(async () => {
   <ol class="list-decimal">
     <ExerciseInfoStep
       v-for="key in sortedStepKeys"
-      :key="key.index"
+      :key="key.stepIndex"
       :step-key="key"
     />
   </ol>
