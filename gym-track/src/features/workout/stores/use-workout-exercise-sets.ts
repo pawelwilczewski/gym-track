@@ -4,6 +4,7 @@ import {
   EditWorkoutExerciseSetRequest,
   GetWorkoutExerciseSetResponse,
   hashWorkoutExerciseSetKey,
+  unhashWorkoutExerciseSetKey,
   WorkoutExerciseKey,
   WorkoutExerciseSetKey,
   WorkoutExerciseSetKeyHash,
@@ -122,11 +123,11 @@ export const useWorkoutExerciseSets = defineStore('workoutExerciseSets', () => {
   }
 
   async function swapDisplayOrders(
-    key1: WorkoutExerciseSetKey,
-    key2: WorkoutExerciseSetKey
+    hash1: WorkoutExerciseSetKeyHash,
+    hash2: WorkoutExerciseSetKeyHash
   ): Promise<boolean> {
-    const hash1 = hashWorkoutExerciseSetKey(key1);
-    const hash2 = hashWorkoutExerciseSetKey(key2);
+    const key1 = unhashWorkoutExerciseSetKey(hash1)!;
+    const key2 = unhashWorkoutExerciseSetKey(hash2)!;
 
     const promise = Promise.allSettled([
       apiClient.put(

@@ -1,89 +1,53 @@
 <script setup lang="ts">
 import ReorderArrows from '@/features/shared/components/reorder-arrows.vue';
-import { useSortedByDisplayOrder } from '@/features/shared/composables/use-sorted-by-display-order';
+import { useSortedByDisplayOrderRecord } from '@/features/shared/composables/use-sorted-by-display-order';
+import { useSetsOfWorkoutExercise } from '@/features/workout/composables/use-sets-of-workout-exercise';
 import { useWorkoutExerciseSets } from '@/features/workout/stores/use-workout-exercise-sets';
 import {
-  unhashWorkoutExerciseSetKey,
   WorkoutExerciseSetKey,
   WorkoutExerciseSetKeyHash,
 } from '@/features/workout/types/workout-types';
-import { computed } from 'vue';
 
 const { setKey } = defineProps<{ setKey: WorkoutExerciseSetKey }>();
 
 const sets = useWorkoutExerciseSets();
-const workoutExerciseSets = computed(() =>
-  Object.keys(sets.all)
-    .filter(hash => {
-      const key = unhashWorkoutExerciseSetKey(hash);
-      return (
-        key &&
-        key.workoutId === setKey.workoutId &&
-        key.exerciseIndex === setKey.exerciseIndex
-      );
-    })
-    .map(key => sets.all[key as WorkoutExerciseSetKeyHash])
-);
-const sortedByDisplayOrder = useSortedByDisplayOrder(workoutExerciseSets);
+const workoutExerciseSets = useSetsOfWorkoutExercise(setKey);
+const sortedSets = useSortedByDisplayOrderRecord(workoutExerciseSets);
 </script>
 
 <template>
   <ReorderArrows
     @up="
       () => {
-        const index = sortedByDisplayOrder.findIndex(
-          set => set.index === setKey.setIndex
+        const entries = Object.entries(sortedSets);
+        const index = entries.findIndex(
+          ([, set]) => set.index === setKey.setIndex
         );
 
         if (index - 1 < 0) {
           return;
         }
 
-        const swap1 = sortedByDisplayOrder[index - 1];
-        const swap2 = sortedByDisplayOrder[index];
-
-        const allKeys = Object.keys(
-          sets.all
-        ) as Array<WorkoutExerciseSetKeyHash>;
-
-        const key1 = allKeys.find(key => sets.all[key] === swap1);
-        if (!key1) return;
-
-        const key2 = allKeys.find(key => sets.all[key] === swap2);
-        if (!key2) return;
-
         sets.swapDisplayOrders(
-          unhashWorkoutExerciseSetKey(key1)!,
-          unhashWorkoutExerciseSetKey(key2)!
+          entries[index][0] as WorkoutExerciseSetKeyHash,
+          entries[index - 1][0] as WorkoutExerciseSetKeyHash
         );
       }
     "
     @down="
       () => {
-        const index = sortedByDisplayOrder.findIndex(
-          set => set.index === setKey.setIndex
+        const entries = Object.entries(sortedSets);
+        const index = entries.findIndex(
+          ([, set]) => set.index === setKey.setIndex
         );
 
-        if (index + 1 >= workoutExerciseSets.length) {
+        if (index + 1 >= entries.length) {
           return;
         }
 
-        const swap1 = sortedByDisplayOrder[index + 1];
-        const swap2 = sortedByDisplayOrder[index];
-
-        const allKeys = Object.keys(
-          sets.all
-        ) as Array<WorkoutExerciseSetKeyHash>;
-
-        const key1 = allKeys.find(key => sets.all[key] === swap1);
-        if (!key1) return;
-
-        const key2 = allKeys.find(key => sets.all[key] === swap2);
-        if (!key2) return;
-
         sets.swapDisplayOrders(
-          unhashWorkoutExerciseSetKey(key1)!,
-          unhashWorkoutExerciseSetKey(key2)!
+          entries[index][0] as WorkoutExerciseSetKeyHash,
+          entries[index + 1][0] as WorkoutExerciseSetKeyHash
         );
       }
     "
