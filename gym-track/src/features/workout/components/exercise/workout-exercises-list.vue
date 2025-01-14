@@ -13,7 +13,7 @@ const { sortedByDisplayOrder: exerciseKeys } = useWorkoutExerciseKeys(workout);
 </script>
 
 <template>
-  <ol class="list-decimal flex flex-col gap-4">
+  <ol class="list-decimal flex flex-col">
     <WorkoutExercise
       v-for="key in exerciseKeys"
       :key="key.exerciseIndex"
