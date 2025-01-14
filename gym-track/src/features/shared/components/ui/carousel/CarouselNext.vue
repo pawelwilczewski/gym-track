@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import type { WithClassAsProps } from './interface'
-import { Button } from '@/features/shared/components/ui/button'
-import { cn } from '@/features/shared/utils/cnUtils'
-import { ArrowRight } from 'lucide-vue-next'
-import { useCarousel } from './useCarousel'
+import type { WithClassAsProps as WithClassAsProperties } from './interface';
+import { Button } from '@/features/shared/components/ui/button';
+import { cn } from '@/features/shared/utils/cn-utils';
+import { ArrowRight } from 'lucide-vue-next';
+import { useCarousel } from './useCarousel';
 
-const props = defineProps<WithClassAsProps>()
+const props = defineProps<WithClassAsProperties>();
 
-const { orientation, canScrollNext, scrollNext } = useCarousel()
+const { orientation, canScrollNext, scrollNext } = useCarousel();
 </script>
 
 <template>
   <Button
     :disabled="!canScrollNext"
-    :class="cn(
-      'touch-manipulation absolute h-8 w-8 rounded-full p-0',
-      orientation === 'horizontal'
-        ? '-right-12 top-1/2 -translate-y-1/2'
-        : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
-      props.class,
-    )"
+    :class="
+      cn(
+        'touch-manipulation absolute h-8 w-8 rounded-full p-0',
+        orientation === 'horizontal'
+          ? '-right-12 top-1/2 -translate-y-1/2'
+          : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
+        props.class
+      )
+    "
     variant="outline"
     @click="scrollNext"
   >

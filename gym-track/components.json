@@ -12,6 +12,6 @@
   "framework": "vite",
   "aliases": {
     "components": "@/features/shared/components",
-    "utils": "@/features/shared/utils/cnUtils"
+    "utils": "@/features/shared/utils/cn-utils"
   }
 }
