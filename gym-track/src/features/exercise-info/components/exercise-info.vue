@@ -16,7 +16,11 @@ const { exerciseInfo, destroy } = useExerciseInfo(id);
 </script>
 
 <template>
-  <Entity v-if="exerciseInfo" class="card" @deleted="destroy()">
+  <Entity
+    v-if="exerciseInfo"
+    class="card h-[600px] overflow-y-auto"
+    @deleted="destroy()"
+  >
     <h3>{{ exerciseInfo.name }}</h3>
 
     <picture v-if="exerciseInfo.thumbnailUrl">

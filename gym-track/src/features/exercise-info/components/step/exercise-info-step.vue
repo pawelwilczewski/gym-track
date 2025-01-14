@@ -15,7 +15,7 @@ const { step, destroy } = useExerciseInfoStep(stepKey);
 
 <template>
   <Entity is="li" v-if="step" class="my-4" @deleted="destroy()">
-    <template #left>
+    <template #reorder>
       <ExerciseInfoStepReorderControls :step-key="stepKey" />
     </template>
     <p class="mb-2">{{ step.description }}</p>

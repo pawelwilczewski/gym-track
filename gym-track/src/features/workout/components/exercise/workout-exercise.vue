@@ -16,7 +16,7 @@ const exerciseInfo = useWorkoutExerciseExerciseInfo(workoutExercise);
 
 <template>
   <Entity is="li" v-if="workoutExercise" :editable="false" @deleted="destroy()">
-    <template #left>
+    <template #reorder>
       <WorkoutExerciseReorderControls :exercise-key="exerciseKey" />
     </template>
 

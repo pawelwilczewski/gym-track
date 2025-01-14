@@ -23,7 +23,7 @@ const exerciseMetric = computed(() => set.value?.metric);
 
 <template>
   <Entity is="li" v-if="set" @deleted="destroy()">
-    <template #left>
+    <template #reorder>
       <WorkoutExerciseSetReorderControls :set-key="setKey" />
     </template>
     <div class="flex flex-col gap-2 px-4">

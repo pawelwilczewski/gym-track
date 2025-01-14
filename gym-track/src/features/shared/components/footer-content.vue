@@ -1,3 +1,3 @@
 <template>
-  <div>Footer content.</div>
+  <div>WIP 2025</div>
 </template>

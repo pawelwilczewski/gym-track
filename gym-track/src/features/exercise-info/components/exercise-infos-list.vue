@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/features/shared/components/ui/carousel';
 import ExerciseInfo from './exercise-info.vue';
 import { useExerciseInfos } from '@/features/exercise-info/stores/use-exercise-infos';
 
@@ -7,11 +14,17 @@ exerciseInfos.fetchAll();
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
-    <ExerciseInfo
-      v-for="exerciseInfo in exerciseInfos.all"
-      :id="exerciseInfo.id"
-      :key="exerciseInfo.id"
-    />
-  </div>
+  <Carousel>
+    <CarouselContent>
+      <CarouselItem
+        v-for="exerciseInfo in exerciseInfos.all"
+        :key="exerciseInfo.id"
+        class="max-w-lg"
+      >
+        <ExerciseInfo :id="exerciseInfo.id" />
+      </CarouselItem>
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+  </Carousel>
 </template>
