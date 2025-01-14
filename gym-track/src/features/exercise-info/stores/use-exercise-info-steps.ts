@@ -10,6 +10,7 @@ import {
   ExerciseInfoStepKeyHash,
   GetExerciseInfoStepResponse,
   hashExerciseInfoStepKey,
+  unhashExerciseInfoStepKey,
 } from '@/features/exercise-info/types/exercise-info-types';
 import { ref } from 'vue';
 import { UUID } from 'node:crypto';
@@ -126,6 +127,50 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
     return fetchByKey(key);
   }
 
+  async function swapDisplayOrders(
+    hash1: ExerciseInfoStepKeyHash,
+    hash2: ExerciseInfoStepKeyHash
+  ): Promise<boolean> {
+    const key1 = unhashExerciseInfoStepKey(hash1)!;
+    const key2 = unhashExerciseInfoStepKey(hash2)!;
+
+    const promise = Promise.allSettled([
+      apiClient.put(
+        `/api/v1/exercise-infos/${key1.exerciseInfoId}/steps/${key1.stepIndex}/display-order`,
+        { displayOrder: steps.value[hash2].displayOrder }
+      ),
+      apiClient.put(
+        `/api/v1/exercise-infos/${key2.exerciseInfoId}/steps/${key2.stepIndex}/display-order`,
+        { displayOrder: steps.value[hash1].displayOrder }
+      ),
+    ]);
+
+    swap();
+
+    const result = await promise;
+
+    if (result.some(settled => settled.status === 'rejected')) {
+      // revert if something went wrong
+      swap();
+      return false;
+    }
+
+    return true;
+
+    function swap(): void {
+      [steps.value[hash1], steps.value[hash2]] = [
+        {
+          ...steps.value[hash1],
+          displayOrder: steps.value[hash2].displayOrder,
+        },
+        {
+          ...steps.value[hash2],
+          displayOrder: steps.value[hash1].displayOrder,
+        },
+      ];
+    }
+  }
+
   async function destroy(key: ExerciseInfoStepKey): Promise<boolean> {
     const response = await apiClient.delete(
       `/api/v1/exercise-infos/${key.exerciseInfoId}/steps/${key.stepIndex}`
@@ -150,6 +195,7 @@ export const useExerciseInfoSteps = defineStore('exerciseInfoSteps', () => {
     fetchMultiple,
     create,
     update,
+    swapDisplayOrders,
     destroy,
   };
 });

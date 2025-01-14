@@ -30,6 +30,22 @@ export function hashExerciseInfoStepKey(
   return `${key.exerciseInfoId}_${key.stepIndex}`;
 }
 
+const unhashStepRegex = new RegExp(/(.+?)_(\d+?)/);
+export function unhashExerciseInfoStepKey(
+  hash: ExerciseInfoStepKeyHash
+): ExerciseInfoStepKey | undefined {
+  const match = hash.match(unhashStepRegex);
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    exerciseInfoId: match[1] as UUID,
+    stepIndex: Number.parseInt(match[2]),
+  };
+}
+
 export type GetExerciseInfoResponse = {
   id: UUID;
   name: string;
