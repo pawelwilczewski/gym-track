@@ -4,7 +4,6 @@ import { useWorkoutExerciseSet } from '@/features/workout/composables/use-workou
 import { WorkoutExerciseSetKey } from '@/features/workout/types/workout-types';
 import { computed } from 'vue';
 import ExerciseMetric from '../exercise-metric.vue';
-import { Tally5 } from 'lucide-vue-next';
 import EditWorkoutExerciseSetForm from './edit-workout-exercise-set-form.vue';
 import { useWorkoutExerciseExerciseInfo } from '@/features/workout/composables/use-workout-exercise-exercise-info';
 import { useWorkoutExercise } from '@/features/workout/composables/use-workout-exercise';
@@ -27,10 +26,7 @@ const exerciseMetric = computed(() => set.value?.metric);
       <WorkoutExerciseSetReorderControls :set-key="setKey" />
     </template>
     <div class="flex flex-col gap-2 px-4">
-      <span class="flex gap-1">
-        <Tally5 class="w-4 h-4 my-auto" />
-        {{ set.reps }}
-      </span>
+      <span class="flex gap-1">{{ set.reps }} reps</span>
       <ExerciseMetric v-if="exerciseMetric" :exercise-metric="exerciseMetric" />
     </div>
     <template #edit="{ closeDialog }">

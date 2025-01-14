@@ -7,19 +7,17 @@ import FullScreenLayout from '@/features/shared/layouts/full-screen-layout.vue';
 
 <template>
   <FullScreenLayout>
-    <section>
-      <h1 class="mb-6">Your Exercises</h1>
+    <h1 class="mb-6">Your Exercises</h1>
 
-      <div class="mb-6">
-        <ButtonDialog dialog-title="Create New Exercise">
-          <template #button>Create Exercise</template>
-          <template #dialog="{ closeDialog }">
-            <CreateExerciseInfoForm @created="closeDialog()" />
-          </template>
-        </ButtonDialog>
-      </div>
+    <div class="mb-6">
+      <ButtonDialog dialog-title="Create New Exercise">
+        <template #button>Create Exercise</template>
+        <template #dialog="{ closeDialog }">
+          <CreateExerciseInfoForm @created="closeDialog()" />
+        </template>
+      </ButtonDialog>
+    </div>
 
-      <ExerciseInfosList />
-    </section>
+    <ExerciseInfosList />
   </FullScreenLayout>
 </template>

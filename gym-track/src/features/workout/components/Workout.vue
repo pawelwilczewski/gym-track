@@ -13,7 +13,11 @@ const { workout, destroy } = useWorkout(id);
 </script>
 
 <template>
-  <Entity v-if="workout" class="card" @deleted="destroy()">
+  <Entity
+    v-if="workout"
+    class="card h-[600px] overflow-y-auto"
+    @deleted="destroy()"
+  >
     <h3>{{ workout.name }}</h3>
     <h4>Exercises</h4>
     <WorkoutExercisesList :workout-id="id" />
