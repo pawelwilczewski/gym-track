@@ -10,7 +10,7 @@ This is a mono repo, which includes everything you need to deploy this app.
 
 ### Backend
 
-`GymTrackApi` directory contains the backend source code and uses `.NET 9`. Instructions on configuring the project _coming soon_.
+`GymTrackApi` directory contains the backend source code and uses `.NET 8`. Instructions on configuring the project _coming soon_.
 
 ### Frontend
 
