@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from '@/features/shared/components/ui/alert-dialog';
 import { Button, buttonVariants } from '@/features/shared/components/ui/button';
+import { useLockMode } from '@/features/lock-mode/stores/use-lock-mode';
 
 const {
   is = 'div',
@@ -28,12 +29,14 @@ const {
 const emit = defineEmits<{
   deleted: [];
 }>();
+
+const lockMode = useLockMode();
 </script>
 
 <template>
   <component :is="is" class="relative">
     <slot />
-    <div class="absolute top-0 right-0 flex">
+    <div v-if="!lockMode.isLocked" class="absolute top-0 right-0 flex">
       <slot name="reorder" />
 
       <ButtonDialog
