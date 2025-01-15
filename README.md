@@ -6,7 +6,7 @@
 
 ## Getting Started
 
-This is a mono repo, which includes everything you need to deploy this app.
+This is a mono repo and includes everything you need to deploy this app.
 
 ### Backend
 
