@@ -23,6 +23,6 @@ This is a mono repo, which includes everything you need to deploy this app.
 ## Gallery
 
 ![Home Page](docs/readme/img/home.jpg)
-![Exercises View](docs/readme/img/exercises-view.jpg)
+![Exercises View Locked](docs/readme/img/exercises-view-locked.jpg)
 ![Create New Exercise](docs/readme/img/exercises-new.jpg)
 ![Workouts View Edit Mode](docs/readme/img/workouts-view-edit.jpg)
