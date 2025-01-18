@@ -10,9 +10,9 @@ export const createWorkoutExerciseSetSchema = z
   .object({
     metricType: z.preprocess(Number, z.nativeEnum(ExerciseMetricType)),
     reps: z.number().int().positive(),
-    distanceValue: z.number().positive().optional(),
+    distanceValue: z.number().nonnegative().optional(),
     distanceUnits: z.preprocess(Number, z.nativeEnum(DistanceUnit)).optional(),
-    weightValue: z.number().positive().optional(),
+    weightValue: z.number().nonnegative().optional(),
     weightUnits: z.preprocess(Number, z.nativeEnum(WeightUnit)).optional(),
     time: z.string().time().optional(),
   })

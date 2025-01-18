@@ -29,12 +29,16 @@ public readonly record struct Amount : IParsable<Amount>, IEquatable<double>
 {
 	public static ValueConverter<Amount, double> Converter { get; } = new(id => id.Value, value => new Amount(value));
 
+	public double Value { get; }
+
+	private Amount(double value) => Value = value;
+
 	public static Amount Parse(string s, IFormatProvider? provider) => new(double.Parse(s, provider));
 
 	public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Amount result)
 	{
-		var success = double.TryParse(s, provider, out var value) && value >= 1;
-		result = success ? new Amount(value) : new Amount(1);
+		var success = double.TryParse(s, provider, out var value) && value >= 0;
+		result = success ? new Amount(value) : new Amount(0);
 		return success;
 	}
 
@@ -52,10 +56,6 @@ public readonly record struct Amount : IParsable<Amount>, IEquatable<double>
 
 	public static bool operator ==(Amount left, double right) => left.Equals(right);
 	public static bool operator !=(Amount left, double right) => !left.Equals(right);
-
-	public double Value { get; }
-
-	private Amount(double value) => Value = value;
 
 	public bool Equals(Amount other) => Math.Abs(Value - other.Value) <= double.Epsilon;
 	public bool Equals(double other) => Math.Abs(Value - other) <= double.Epsilon;
