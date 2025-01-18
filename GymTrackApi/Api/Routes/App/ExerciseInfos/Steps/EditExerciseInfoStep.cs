@@ -57,8 +57,7 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{stepIndex:int}", Handler)
-			.DisableAntiforgery(); // TODO Pawel: enable anti forgery outside of development
+		builder.MapPut("{stepIndex:int}", Handler);
 		return builder;
 	}
 }

@@ -1,3 +1,4 @@
+import { attachAntiforgery } from '@/features/antiforgery/middleware/attach-antiforgery';
 import axios from 'axios';
 
 export const apiClient = axios.create({
@@ -6,3 +7,5 @@ export const apiClient = axios.create({
   validateStatus: () => true, // never throw
   withCredentials: true,
 });
+
+apiClient.interceptors.request.use(attachAntiforgery);

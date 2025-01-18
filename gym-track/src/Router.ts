@@ -18,6 +18,7 @@ import {
 } from './features/auth/middleware/auth-and-redirect';
 import Dashboard from './features/dashboard/views/dashboard.vue';
 import ExerciseInfos from './features/exercise-info/views/exercise-infos.vue';
+import { refetchAntiforgeryToken } from '@/features/antiforgery/middleware/fetch-antiforgery';
 
 declare module 'vue-router' {
   enum UserRole {
@@ -123,5 +124,6 @@ const router = createRouter({
 
 router.beforeEach(handleAuthAndRedirectBefore);
 router.afterEach(handleAuthAndRedirectAfter);
+router.afterEach(refetchAntiforgeryToken);
 
 export default router;

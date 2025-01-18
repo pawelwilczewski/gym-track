@@ -45,10 +45,7 @@ if (builder.Environment.IsDevelopment())
 	}));
 }
 
-if (builder.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
-{
-	builder.Services.AddAntiforgery();
-}
+builder.Services.AddAntiforgery();
 
 builder.Services
 	.AddAuthentication(IdentityConstants.BearerScheme)
@@ -111,12 +108,13 @@ if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
 {
 	app.Strip404Body();
 	app.Use404InsteadOf403();
-	app.UseAntiforgery();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAntiforgery();
 app.UseAuthorization();
 
 app.AddPutFormSupport();

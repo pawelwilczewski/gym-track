@@ -40,7 +40,7 @@ internal sealed class EditExerciseInfoStepDisplayOrder : IEndpoint
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("", Handler); // TODO Pawel: enable anti forgery outside of development
+		builder.MapPut("", Handler);
 		return builder;
 	}
 }
