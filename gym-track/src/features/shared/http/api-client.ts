@@ -1,4 +1,4 @@
-import { attachAntiforgery } from '@/features/antiforgery/middleware/attach-antiforgery';
+import { attachAntiforgeryToken } from '@/features/antiforgery/middleware/attach-antiforgery-token';
 import axios from 'axios';
 
 export const apiClient = axios.create({
@@ -8,4 +8,4 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
-apiClient.interceptors.request.use(attachAntiforgery);
+apiClient.interceptors.request.use(attachAntiforgeryToken);

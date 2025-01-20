@@ -1,7 +1,7 @@
 import { useAntiforgery } from '@/features/antiforgery/stores/use-antiforgery';
 import { InternalAxiosRequestConfig } from 'axios';
 
-export function attachAntiforgery(
+export function attachAntiforgeryToken(
   config: InternalAxiosRequestConfig<unknown>
 ): InternalAxiosRequestConfig<unknown> {
   const antiforgery = useAntiforgery();
