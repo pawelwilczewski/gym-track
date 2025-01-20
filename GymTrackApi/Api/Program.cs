@@ -114,8 +114,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAntiforgery();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.AddPutFormSupport();
 

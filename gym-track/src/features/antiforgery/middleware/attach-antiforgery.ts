@@ -5,6 +5,19 @@ export function attachAntiforgery(
   config: InternalAxiosRequestConfig<unknown>
 ): InternalAxiosRequestConfig<unknown> {
   const antiforgery = useAntiforgery();
-  config.headers['X-CSRF-TOKEN'] = antiforgery.token;
+
+  if (
+    antiforgery.token &&
+    config.method &&
+    config.method.toLowerCase() === 'post' &&
+    config.data &&
+    // just check if not json because Content-Type is sometimes undefined
+    config.headers['Content-Type'] !== 'application/json' &&
+    config.data instanceof FormData
+  ) {
+    // If it's FormData, append the token
+    config.data.append('__RequestVerificationToken', antiforgery.token);
+  }
+
   return config;
 }
