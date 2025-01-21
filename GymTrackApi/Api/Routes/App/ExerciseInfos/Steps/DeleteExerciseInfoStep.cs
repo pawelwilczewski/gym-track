@@ -21,17 +21,17 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var id = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfoStep = await dataContext.ExerciseInfoSteps
-			.Include(exerciseInfoStep => exerciseInfoStep.ExerciseInfo)
-			.ThenInclude(exerciseInfo => exerciseInfo.Users)
-			.FirstOrDefaultAsync(exerciseInfoStep => exerciseInfoStep.ExerciseInfoId == id
-				&& exerciseInfoStep.Index == stepIndex, cancellationToken)
+		var exerciseInfo = await dataContext.ExerciseInfos
+			.Include(exerciseInfo => exerciseInfo.Users)
+			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == stepIndex))
+			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found");
-
-		var exerciseInfo = exerciseInfoStep.ExerciseInfo;
+		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
+
+		var exerciseInfoStep = exerciseInfo.Steps.SingleOrDefault();
+		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found.");
 
 		await EntityImage.Delete(
 				exerciseInfoStep.GetImageBaseName(),
