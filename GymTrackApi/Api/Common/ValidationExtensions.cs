@@ -1,4 +1,4 @@
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Domain.Validation;
 using Microsoft.AspNetCore.Http.HttpResults;
 

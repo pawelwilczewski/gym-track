@@ -3,6 +3,7 @@ using Api.Routes.App.ExerciseInfos.Steps;
 using Api.Routes.App.ExerciseInfos.Steps.DisplayOrder;
 using Api.Tests.Unit.Mocks;
 using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

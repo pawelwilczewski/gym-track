@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Net.Mime;
 using Api.Dtos;
 using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 
 namespace Api.Tests.Functional;

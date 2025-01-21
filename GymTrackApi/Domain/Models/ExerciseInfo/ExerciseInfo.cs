@@ -3,7 +3,7 @@ using Domain.Common;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
-namespace Domain.Models.Workout;
+namespace Domain.Models.ExerciseInfo;
 
 public class ExerciseInfo
 {
@@ -17,7 +17,7 @@ public class ExerciseInfo
 	public ExerciseMetricType AllowedMetricTypes { get; set; }
 
 	public virtual List<Step> Steps { get; private set; } = [];
-	public virtual List<Workout.Exercise> Exercises { get; private set; } = [];
+	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
 	public virtual List<UserExerciseInfo> Users { get; private set; } = [];
 
 	private ExerciseInfo() { }

@@ -1,4 +1,5 @@
 using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

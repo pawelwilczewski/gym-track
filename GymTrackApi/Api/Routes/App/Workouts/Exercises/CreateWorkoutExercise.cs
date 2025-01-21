@@ -3,6 +3,7 @@ using Application.Persistence;
 using Domain.Common;
 using Domain.Models;
 using Domain.Models.Common;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

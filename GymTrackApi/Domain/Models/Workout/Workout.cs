@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Domain.Common;
+using Domain.Models.ExerciseInfo;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
@@ -33,8 +34,8 @@ public class Workout
 
 		public virtual Workout Workout { get; private set; } = default!;
 
-		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
-		public virtual ExerciseInfo ExerciseInfo { get; private set; } = default!;
+		public Id<ExerciseInfo.ExerciseInfo> ExerciseInfoId { get; private set; }
+		public virtual ExerciseInfo.ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 		public int DisplayOrder { get; set; }
 
@@ -43,7 +44,7 @@ public class Workout
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo> exerciseInfoId, int displayOrder)
+		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo.ExerciseInfo> exerciseInfoId, int displayOrder)
 		{
 			WorkoutId = workoutId;
 			Index = index;

@@ -1,4 +1,4 @@
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Domain.Models.Workout;
+namespace Domain.Models.ExerciseInfo;
 
 [JsonDerivedType(typeof(Weight), (int)ExerciseMetricType.Weight)]
 [JsonDerivedType(typeof(Duration), (int)ExerciseMetricType.Duration)]

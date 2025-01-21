@@ -2,6 +2,7 @@ using Api.Common;
 using Api.Files;
 using Application.Persistence;
 using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Microsoft.AspNetCore.Http.HttpResults;

@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Domain.Models;
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

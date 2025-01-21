@@ -1,4 +1,5 @@
 using Application.Persistence;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Identity;
 using Domain.Models.Workout;
 using Infrastructure.Persistence.Configurations.Common;
