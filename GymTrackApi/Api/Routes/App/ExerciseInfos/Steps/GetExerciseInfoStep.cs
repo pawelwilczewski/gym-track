@@ -27,7 +27,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var step = exerciseInfo.Steps.SingleOrDefault();
+		var step = exerciseInfo.Steps.SingleOrDefault(step => step.Index == stepIndex);
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
 		return TypedResults.Ok(new GetExerciseInfoStepResponse(

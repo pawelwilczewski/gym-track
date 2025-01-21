@@ -20,7 +20,8 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var typedExerciseInfoId = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
+		var exerciseInfo = await dataContext.ExerciseInfos
+			.Include(exerciseInfo => exerciseInfo.Users)
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == typedExerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 

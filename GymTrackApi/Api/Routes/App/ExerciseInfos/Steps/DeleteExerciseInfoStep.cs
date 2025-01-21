@@ -30,7 +30,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var exerciseInfoStep = exerciseInfo.Steps.SingleOrDefault();
+		var exerciseInfoStep = exerciseInfo.Steps.SingleOrDefault(step => step.Index == stepIndex);
 		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found.");
 
 		await EntityImage.Delete(

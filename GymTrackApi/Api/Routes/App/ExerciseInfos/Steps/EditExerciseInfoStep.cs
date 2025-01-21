@@ -33,7 +33,7 @@ internal sealed class EditExerciseInfoStep : IEndpoint
 		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
 		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
 
-		var step = exerciseInfo.Steps.SingleOrDefault();
+		var step = exerciseInfo.Steps.SingleOrDefault(step => step.Index == stepIndex);
 		if (step is null) return TypedResults.NotFound("Step not found.");
 
 		if (!step.Description.TrySet(description, out var error))

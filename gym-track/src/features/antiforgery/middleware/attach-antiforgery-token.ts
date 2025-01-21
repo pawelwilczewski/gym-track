@@ -15,7 +15,6 @@ export function attachAntiforgeryToken(
     config.headers['Content-Type'] !== 'application/json' &&
     config.data instanceof FormData
   ) {
-    // If it's FormData, append the token
     config.data.append('__RequestVerificationToken', antiforgery.token);
   }
 
