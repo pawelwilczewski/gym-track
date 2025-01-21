@@ -1,5 +1,4 @@
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Workout;
 
 namespace Api.Dtos;
 
@@ -66,3 +65,6 @@ public sealed record class WorkoutExerciseSetKey(
 	Guid WorkoutId,
 	int ExerciseIndex,
 	int SetIndex);
+
+public sealed record class GetAntiforgeryTokenResponse(
+	string Token);

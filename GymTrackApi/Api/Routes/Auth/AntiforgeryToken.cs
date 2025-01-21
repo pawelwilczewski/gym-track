@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -7,10 +8,12 @@ internal sealed class AntiforgeryToken : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("antiforgery-token", Ok<string> (IAntiforgery antiforgery, HttpContext httpContext) =>
+		builder.MapGet("antiforgery-token", Ok<GetAntiforgeryTokenResponse> (IAntiforgery antiforgery, HttpContext httpContext) =>
 		{
 			var tokens = antiforgery.GetAndStoreTokens(httpContext);
-			return TypedResults.Ok(tokens.RequestToken);
+			if (tokens.RequestToken is null) throw new Exception("Antiforgery token is not correctly configured");
+
+			return TypedResults.Ok(new GetAntiforgeryTokenResponse(tokens.RequestToken));
 		});
 
 		return builder;

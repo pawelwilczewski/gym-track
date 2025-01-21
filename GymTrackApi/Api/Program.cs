@@ -45,7 +45,11 @@ if (builder.Environment.IsDevelopment())
 	}));
 }
 
-builder.Services.AddAntiforgery();
+builder.Services.AddAntiforgery(options =>
+{
+	options.FormFieldName = "__RequestVerificationToken";
+	options.HeaderName = "X-CSRF-TOKEN";
+});
 
 builder.Services
 	.AddAuthentication(IdentityConstants.BearerScheme)

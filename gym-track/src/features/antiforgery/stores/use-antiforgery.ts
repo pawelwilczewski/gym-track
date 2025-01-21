@@ -18,7 +18,7 @@ export const useAntiforgery = defineStore('antiforgery', () => {
       return;
     }
 
-    token.value = response.data;
+    token.value = response.data.token;
   }
 
   return { token, fetchToken };

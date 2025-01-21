@@ -5,7 +5,6 @@ using System.Net.Mime;
 using Api.Dtos;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Workout;
 
 namespace Api.Tests.Functional;
 
@@ -47,8 +46,10 @@ internal sealed class UseCaseTests
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
-		var content = new MultipartFormDataContent();
+		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
 
+		var content = new MultipartFormDataContent();
+		content.Add(new StringContent(antiforgeryToken!.Token), "__RequestVerificationToken");
 		content.Add(new StringContent("Nice Exercise"), "name");
 		content.Add(new StringContent("Some exercise description."), "description");
 		content.Add(new StringContent(((int)(ExerciseMetricType.Distance | ExerciseMetricType.Weight)).ToString()), "allowedMetricTypes");
@@ -57,25 +58,26 @@ internal sealed class UseCaseTests
 		var writer = new StreamWriter(imageStream);
 		await writer.WriteAsync("Test jpg image content").ConfigureAwait(false);
 		await writer.FlushAsync().ConfigureAwait(false);
+		imageStream.Position = 0;
 		var imageContent = new StreamContent(imageStream);
 		imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Image.Jpeg);
 		content.Add(imageContent, "thumbnailImage", "ExampleExerciseInfoThumbnail.jpg");
 
+		var response = await httpClient.PostAsync("api/v1/exercise-infos", content).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+		var exerciseInfoUri = response.Headers.Location!;
+		var exerciseInfoUriString = exerciseInfoUri.ToString();
+		var lastSlashIndex = exerciseInfoUriString.LastIndexOf('/');
+		var exerciseId = Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
+
 		const string workoutName = "Nice Workout";
-		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
+		response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var workoutUri = response.Headers.Location!;
 
 		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(workoutUri).ConfigureAwait(false);
 		await Assert.That(workout).IsNotNull();
 		await Assert.That(workout!.Name).IsEqualTo(workoutName);
-
-		response = await httpClient.PostAsync("api/v1/exercise-infos", content).ConfigureAwait(false);
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
-		var exerciseInfoUri = response.Headers.Location!;
-		var exerciseInfoUriString = exerciseInfoUri.ToString();
-		var lastSlashIndex = exerciseInfoUriString.LastIndexOf('/');
-		var exerciseId = Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
 
 		const int exerciseIndex = 0;
 		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises", new CreateWorkoutExerciseRequest(exerciseId));
