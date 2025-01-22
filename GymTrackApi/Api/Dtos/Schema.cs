@@ -68,3 +68,18 @@ public sealed record class WorkoutExerciseSetKey(
 
 public sealed record class GetAntiforgeryTokenResponse(
 	string Token);
+
+public sealed record class GetTrackedWorkoutResponse(
+	Guid TrackedWorkoutId,
+	Guid WorkoutId,
+	DateTime PerformedAt,
+	TimeSpan Duration);
+
+public sealed record class CreateTrackedWorkoutRequest(
+	Guid WorkoutId,
+	DateTime PerformedAt,
+	TimeSpan Duration);
+
+public sealed record class EditTrackedWorkoutRequest(
+	DateTime PerformedAt,
+	TimeSpan Duration);

@@ -12,8 +12,8 @@ public class TrackedWorkout
 	public Guid UserId { get; }
 	public virtual User User { get; private set; } = default!;
 
-	public DateTime PerformedAt { get; }
-	public TimeSpan Duration { get; }
+	public DateTime PerformedAt { get; set; }
+	public TimeSpan Duration { get; set; }
 
 	public TrackedWorkout() { }
 

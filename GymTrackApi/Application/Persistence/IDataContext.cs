@@ -1,5 +1,6 @@
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Identity;
+using Domain.Models.Tracking;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,8 @@ public interface IDataContext : IDisposable
 	DbSet<Workout> Workouts { get; }
 	DbSet<Workout.Exercise> WorkoutExercises { get; }
 	DbSet<Workout.Exercise.Set> WorkoutExerciseSets { get; }
+
+	DbSet<TrackedWorkout> TrackedWorkouts { get; }
 
 	Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
