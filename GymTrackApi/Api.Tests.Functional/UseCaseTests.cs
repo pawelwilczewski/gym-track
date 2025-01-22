@@ -40,16 +40,10 @@ internal sealed class UseCaseTests
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
 	}
 
-	[Test]
-	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateEditDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	private async Task<Guid> CreateExerciseInfo(HttpClient httpClient, GetAntiforgeryTokenResponse antiforgeryToken)
 	{
-		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
-
-		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
-
 		var content = new MultipartFormDataContent();
-		content.Add(new StringContent(antiforgeryToken!.Token), "__RequestVerificationToken");
+		content.Add(new StringContent(antiforgeryToken.Token), "__RequestVerificationToken");
 		content.Add(new StringContent("Nice Exercise"), "name");
 		content.Add(new StringContent("Some exercise description."), "description");
 		content.Add(new StringContent(((int)(ExerciseMetricType.Distance | ExerciseMetricType.Weight)).ToString()), "allowedMetricTypes");
@@ -68,10 +62,20 @@ internal sealed class UseCaseTests
 		var exerciseInfoUri = response.Headers.Location!;
 		var exerciseInfoUriString = exerciseInfoUri.ToString();
 		var lastSlashIndex = exerciseInfoUriString.LastIndexOf('/');
-		var exerciseId = Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
+		return Guid.Parse(exerciseInfoUriString[(lastSlashIndex + 1)..]);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task CreateEditDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	{
+		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
+
+		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
+		var exerciseId = await CreateExerciseInfo(httpClient, antiforgeryToken!).ConfigureAwait(false);
 
 		const string workoutName = "Nice Workout";
-		response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
+		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var workoutUri = response.Headers.Location!;
 
@@ -111,5 +115,59 @@ internal sealed class UseCaseTests
 		await Assert.That((await httpClient.GetAsync(setUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 		await Assert.That((await httpClient.GetAsync(exerciseUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 		await Assert.That((await httpClient.GetAsync(workoutUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task CreateAndEditTrackedWorkouts_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	{
+		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
+
+		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
+		var exerciseId = CreateExerciseInfo(httpClient, antiforgeryToken!);
+
+		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Test workout")).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+		var workoutUri = response.Headers.Location!;
+		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(workoutUri).ConfigureAwait(false);
+		await Assert.That(workout).IsNotNull();
+
+		var performedAt = DateTime.Now;
+		var duration = TimeSpan.FromMinutes(30.0);
+		response = await httpClient.PostAsJsonAsync("api/v1/tracking/workouts",
+				new CreateTrackedWorkoutRequest(workout!.Id, performedAt, duration))
+			.ConfigureAwait(false);
+
+		var trackedWorkoutUri = response.Headers.Location!;
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
+
+		var trackedWorkout = await httpClient.GetFromJsonAsync<GetTrackedWorkoutResponse>(response.Headers.Location!).ConfigureAwait(false);
+
+		await Assert.That(trackedWorkout).IsNotNull();
+		await Assert.That(trackedWorkout!.WorkoutId).IsEqualTo(workout.Id);
+		await Assert.That(trackedWorkout.PerformedAt - performedAt).IsLessThan(TimeSpan.FromSeconds(0.1));
+		await Assert.That(trackedWorkout.Duration).IsEqualTo(duration);
+
+		performedAt = DateTime.Today - TimeSpan.FromDays(1);
+		duration = TimeSpan.FromMinutes(40.0);
+		response = await httpClient.PutAsJsonAsync($"api/v1/tracking/workouts/{trackedWorkout.TrackedWorkoutId}",
+				new EditTrackedWorkoutRequest(performedAt, duration))
+			.ConfigureAwait(false);
+
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		trackedWorkout = await httpClient.GetFromJsonAsync<GetTrackedWorkoutResponse>(trackedWorkoutUri).ConfigureAwait(false);
+
+		await Assert.That(trackedWorkout).IsNotNull();
+		await Assert.That(trackedWorkout!.WorkoutId).IsEqualTo(workout.Id);
+		await Assert.That(trackedWorkout.PerformedAt - performedAt).IsLessThan(TimeSpan.FromSeconds(0.1));
+		await Assert.That(trackedWorkout.Duration).IsEqualTo(duration);
+
+		response = await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		response = await httpClient.GetAsync(response.Headers.Location!).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 	}
 }
