@@ -70,7 +70,7 @@ public sealed record class GetAntiforgeryTokenResponse(
 	string Token);
 
 public sealed record class GetTrackedWorkoutResponse(
-	Guid TrackedWorkoutId,
+	Guid Id,
 	Guid WorkoutId,
 	DateTime PerformedAt,
 	TimeSpan Duration);

@@ -150,7 +150,7 @@ internal sealed class UseCaseTests
 
 		performedAt = DateTime.Today - TimeSpan.FromDays(1);
 		duration = TimeSpan.FromMinutes(40.0);
-		response = await httpClient.PutAsJsonAsync($"api/v1/tracking/workouts/{trackedWorkout.TrackedWorkoutId}",
+		response = await httpClient.PutAsJsonAsync($"api/v1/tracking/workouts/{trackedWorkout.Id}",
 				new EditTrackedWorkoutRequest(performedAt, duration))
 			.ConfigureAwait(false);
 
