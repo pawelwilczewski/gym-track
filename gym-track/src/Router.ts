@@ -19,6 +19,7 @@ import {
 import Dashboard from './features/dashboard/views/dashboard.vue';
 import ExerciseInfos from './features/exercise-info/views/exercise-infos.vue';
 import { fetchAntiforgeryToken } from '@/features/antiforgery/middleware/fetch-antiforgery-token';
+import Tracking from '@/features/tracking/views/tracking.vue';
 
 declare module 'vue-router' {
   enum UserRole {
@@ -99,15 +100,21 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/exercises',
+    name: 'Exercise Infos',
+    component: ExerciseInfos,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/workouts',
     name: 'Workouts',
     component: Workouts,
     meta: { requiresAuth: true },
   },
   {
-    path: '/exercises',
-    name: 'Exercise Infos',
-    component: ExerciseInfos,
+    path: '/tracking',
+    name: 'Tracking',
+    component: Tracking,
     meta: { requiresAuth: true },
   },
   {

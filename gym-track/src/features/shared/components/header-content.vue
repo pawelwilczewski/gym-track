@@ -17,6 +17,7 @@ const auth = useAuth();
     <div class="flex gap-6 flex-wrap">
       <div v-if="auth.isLoggedIn" class="flex gap-2">
         <!-- <TabButton path="/dashboard" name="Dashboard"></TabButton> -->
+        <TabButton path="/tracking" name="Tracking"></TabButton>
         <TabButton path="/workouts" name="Workouts"></TabButton>
         <TabButton path="/exercises" name="Exercises"></TabButton>
       </div>
