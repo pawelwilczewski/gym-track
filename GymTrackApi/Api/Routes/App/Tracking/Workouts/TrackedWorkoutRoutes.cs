@@ -6,6 +6,7 @@ internal static class TrackedWorkoutRoutes
 	{
 		builder.MapGroup("workouts")
 			.Map(new GetTrackedWorkout())
+			.Map(new GetTrackedWorkouts())
 			.Map(new CreateTrackedWorkout())
 			.Map(new EditTrackedWorkout())
 			.Map(new DeleteTrackedWorkout());
