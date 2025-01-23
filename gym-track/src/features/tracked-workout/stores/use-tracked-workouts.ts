@@ -15,11 +15,13 @@ import { GetTrackedWorkoutResponse } from '@/features/tracked-workout/types/trac
 import { editTrackedWorkoutSchema } from '@/features/tracked-workout/schemas/edit-tracked-workout-schema';
 import { createTrackedWorkoutSchema } from '@/features/tracked-workout/schemas/create-tracked-workout-schema';
 
-export const useWorkouts = defineStore('tracked-workouts', () => {
+export const useTrackedWorkouts = defineStore('tracked-workouts', () => {
   const trackedWorkouts = ref<Record<UUID, GetTrackedWorkoutResponse>>({});
 
   const allSorted = useSortedRecord(trackedWorkouts, (a, b) => {
-    return a.performedAt.getTime() - b.performedAt.getTime();
+    return (
+      new Date(a.performedAt).getTime() - new Date(b.performedAt).getTime()
+    );
   });
 
   async function fetchAll(): Promise<boolean> {
