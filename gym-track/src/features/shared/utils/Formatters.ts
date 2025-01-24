@@ -42,3 +42,28 @@ export function formatDateTime(dateTime: Date): string {
     minute: '2-digit',
   });
 }
+
+export function formatDuration(time: string): string {
+  const timeSplit = time.split(':').map(Number);
+  const parts = [];
+
+  if (timeSplit[0] > 0) {
+    parts.push(`${timeSplit[0]} hours`);
+  }
+  if (timeSplit[1] > 0) {
+    parts.push(`${timeSplit[1]} minutes`);
+  }
+  if (timeSplit[2] > 0) {
+    parts.push(`${timeSplit[2]} seconds`);
+  }
+
+  if (parts.length === 0) {
+    return '0 seconds';
+  }
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  const lastPart = parts.pop();
+  return `${parts.join(', ')} and ${lastPart}`;
+}

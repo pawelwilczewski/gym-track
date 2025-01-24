@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Entity from '@/features/shared/components/entity.vue';
-import { formatDateTime } from '@/features/shared/utils/formatters';
+import {
+  formatDateTime,
+  formatDuration,
+} from '@/features/shared/utils/formatters';
 import EditTrackedWorkoutForm from '@/features/tracked-workout/components/edit-tracked-workout-form.vue';
 import { useTrackedWorkout } from '@/features/tracked-workout/composables/use-tracked-workout';
 import { useWorkouts } from '@/features/workout/stores/use-workouts';
@@ -47,6 +50,14 @@ const performedAt = computed(() => {
   const date = new Date(trackedWorkout.value.performedAt);
   return formatDateTime(date);
 });
+
+const duration = computed(() => {
+  if (!trackedWorkout.value) {
+    return;
+  }
+
+  return formatDuration(trackedWorkout.value.duration);
+});
 </script>
 
 <template>
@@ -60,7 +71,7 @@ const performedAt = computed(() => {
     <span>{{ performedAt }}</span>
     <span class="flex gap-1">
       <Clock class="w-4 h-4 my-auto" />
-      {{ trackedWorkout.duration }}
+      {{ duration }}
     </span>
     <template #edit="{ closeDialog }">
       <EditTrackedWorkoutForm
