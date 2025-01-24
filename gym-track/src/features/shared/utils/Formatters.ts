@@ -32,3 +32,7 @@ export function formatDistance(distance: number, unit: DistanceUnit): string {
   }
   return `${distance} ${unitText}`;
 }
+
+export function formatDateTime(dateTime: Date): string {
+  return dateTime.toLocaleDateString();
+}

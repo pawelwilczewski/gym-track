@@ -15,6 +15,7 @@ import PopoverTrigger from '@/features/shared/components/ui/popover/PopoverTrigg
 import { CalendarIcon } from 'lucide-vue-next';
 import Calendar from '@/features/shared/components/ui/calendar/Calendar.vue';
 import Input from '@/features/shared/components/ui/input/Input.vue';
+import { formatDateTime } from '@/features/shared/utils/formatters';
 
 defineProps<{
   submitLabel: string;
@@ -49,13 +50,14 @@ defineProps<{
                 variant="outline"
                 :class="
                   cn(
-                    'w-[280px] justify-start text-left font-normal',
+                    'flex w-[280px] justify-start text-left font-normal',
                     !value && 'text-muted-foreground'
                   )
                 "
               >
                 <CalendarIcon class="mr-2 h-4 w-4" />
-                {{ value ?? 'Pick a date' }}
+                <span v-if="value">{{ formatDateTime(value) }}</span>
+                <span v-else>Date and time</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">

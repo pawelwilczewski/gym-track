@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Entity from '@/features/shared/components/entity.vue';
+import { formatDateTime } from '@/features/shared/utils/formatters';
 import EditTrackedWorkoutForm from '@/features/tracked-workout/components/edit-tracked-workout-form.vue';
 import { useTrackedWorkout } from '@/features/tracked-workout/composables/use-tracked-workout';
 import { useWorkouts } from '@/features/workout/stores/use-workouts';
@@ -44,7 +45,7 @@ const performedAt = computed(() => {
     return;
   }
   const date = new Date(trackedWorkout.value.performedAt);
-  return date.toLocaleDateString();
+  return formatDateTime(date);
 });
 </script>
 
