@@ -21,7 +21,6 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  console.log('submitted');
   await trackedWorkouts.update(
     trackedWorkoutId,
     {
