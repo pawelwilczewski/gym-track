@@ -13,9 +13,9 @@ import PopoverContent from '@/features/shared/components/ui/popover/PopoverConte
 import Popover from '@/features/shared/components/ui/popover/Popover.vue';
 import PopoverTrigger from '@/features/shared/components/ui/popover/PopoverTrigger.vue';
 import { CalendarIcon } from 'lucide-vue-next';
-import Calendar from '@/features/shared/components/ui/calendar/Calendar.vue';
 import Input from '@/features/shared/components/ui/input/Input.vue';
 import { formatDateTime } from '@/features/shared/utils/formatters';
+import Calendar from '@/features/shared/components/ui/v-calendar/Calendar.vue';
 
 defineProps<{
   submitLabel: string;
@@ -63,14 +63,8 @@ defineProps<{
             <PopoverContent class="w-auto p-0">
               <Calendar
                 initial-focus
-                @update:model-value="
-                  val =>
-                    setValue(
-                      val?.toDate(
-                        Intl.DateTimeFormat().resolvedOptions().timeZone
-                      )
-                    )
-                "
+                mode="datetime"
+                @update:model-value="setValue"
               />
             </PopoverContent>
           </Popover>

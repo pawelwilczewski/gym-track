@@ -34,5 +34,11 @@ export function formatDistance(distance: number, unit: DistanceUnit): string {
 }
 
 export function formatDateTime(dateTime: Date): string {
-  return dateTime.toLocaleDateString();
+  return dateTime.toLocaleString(navigator.language, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
