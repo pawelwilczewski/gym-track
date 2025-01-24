@@ -26,3 +26,4 @@ This is a mono repo and includes everything you need to deploy this app.
 ![Exercises View Locked](docs/readme/img/exercises-view-locked.jpg)
 ![Create New Exercise](docs/readme/img/exercises-new.jpg)
 ![Workouts View Edit Mode](docs/readme/img/workouts-view-edit.jpg)
+![Tracking View](docs/readme/img/tracking-view-locked.jpg)
