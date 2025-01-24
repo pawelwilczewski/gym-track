@@ -18,8 +18,6 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async values => {
-  console.log('values');
-
   await trackedWorkouts.create(
     {
       workoutId: values.workoutId as UUID,
@@ -34,5 +32,9 @@ const onSubmit = form.handleSubmit(async values => {
 </script>
 
 <template>
-  <TrackedWorkoutForm :on-submit="onSubmit" submit-label="Create" />
+  <TrackedWorkoutForm
+    :on-submit="onSubmit"
+    submit-label="Create"
+    :include-workout-id-field="true"
+  />
 </template>

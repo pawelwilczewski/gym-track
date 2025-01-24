@@ -19,12 +19,17 @@ import Input from '@/features/shared/components/ui/input/Input.vue';
 defineProps<{
   submitLabel: string;
   onSubmit: () => void;
+  includeWorkoutIdField: boolean;
 }>();
 </script>
 
 <template>
   <form class="flex flex-col gap-6 mt-6" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="workoutId">
+    <FormField
+      v-if="includeWorkoutIdField"
+      v-slot="{ componentField }"
+      name="workoutId"
+    >
       <FormItem>
         <FormLabel class="text-lg !text-current">Workout</FormLabel>
         <FormControl>
