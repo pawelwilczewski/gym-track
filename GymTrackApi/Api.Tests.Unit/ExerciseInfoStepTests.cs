@@ -3,7 +3,7 @@ using Api.Routes.App.ExerciseInfos.Steps;
 using Api.Routes.App.ExerciseInfos.Steps.DisplayOrder;
 using Api.Tests.Unit.Mocks;
 using Domain.Models;
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -209,7 +209,7 @@ internal sealed class ExerciseInfoStepTests
 		new([Users.User1], Users.User1, 0, typeof(NoContent)),
 		new([Users.User1], Users.User1, 1, typeof(NotFound<string>)),
 		new([Users.User1, Users.User2], Users.User1, 0, typeof(ForbidHttpResult)),
-		new([Users.User1, Users.User2], Users.User1, 1, typeof(NotFound<string>)),
+		new([Users.User1, Users.User2], Users.User1, 1, typeof(ForbidHttpResult)),
 		new([Users.User2], Users.User1, 0, typeof(ForbidHttpResult))
 	];
 

@@ -1,4 +1,4 @@
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 
 namespace Api.Dtos;
 
@@ -65,3 +65,21 @@ public sealed record class WorkoutExerciseSetKey(
 	Guid WorkoutId,
 	int ExerciseIndex,
 	int SetIndex);
+
+public sealed record class GetAntiforgeryTokenResponse(
+	string Token);
+
+public sealed record class GetTrackedWorkoutResponse(
+	Guid Id,
+	Guid WorkoutId,
+	DateTime PerformedAt,
+	TimeSpan Duration);
+
+public sealed record class CreateTrackedWorkoutRequest(
+	Guid WorkoutId,
+	DateTime PerformedAt,
+	TimeSpan Duration);
+
+public sealed record class EditTrackedWorkoutRequest(
+	DateTime PerformedAt,
+	TimeSpan Duration);

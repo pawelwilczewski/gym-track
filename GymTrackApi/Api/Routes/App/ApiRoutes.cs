@@ -1,4 +1,5 @@
 using Api.Routes.App.ExerciseInfos;
+using Api.Routes.App.Tracking;
 using Api.Routes.App.Workouts;
 using Asp.Versioning;
 
@@ -16,7 +17,8 @@ internal static class ApiRoutes
 		builder.MapGroup("api/v{apiVersion:apiVersion}")
 			.WithApiVersionSet(apiVersionSet)
 			.MapWorkoutRoutes()
-			.MapExerciseInfoRoutes();
+			.MapExerciseInfoRoutes()
+			.MapTrackingRoutes();
 
 		return builder;
 	}

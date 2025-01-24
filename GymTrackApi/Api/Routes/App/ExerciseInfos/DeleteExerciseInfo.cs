@@ -3,7 +3,7 @@ using Api.Files;
 using Application.Persistence;
 using Domain.Models;
 using Domain.Models.Common;
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,8 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var typedExerciseInfoId = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos.Include(exerciseInfo => exerciseInfo.Users)
+		var exerciseInfo = await dataContext.ExerciseInfos
+			.Include(exerciseInfo => exerciseInfo.Users)
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == typedExerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 

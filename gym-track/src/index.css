@@ -109,7 +109,7 @@
   }
 
   .card {
-    @apply mx-auto border border-border rounded-xl flex flex-col gap-6 p-8;
+    @apply border border-border rounded-xl flex flex-col gap-6 p-8;
   }
 
   .thumbnail-image {

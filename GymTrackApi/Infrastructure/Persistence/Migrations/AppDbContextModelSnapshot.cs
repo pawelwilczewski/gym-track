@@ -23,6 +23,73 @@ namespace Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.ExerciseInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AllowedMetricTypes")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ThumbnailImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExerciseInfos", "Workout");
+                });
+
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.ExerciseInfo+Step", b =>
+                {
+                    b.Property<Guid>("ExerciseInfoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageFile")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("ExerciseInfoId", "Index");
+
+                    b.ToTable("ExerciseInfoSteps", "Workout");
+                });
+
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.UserExerciseInfo", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ExerciseInfoId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "ExerciseInfoId");
+
+                    b.HasIndex("ExerciseInfoId");
+
+                    b.ToTable("UserExerciseInfos", "Workout");
+                });
+
             modelBuilder.Entity("Domain.Models.Identity.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -117,71 +184,30 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUsers", "Identity");
                 });
 
-            modelBuilder.Entity("Domain.Models.Workout.ExerciseInfo", b =>
+            modelBuilder.Entity("Domain.Models.Tracking.TrackedWorkout", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("AllowedMetricTypes")
-                        .HasColumnType("integer");
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("interval");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                    b.Property<DateTime>("PerformedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("ThumbnailImage")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExerciseInfos", "Workout");
-                });
-
-            modelBuilder.Entity("Domain.Models.Workout.ExerciseInfo+Step", b =>
-                {
-                    b.Property<Guid>("ExerciseInfoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ImageFile")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("ExerciseInfoId", "Index");
-
-                    b.ToTable("ExerciseInfoSteps", "Workout");
-                });
-
-            modelBuilder.Entity("Domain.Models.Workout.UserExerciseInfo", b =>
-                {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ExerciseInfoId")
+                    b.Property<Guid>("WorkoutId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "ExerciseInfoId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ExerciseInfoId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("UserExerciseInfos", "Workout");
+                    b.HasIndex("WorkoutId");
+
+                    b.ToTable("TrackedWorkouts", "Tracking");
                 });
 
             modelBuilder.Entity("Domain.Models.Workout.UserWorkout", b =>
@@ -364,9 +390,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", "Identity");
                 });
 
-            modelBuilder.Entity("Domain.Models.Workout.ExerciseInfo+Step", b =>
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.ExerciseInfo+Step", b =>
                 {
-                    b.HasOne("Domain.Models.Workout.ExerciseInfo", "ExerciseInfo")
+                    b.HasOne("Domain.Models.ExerciseInfo.ExerciseInfo", "ExerciseInfo")
                         .WithMany("Steps")
                         .HasForeignKey("ExerciseInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -375,9 +401,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("ExerciseInfo");
                 });
 
-            modelBuilder.Entity("Domain.Models.Workout.UserExerciseInfo", b =>
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.UserExerciseInfo", b =>
                 {
-                    b.HasOne("Domain.Models.Workout.ExerciseInfo", "ExerciseInfo")
+                    b.HasOne("Domain.Models.ExerciseInfo.ExerciseInfo", "ExerciseInfo")
                         .WithMany("Users")
                         .HasForeignKey("ExerciseInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -392,6 +418,25 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("ExerciseInfo");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.Tracking.TrackedWorkout", b =>
+                {
+                    b.HasOne("Domain.Models.Identity.User", "User")
+                        .WithMany("TrackedWorkouts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Workout.Workout", "Workout")
+                        .WithMany("TrackedWorkouts")
+                        .HasForeignKey("WorkoutId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Workout");
                 });
 
             modelBuilder.Entity("Domain.Models.Workout.UserWorkout", b =>
@@ -415,7 +460,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Models.Workout.Workout+Exercise", b =>
                 {
-                    b.HasOne("Domain.Models.Workout.ExerciseInfo", "ExerciseInfo")
+                    b.HasOne("Domain.Models.ExerciseInfo.ExerciseInfo", "ExerciseInfo")
                         .WithMany("Exercises")
                         .HasForeignKey("ExerciseInfoId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -494,14 +539,7 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Models.Identity.User", b =>
-                {
-                    b.Navigation("ExerciseInfos");
-
-                    b.Navigation("Workouts");
-                });
-
-            modelBuilder.Entity("Domain.Models.Workout.ExerciseInfo", b =>
+            modelBuilder.Entity("Domain.Models.ExerciseInfo.ExerciseInfo", b =>
                 {
                     b.Navigation("Exercises");
 
@@ -510,9 +548,20 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("Domain.Models.Identity.User", b =>
+                {
+                    b.Navigation("ExerciseInfos");
+
+                    b.Navigation("TrackedWorkouts");
+
+                    b.Navigation("Workouts");
+                });
+
             modelBuilder.Entity("Domain.Models.Workout.Workout", b =>
                 {
                     b.Navigation("Exercises");
+
+                    b.Navigation("TrackedWorkouts");
 
                     b.Navigation("Users");
                 });

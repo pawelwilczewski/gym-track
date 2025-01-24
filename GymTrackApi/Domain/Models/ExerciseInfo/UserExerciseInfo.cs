@@ -3,7 +3,7 @@ using Domain.Models.Identity;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
-namespace Domain.Models.Workout;
+namespace Domain.Models.ExerciseInfo;
 
 public class UserExerciseInfo : IUserOwned
 {

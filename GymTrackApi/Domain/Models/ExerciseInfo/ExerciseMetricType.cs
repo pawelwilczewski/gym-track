@@ -1,4 +1,4 @@
-namespace Domain.Models.Workout;
+namespace Domain.Models.ExerciseInfo;
 
 [Flags]
 public enum ExerciseMetricType

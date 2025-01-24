@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
 using Api.Routes.App.ExerciseInfos;
 using Api.Tests.Unit.Mocks;
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 

@@ -1,9 +1,9 @@
 using Domain.Models;
-using Domain.Models.Workout;
+using Domain.Models.ExerciseInfo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations.Workout;
+namespace Infrastructure.Persistence.Configurations.ExerciseInfo;
 
 internal sealed class UserExerciseInfoConfiguration : IEntityTypeConfiguration<UserExerciseInfo>
 {
@@ -17,7 +17,7 @@ internal sealed class UserExerciseInfoConfiguration : IEntityTypeConfiguration<U
 			});
 
 		builder.Property(userExerciseInfo => userExerciseInfo.ExerciseInfoId)
-			.HasConversion(Id<ExerciseInfo>.Converter);
+			.HasConversion(Id<Domain.Models.ExerciseInfo.ExerciseInfo>.Converter);
 
 		builder.HasOne(userExerciseInfo => userExerciseInfo.ExerciseInfo)
 			.WithMany(exerciseInfo => exerciseInfo.Users)

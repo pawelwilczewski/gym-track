@@ -1,3 +1,4 @@
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 
 namespace Api.Tests.Unit.Mocks;
