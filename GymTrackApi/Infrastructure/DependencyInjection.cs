@@ -27,7 +27,7 @@ public static class DependencyInjection
 					options.EnableSensitiveDataLogging();
 				}
 			})
-			.AddSingleton<IUserDataContextFactory, UserDataContextFactory>();
+			.AddScoped<IUserDataContextFactory, UserDataContextFactory>();
 
 		services
 			.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
