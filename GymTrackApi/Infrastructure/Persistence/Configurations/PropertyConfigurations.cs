@@ -1,6 +1,4 @@
-using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
-using Infrastructure.Persistence.Configurations.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Vogen;
 
@@ -15,8 +13,6 @@ internal static class PropertyConfigurations
 		builder.Properties<Name>().HaveMaxLength(Name.MAX_LENGTH);
 		builder.Properties<Description>().HaveMaxLength(Description.MAX_LENGTH);
 		builder.Properties<FilePath>().HaveMaxLength(FilePath.MAX_LENGTH);
-
-		builder.Properties<Owner>().HaveConversion<OwnerValueConverter>();
 
 		return builder;
 	}

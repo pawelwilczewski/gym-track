@@ -18,11 +18,13 @@ public class ExerciseInfo : IOwned
 
 	public ExerciseMetricType AllowedMetricTypes { get; private set; }
 
-	public Owner Owner { get; private set; }
-
-	// TODO Pawel: NOW encapsulate collections so we only use explicit Add/Remove guarded by userId
 	public virtual List<Step> Steps { get; private set; } = [];
 	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
+
+	public Owner Owner => ownerId;
+
+	// ReSharper disable once FieldCanBeMadeReadOnly.Local
+	private Guid? ownerId;
 
 	private ExerciseInfo() { }
 
@@ -39,7 +41,7 @@ public class ExerciseInfo : IOwned
 		ThumbnailImage = thumbnailImage;
 		Description = description;
 		AllowedMetricTypes = allowedMetricTypes;
-		Owner = owner;
+		ownerId = owner;
 	}
 
 	public static ExerciseInfo CreatePublic(

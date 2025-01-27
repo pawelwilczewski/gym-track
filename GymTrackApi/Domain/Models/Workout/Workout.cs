@@ -17,15 +17,20 @@ public class Workout : IOwned
 
 	public Name Name { get; private set; }
 
-	public Owner Owner { get; private set; }
-
 	public virtual List<Exercise> Exercises { get; private set; } = [];
 	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
+
+	public Owner Owner => ownerId;
+
+	// ReSharper disable once FieldCanBeMadeReadOnly.Local
+	private Guid? ownerId;
+
+	private Workout() { }
 
 	private Workout(Name name, Owner owner)
 	{
 		Name = name;
-		Owner = owner;
+		ownerId = owner;
 	}
 
 	public static Workout CreatePublic(Name name) =>

@@ -10,10 +10,13 @@ public class TrackedWorkout : IOwned
 	public Id<Workout.Workout> WorkoutId { get; }
 	public virtual Workout.Workout Workout { get; private set; } = default!;
 
-	public Owner Owner { get; }
-
 	public DateTime PerformedAt { get; set; }
 	public TimeSpan Duration { get; set; }
+
+	public Owner Owner => ownerId;
+
+	// ReSharper disable once FieldCanBeMadeReadOnly.Local
+	private Guid? ownerId;
 
 	private TrackedWorkout() { }
 
@@ -22,7 +25,7 @@ public class TrackedWorkout : IOwned
 		WorkoutId = workoutId;
 		PerformedAt = performedAt;
 		Duration = duration;
-		Owner = new Owner.User(userId);
+		ownerId = userId;
 	}
 
 	public void Update(DateTime performedAt, TimeSpan duration, Guid userId)
