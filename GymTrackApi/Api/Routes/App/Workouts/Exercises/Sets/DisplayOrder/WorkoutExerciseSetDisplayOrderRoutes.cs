@@ -5,7 +5,7 @@ internal static class WorkoutExerciseSetDisplayOrderRoutes
 	public static IEndpointRouteBuilder MapWorkoutExerciseSetDisplayOrderRoutes(this IEndpointRouteBuilder builder)
 	{
 		builder.MapGroup("{setIndex:int}/display-order")
-			.Map(new EditWorkoutExerciseSetDisplayOrder());
+			.Map(new UpdateWorkoutExerciseSetDisplayOrder());
 
 		return builder;
 	}

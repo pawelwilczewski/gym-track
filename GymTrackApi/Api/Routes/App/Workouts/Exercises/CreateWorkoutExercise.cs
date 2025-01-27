@@ -1,52 +1,35 @@
 using Api.Dtos;
-using Application.Persistence;
+using Application.Workout.Exercise.Commands;
 using Domain.Common;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.Workouts.Exercises;
 
+using ResultType = Results<Created, NotFound>;
+
 internal sealed class CreateWorkoutExercise : IEndpoint
 {
-	public static async Task<Results<Created, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromBody] CreateWorkoutExerciseRequest request,
-		[FromServices] IDataContext dataContext,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var workoutIdTyped = new Id<Workout>(workoutId);
-		var workout = await dataContext.Workouts.Include(workout => workout.Users)
-			.Include(workout => workout.Exercises)
-			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken)
+		var result = await sender.Send(new CreateWorkoutExerciseCommand(
+				new Id<Workout>(workoutId),
+				new Id<ExerciseInfo>(request.ExerciseInfoId),
+				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);
 
-		if (workout is null) return TypedResults.NotFound("Workout not found.");
-
-		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
-
-		var exerciseInfoId = new Id<ExerciseInfo>(request.ExerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
-			.Include(exerciseInfo => exerciseInfo.Users)
-			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == exerciseInfoId, cancellationToken)
-			.ConfigureAwait(false);
-
-		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
-		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
-
-		var index = workout.Exercises.GetNextIndex();
-		var displayOrder = workout.Exercises.GetNextDisplayOrder();
-		var exercise = new Workout.Exercise(workoutIdTyped, index, exerciseInfoId, displayOrder);
-
-		workout.Exercises.Add(exercise);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		return TypedResults.Created($"{httpContext.Request.Path}/{exercise.Index}");
+		return result.Match<ResultType>(
+			success => TypedResults.Created($"{httpContext.Request.Path}/{success.Value.Index}"),
+			notFound => TypedResults.NotFound());
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

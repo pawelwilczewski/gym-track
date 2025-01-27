@@ -5,7 +5,7 @@ internal static class ExerciseInfoStepDisplayOrderRoutes
 	internal static IEndpointRouteBuilder MapExerciseInfoStepDisplayOrderRoutes(this IEndpointRouteBuilder builder)
 	{
 		builder.MapGroup("{stepIndex:int}/display-order")
-			.Map(new EditExerciseInfoStepDisplayOrder());
+			.Map(new UpdateExerciseInfoStepDisplayOrder());
 
 		return builder;
 	}

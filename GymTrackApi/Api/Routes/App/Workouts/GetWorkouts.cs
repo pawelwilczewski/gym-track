@@ -1,32 +1,27 @@
-using Api.Dtos;
-using Application.Persistence;
+using Application.Workout.Dtos;
+using Application.Workout.Queries;
 using Domain.Common;
-using Domain.Models.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.Workouts;
 
+using ResultType = Ok<List<GetWorkoutResponse>>;
+
 internal sealed class GetWorkouts : IEndpoint
 {
-	public static async Task<Results<Ok<List<GetWorkoutResponse>>, NotFound<string>, ForbidHttpResult>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
-		[FromServices] IDataContext dataContext,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var userId = httpContext.User.GetUserId();
-		var isAdmin = httpContext.User.IsInRole(Role.ADMINISTRATOR);
-		var workouts = dataContext.Workouts
-			.Where(workout => workout.Users.Count <= 0 || isAdmin || workout.Users.Any(user => user.UserId == userId))
-			.AsNoTracking();
-		var workoutsResponse = workouts.Select(workout => new GetWorkoutResponse(
-			workout.Id.Value,
-			workout.Name.ToString(),
-			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index)).ToList()));
-		return TypedResults.Ok(await workoutsResponse
-			.ToListAsync(cancellationToken)
-			.ConfigureAwait(false));
+		var result = await sender.Send(new GetWorkoutsQuery(
+					httpContext.User.GetUserId()),
+				cancellationToken)
+			.ConfigureAwait(false);
+
+		return TypedResults.Ok(result.Value);
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

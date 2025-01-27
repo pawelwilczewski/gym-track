@@ -2,7 +2,7 @@
 using Api.Routes.App.ExerciseInfos.Steps;
 using Api.Routes.App.ExerciseInfos.Steps.DisplayOrder;
 using Api.Tests.Unit.Mocks;
-using Domain.Models;
+using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -134,7 +134,7 @@ internal sealed class ExerciseInfoStepTests
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
-		var result = await EditExerciseInfoStep.Handler(
+		var result = await UpdateExerciseInfoStep.Handler(
 				editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
 				0,
@@ -175,11 +175,11 @@ internal sealed class ExerciseInfoStepTests
 		exerciseInfo.Steps.Add(originalStep);
 		await dataContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
 
-		var result = await EditExerciseInfoStepDisplayOrder.Handler(
+		var result = await UpdateExerciseInfoStepDisplayOrder.Handler(
 				editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
 				stepIndex,
-				new EditDisplayOrderRequest(displayOrder),
+				new UpdateDisplayOrderRequest(displayOrder),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);

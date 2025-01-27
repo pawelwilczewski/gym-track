@@ -1,43 +1,34 @@
-using Api.Dtos;
-using Application.Persistence;
+using Application.Workout.Exercise.Dtos;
+using Application.Workout.Exercise.Queries;
+using Domain.Common;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.Workout;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.Workouts.Exercises;
 
+using ResultType = Results<Ok<GetWorkoutExerciseResponse>, NotFound>;
+
 internal sealed class GetWorkoutExercise : IEndpoint
 {
-	public static async Task<Results<Ok<GetWorkoutExerciseResponse>, NotFound<string>, ForbidHttpResult>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid workoutId,
 		[FromRoute] int exerciseIndex,
-		[FromServices] IDataContext dataContext,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var workoutIdTyped = new Id<Workout>(workoutId);
-		var workout = await dataContext.Workouts.AsNoTracking()
-			.Include(workout => workout.Users)
-			.Include(workout => workout.Exercises)
-			.ThenInclude(exercise => exercise.Sets)
-			.FirstOrDefaultAsync(workout => workout.Id == workoutIdTyped, cancellationToken);
+		var result = await sender.Send(new GetWorkoutExerciseQuery(
+				new Id<Workout>(workoutId),
+				exerciseIndex,
+				httpContext.User.GetUserId()), cancellationToken)
+			.ConfigureAwait(false);
 
-		if (workout is null) return TypedResults.NotFound("Workout not found.");
-		if (!httpContext.User.CanAccess(workout.Users)) return TypedResults.Forbid();
-
-		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == exerciseIndex);
-		if (exercise is null) return TypedResults.NotFound("Exercise not found.");
-
-		return TypedResults.Ok(new GetWorkoutExerciseResponse(
-			exercise.Index,
-			exercise.ExerciseInfoId.Value,
-			exercise.DisplayOrder,
-			exercise.Sets
-				.Select(set => new WorkoutExerciseSetKey(workoutId, exerciseIndex, set.Index))
-				.ToList()));
+		return result.Match<ResultType>(
+			success => TypedResults.Ok(success.Value),
+			notFound => TypedResults.NotFound());
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

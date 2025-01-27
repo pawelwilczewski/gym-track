@@ -1,40 +1,35 @@
-using Api.Dtos;
-using Application.Persistence;
+using Application.ExerciseInfo.Step.Dtos;
+using Application.ExerciseInfo.Step.Queries;
+using Domain.Common;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.ExerciseInfo;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
+using ResultType = Results<Ok<GetExerciseInfoStepResponse>, NotFound>;
+
 internal sealed class GetExerciseInfoStep : IEndpoint
 {
-	public static async Task<Results<Ok<GetExerciseInfoStepResponse>, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int stepIndex,
-		[FromServices] IDataContext dataContext,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var id = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos.AsNoTracking()
-			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == stepIndex))
-			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken);
+		var response = await sender.Send(
+				new GetExerciseInfoStepQuery(
+					new Id<ExerciseInfo>(exerciseInfoId),
+					stepIndex, httpContext.User.GetUserId()),
+				cancellationToken)
+			.ConfigureAwait(false);
 
-		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
-		if (!httpContext.User.CanAccess(exerciseInfo.Users)) return TypedResults.Forbid();
-
-		var step = exerciseInfo.Steps.SingleOrDefault(step => step.Index == stepIndex);
-		if (step is null) return TypedResults.NotFound("Step not found.");
-
-		return TypedResults.Ok(new GetExerciseInfoStepResponse(
-			step.Index,
-			step.Description.ToString(),
-			step.ImageFile?.ToString(),
-			step.DisplayOrder));
+		return response.Match<ResultType>(
+			success => TypedResults.Ok(success.Value),
+			notFound => TypedResults.NotFound());
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

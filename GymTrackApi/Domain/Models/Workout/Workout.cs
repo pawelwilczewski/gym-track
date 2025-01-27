@@ -1,5 +1,9 @@
-using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Common;
+using Domain.Common.Exceptions;
+using Domain.Common.Ownership;
+using Domain.Common.Results;
+using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Tracking;
 
@@ -7,26 +11,34 @@ using Domain.Models.Tracking;
 
 namespace Domain.Models.Workout;
 
-public class Workout
+public class Workout : IOwned
 {
 	public Id<Workout> Id { get; private set; } = Id<Workout>.New();
 
 	public Name Name { get; private set; }
 
-	public virtual List<UserWorkout> Users { get; private set; } = [];
+	public Owner Owner { get; private set; }
+
 	public virtual List<Exercise> Exercises { get; private set; } = [];
 	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
 
-	private Workout(Name name) => Name = name;
-	public static Workout CreateForEveryone(Name name) => new(name);
-
-	public static Workout CreateForUser(Name name, ClaimsPrincipal user)
+	private Workout(Name name, Owner owner)
 	{
-		var workout = new Workout(name);
-		var userWorkout = new UserWorkout(user.GetUserId(), workout.Id);
-		workout.Users.Add(userWorkout);
+		Name = name;
+		Owner = owner;
+	}
 
-		return workout;
+	public static Workout CreatePublic(Name name) =>
+		new(name, new Owner.Public());
+
+	public static Workout CreateForUser(Name name, Guid userId) =>
+		new(name, new Owner.User(userId));
+
+	public void Update(Name name, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		Name = name;
 	}
 
 	public class Exercise : IIndexed, IDisplayOrdered
@@ -62,16 +74,16 @@ public class Workout
 
 			public virtual Exercise Exercise { get; private set; } = default!;
 
-			public ExerciseMetric Metric { get; set; } = default!;
+			public ExerciseMetric Metric { get; private set; } = default!;
 
-			public PositiveCount Reps { get; set; }
+			public PositiveCount Reps { get; private set; }
 
 			public int DisplayOrder { get; set; }
 
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
-			public Set(Exercise exercise, int index, ExerciseMetric metric, PositiveCount reps, int displayOrder)
+			private Set(Exercise exercise, int index, ExerciseMetric metric, PositiveCount reps, int displayOrder)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;
@@ -80,6 +92,55 @@ public class Workout
 				Metric = metric;
 				Reps = reps;
 				DisplayOrder = displayOrder;
+			}
+
+			public static bool TryCreate(
+				Exercise exercise,
+				int index,
+				ExerciseMetric metric,
+				PositiveCount reps,
+				int displayOrder,
+				Guid userId,
+				[NotNullWhen(true)] out Set? set,
+				[NotNullWhen(false)] out ValidationError? error)
+			{
+				if (!exercise.Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
+				var exerciseInfo = exercise.ExerciseInfo;
+				if (!exerciseInfo.CanBeReadBy(userId)) throw new PermissionError();
+
+				if (!exerciseInfo.AllowedMetricTypes.HasFlag(metric.Type))
+				{
+					error = new ValidationError("Invalid metric type.");
+					set = null;
+					return false;
+				}
+
+				set = new Set(exercise, index, metric, reps, displayOrder);
+				error = null;
+				return true;
+			}
+
+			public bool TryUpdate(
+				ExerciseMetric metric,
+				PositiveCount reps,
+				Guid userId,
+				[NotNullWhen(false)] out ValidationError? error)
+			{
+				var exerciseInfo = Exercise.ExerciseInfo;
+				if (!exerciseInfo.CanBeReadBy(userId)) throw new PermissionError();
+
+				if (!exerciseInfo.AllowedMetricTypes.HasFlag(metric.Type))
+				{
+					error = new ValidationError("Invalid metric type.");
+					return false;
+				}
+
+				Metric = metric;
+				Reps = reps;
+
+				error = null;
+				return true;
 			}
 		}
 	}

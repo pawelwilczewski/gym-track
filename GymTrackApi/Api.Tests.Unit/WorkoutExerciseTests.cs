@@ -101,11 +101,11 @@ internal sealed class WorkoutExerciseTests
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
-		var result = await EditWorkoutExerciseDisplayOrder.Handler(
+		var result = await UpdateWorkoutExerciseDisplayOrder.Handler(
 				editor.GetHttpContext(),
 				workout.Id.Value,
 				exerciseIndex,
-				new EditDisplayOrderRequest(displayOrder),
+				new UpdateDisplayOrderRequest(displayOrder),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);

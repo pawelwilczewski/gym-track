@@ -1,5 +1,4 @@
-﻿using Api.Dtos;
-using Api.Routes.App.ExerciseInfos;
+﻿using Api.Routes.App.ExerciseInfos;
 using Api.Tests.Unit.Mocks;
 using Domain.Models.ExerciseInfo;
 using Microsoft.AspNetCore.Http;
@@ -121,7 +120,7 @@ internal sealed class ExerciseInfoTests
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await EditExerciseInfo.Handler(
+		var result = await UpdateExerciseInfo.Handler(
 				data.Editor.GetHttpContext(),
 				exerciseInfo.Id.Value,
 				data.Name,

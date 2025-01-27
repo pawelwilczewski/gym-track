@@ -10,7 +10,7 @@ internal static class WorkoutExerciseSetRoutes
 			.Map(new CreateWorkoutExerciseSet())
 			.Map(new DeleteWorkoutExerciseSet())
 			.Map(new GetWorkoutExerciseSet())
-			.Map(new EditWorkoutExerciseSet())
+			.Map(new UpdateWorkoutExerciseSet())
 			.MapWorkoutExerciseSetDisplayOrderRoutes();
 
 		return builder;

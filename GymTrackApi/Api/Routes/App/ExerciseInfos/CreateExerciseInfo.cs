@@ -1,10 +1,10 @@
 using Api.Common;
 using Api.Files;
-using Application.Persistence;
-using Domain.Models;
+using Application.ExerciseInfo.Commands;
+using Domain.Common;
+using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Identity;
-using Domain.Models.Workout;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,38 +18,32 @@ internal sealed class CreateExerciseInfo : IEndpoint
 		[FromForm] string description,
 		[FromForm] ExerciseMetricType allowedMetricTypes,
 		IFormFile? thumbnailImage,
-		[FromServices] IDataContext dataContext,
-		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		if (!Name.TryCreate(name, out var exerciseInfoName, out var error))
+		var nameResult = Name.TryFrom(name);
+		if (!nameResult.IsSuccess)
 		{
-			return error.ToValidationProblem(nameof(name));
+			return nameResult.Error.ToValidationProblem(nameof(name));
 		}
 
-		if (!Description.TryCreate(description, out var exerciseInfoDescription, out error))
+		var descriptionResult = Description.TryFrom(description);
+		if (!descriptionResult.IsSuccess)
 		{
-			return error.ToValidationProblem(nameof(description));
+			return descriptionResult.Error.ToValidationProblem(nameof(description));
 		}
 
-		var id = Id<ExerciseInfo>.New();
+		var userId = httpContext.User.GetUserId();
 
-		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-			? ExerciseInfo.CreateForEveryone(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, id)
-			: ExerciseInfo.CreateForUser(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
-
-		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideImage(
-				exerciseInfo.GetThumbnailImageBaseName(),
-				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY_URL,
-				fileStoragePathProvider,
-				cancellationToken)
+		var result = await sender.Send(new CreateExerciseInfoCommand(
+				nameResult.ValueObject,
+				descriptionResult.ValueObject,
+				thumbnailImage?.AsNamedFile(),
+				allowedMetricTypes,
+				userId), cancellationToken)
 			.ConfigureAwait(false);
-		exerciseInfo.ThumbnailImage = thumbnailImagePath;
 
-		dataContext.ExerciseInfos.Add(exerciseInfo);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		return TypedResults.Created($"{httpContext.Request.Path}/{exerciseInfo.Id}");
+		return TypedResults.Created($"{httpContext.Request.Path}/{result.Value.Id}");
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

@@ -12,7 +12,7 @@ internal static class ExerciseInfoRoutes
 			.Map(new CreateExerciseInfo())
 			.Map(new GetExerciseInfos())
 			.Map(new GetExerciseInfo())
-			.Map(new EditExerciseInfo())
+			.Map(new UpdateExerciseInfo())
 			.Map(new DeleteExerciseInfo())
 			.MapExerciseInfoStepRoutes();
 

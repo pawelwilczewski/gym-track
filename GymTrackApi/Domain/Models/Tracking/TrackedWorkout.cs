@@ -1,26 +1,34 @@
-using Domain.Models.Identity;
+using Domain.Common.Exceptions;
+using Domain.Common.Ownership;
 
 namespace Domain.Models.Tracking;
 
-public class TrackedWorkout
+public class TrackedWorkout : IOwned
 {
 	public Id<TrackedWorkout> Id { get; } = Id<TrackedWorkout>.New();
 
 	public Id<Workout.Workout> WorkoutId { get; }
 	public virtual Workout.Workout Workout { get; private set; } = default!;
 
-	public Guid UserId { get; }
-	public virtual User User { get; private set; } = default!;
+	public Owner Owner { get; }
 
 	public DateTime PerformedAt { get; set; }
 	public TimeSpan Duration { get; set; }
 
-	public TrackedWorkout() { }
+	private TrackedWorkout() { }
 
-	public TrackedWorkout(Id<Workout.Workout> workoutId, Guid userId, DateTime performedAt, TimeSpan duration)
+	public TrackedWorkout(Id<Workout.Workout> workoutId, DateTime performedAt, TimeSpan duration, Guid userId)
 	{
 		WorkoutId = workoutId;
-		UserId = userId;
+		PerformedAt = performedAt;
+		Duration = duration;
+		Owner = new Owner.User(userId);
+	}
+
+	public void Update(DateTime performedAt, TimeSpan duration, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
 		PerformedAt = performedAt;
 		Duration = duration;
 	}

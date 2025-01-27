@@ -8,7 +8,7 @@ internal static class TrackedWorkoutRoutes
 			.Map(new GetTrackedWorkout())
 			.Map(new GetTrackedWorkouts())
 			.Map(new CreateTrackedWorkout())
-			.Map(new EditTrackedWorkout())
+			.Map(new UpdateTrackedWorkout())
 			.Map(new DeleteTrackedWorkout());
 
 		return builder;

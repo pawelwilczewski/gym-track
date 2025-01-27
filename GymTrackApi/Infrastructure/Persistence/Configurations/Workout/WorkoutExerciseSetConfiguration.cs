@@ -38,5 +38,9 @@ internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration
 				metric => JsonSerializer.Serialize(metric, JsonSettings.Options),
 				json => JsonSerializer.Deserialize<ExerciseMetric>(json, JsonSettings.Options)!)
 			.HasColumnType("json");
+
+		builder
+			.Navigation(set => set.Exercise)
+			.AutoInclude();
 	}
 }

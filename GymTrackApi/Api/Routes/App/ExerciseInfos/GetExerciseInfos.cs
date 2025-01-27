@@ -1,39 +1,25 @@
-using Api.Dtos;
-using Application.Persistence;
+using Application.ExerciseInfo.Dtos;
+using Application.ExerciseInfo.Queries;
 using Domain.Common;
-using Domain.Models.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.ExerciseInfos;
 
 internal sealed class GetExerciseInfos : IEndpoint
 {
-	public static async Task<Results<Ok<List<GetExerciseInfoResponse>>, NotFound<string>, ForbidHttpResult>> Handler(
+	public static async Task<Ok<List<GetExerciseInfoResponse>>> Handler(
 		HttpContext httpContext,
-		[FromServices] IDataContext dataContext,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var userId = httpContext.User.GetUserId();
-		var isAdmin = httpContext.User.IsInRole(Role.ADMINISTRATOR);
+		var result = await sender.Send(
+				new GetExerciseInfosQuery(httpContext.User.GetUserId()),
+				cancellationToken)
+			.ConfigureAwait(false);
 
-		var exerciseInfos = dataContext.ExerciseInfos
-			.Where(exerciseInfo => exerciseInfo.Users.Count <= 0 || isAdmin || exerciseInfo.Users.Any(user => user.UserId == userId))
-			.Include(exerciseInfo => exerciseInfo.Steps)
-			.AsNoTracking();
-
-		var exerciseInfosResponse = exerciseInfos.Select(exerciseInfo => new GetExerciseInfoResponse(
-			exerciseInfo.Id.Value,
-			exerciseInfo.Name.ToString(),
-			exerciseInfo.Description.ToString(),
-			exerciseInfo.AllowedMetricTypes,
-			exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.ToString() : null,
-			exerciseInfo.Steps.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index)).ToList()));
-
-		return TypedResults.Ok(await exerciseInfosResponse
-			.ToListAsync(cancellationToken)
-			.ConfigureAwait(false));
+		return TypedResults.Ok(result.Value);
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

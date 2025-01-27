@@ -36,7 +36,7 @@ internal sealed class UseCaseTests
 		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(workoutUri).ConfigureAwait(false);
 		await Assert.That(workout).IsNotNull();
 
-		response = await httpClient.PutAsJsonAsync(workoutUri, new EditWorkoutRequest(" ,,,,")).ConfigureAwait(false);
+		response = await httpClient.PutAsJsonAsync(workoutUri, new UpdateWorkoutRequest(" ,,,,")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
 	}
 
@@ -102,7 +102,7 @@ internal sealed class UseCaseTests
 		await Assert.That(set).IsNotNull();
 
 		Amount.TryCreate(30.0, out var weight);
-		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new EditWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
+		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new UpdateWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
@@ -151,7 +151,7 @@ internal sealed class UseCaseTests
 		performedAt = DateTime.Today - TimeSpan.FromDays(1);
 		duration = TimeSpan.FromMinutes(40.0);
 		response = await httpClient.PutAsJsonAsync($"api/v1/tracking/workouts/{trackedWorkout.Id}",
-				new EditTrackedWorkoutRequest(performedAt, duration))
+				new UpdateTrackedWorkoutRequest(performedAt, duration))
 			.ConfigureAwait(false);
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);

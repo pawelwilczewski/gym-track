@@ -6,24 +6,6 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Models;
 
-internal sealed class AmountJsonConverter : JsonConverter<Amount>
-{
-	public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-	{
-		if (reader.TokenType != JsonTokenType.Number)
-		{
-			throw new JsonException($"Expected number when converting to Amount. Got {reader.TokenType}.");
-		}
-
-		var value = reader.GetDouble();
-		Amount.TryCreate(value, out var amount);
-		return amount;
-	}
-
-	public override void Write(Utf8JsonWriter writer, Amount value, JsonSerializerOptions options) =>
-		writer.WriteNumberValue(value.Value);
-}
-
 [JsonConverter(typeof(AmountJsonConverter))]
 public readonly record struct Amount : IParsable<Amount>, IEquatable<double>
 {
@@ -67,4 +49,22 @@ public readonly record struct Amount : IParsable<Amount>, IEquatable<double>
 	}
 
 	public override string ToString() => Value.ToString(CultureInfo.CurrentCulture);
+}
+
+internal sealed class AmountJsonConverter : JsonConverter<Amount>
+{
+	public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	{
+		if (reader.TokenType != JsonTokenType.Number)
+		{
+			throw new JsonException($"Expected number when converting to Amount. Got {reader.TokenType}.");
+		}
+
+		var value = reader.GetDouble();
+		Amount.TryCreate(value, out var amount);
+		return amount;
+	}
+
+	public override void Write(Utf8JsonWriter writer, Amount value, JsonSerializerOptions options) =>
+		writer.WriteNumberValue(value.Value);
 }

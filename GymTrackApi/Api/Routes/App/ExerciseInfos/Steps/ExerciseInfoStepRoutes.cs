@@ -9,7 +9,7 @@ internal static class ExerciseInfoStepRoutes
 		builder.MapGroup("{exerciseInfoId:Guid}/steps/")
 			.Map(new CreateExerciseInfoStep())
 			.Map(new GetExerciseInfoStep())
-			.Map(new EditExerciseInfoStep())
+			.Map(new UpdateExerciseInfoStep())
 			.Map(new DeleteExerciseInfoStep())
 			.MapExerciseInfoStepDisplayOrderRoutes();
 

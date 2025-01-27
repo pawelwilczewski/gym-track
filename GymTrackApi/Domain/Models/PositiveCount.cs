@@ -7,6 +7,11 @@ public readonly record struct PositiveCount : IParsable<PositiveCount>, IEquatab
 {
 	public static ValueConverter<PositiveCount, int> Converter { get; } = new(id => (int)id.Value, value => new PositiveCount((uint)value));
 
+	public uint Value { get; }
+	public int IntValue => (int)Value;
+
+	private PositiveCount(uint value) => Value = value;
+
 	public static PositiveCount Parse(string s, IFormatProvider? provider) => new(uint.Parse(s, provider));
 
 	public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out PositiveCount result)
@@ -33,11 +38,6 @@ public readonly record struct PositiveCount : IParsable<PositiveCount>, IEquatab
 
 	public static bool operator ==(PositiveCount left, int right) => left.Equals(right);
 	public static bool operator !=(PositiveCount left, int right) => !left.Equals(right);
-
-	public uint Value { get; }
-	public int IntValue => (int)Value;
-
-	private PositiveCount(uint value) => Value = value;
 
 	public bool Equals(PositiveCount other) => Value == other.Value;
 	public bool Equals(uint other) => Value == other;

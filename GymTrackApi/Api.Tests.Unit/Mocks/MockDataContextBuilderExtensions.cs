@@ -12,7 +12,7 @@ internal static class MockDataContextBuilderExtensions
 			case []:
 			case [AdminInfo]:
 			{
-				workout = Workout.CreateForEveryone(Placeholders.RandomName());
+				workout = Workout.CreatePublic(Placeholders.RandomName());
 				break;
 			}
 			default:
@@ -43,7 +43,7 @@ internal static class MockDataContextBuilderExtensions
 			case []:
 			case [AdminInfo]:
 			{
-				exerciseInfo = ExerciseInfo.CreateForEveryone(Placeholders.RandomName(), Placeholders.RandomFilePath(), Placeholders.RandomDescription(), allowedMetricTypes);
+				exerciseInfo = ExerciseInfo.CreatePublic(Placeholders.RandomName(), Placeholders.RandomFilePath(), Placeholders.RandomDescription(), allowedMetricTypes);
 				break;
 			}
 			default:

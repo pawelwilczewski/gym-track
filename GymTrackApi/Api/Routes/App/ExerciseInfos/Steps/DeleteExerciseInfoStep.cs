@@ -1,48 +1,33 @@
-using Api.Common;
-using Api.Files;
-using Application.Persistence;
+using Application.ExerciseInfo.Step.Commands;
+using Domain.Common;
 using Domain.Models;
-using Domain.Models.Common;
 using Domain.Models.ExerciseInfo;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.ExerciseInfos.Steps;
 
+using ResultType = Results<NoContent, NotFound>;
+
 internal sealed class DeleteExerciseInfoStep : IEndpoint
 {
-	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult, ValidationProblem>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
 		[FromRoute] Guid exerciseInfoId,
 		[FromRoute] int stepIndex,
-		[FromServices] IDataContext dataContext,
-		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
+		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var id = new Id<ExerciseInfo>(exerciseInfoId);
-		var exerciseInfo = await dataContext.ExerciseInfos
-			.Include(exerciseInfo => exerciseInfo.Users)
-			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == stepIndex))
-			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == id, cancellationToken)
+		var result = await sender.Send(new DeleteExerciseInfoStepCommand(
+				new Id<ExerciseInfo>(exerciseInfoId),
+				stepIndex,
+				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);
 
-		if (exerciseInfo is null) return TypedResults.NotFound("Exercise info not found.");
-		if (!httpContext.User.CanModifyOrDelete(exerciseInfo.Users)) return TypedResults.Forbid();
-
-		var exerciseInfoStep = exerciseInfo.Steps.SingleOrDefault(step => step.Index == stepIndex);
-		if (exerciseInfoStep is null) return TypedResults.NotFound("Step not found.");
-
-		await EntityImage.Delete(
-				exerciseInfoStep.GetImageBaseName(),
-				Paths.EXERCISE_INFO_STEP_IMAGES_DIRECTORY_URL,
-				fileStoragePathProvider)
-			.ConfigureAwait(false);
-
-		exerciseInfo.Steps.Remove(exerciseInfoStep);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		return TypedResults.NoContent();
+		return result.Match<ResultType>(
+			success => TypedResults.NoContent(),
+			notFound => TypedResults.NotFound());
 	}
 
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)

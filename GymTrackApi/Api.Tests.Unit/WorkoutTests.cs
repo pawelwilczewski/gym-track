@@ -152,10 +152,10 @@ internal sealed class WorkoutTests
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await EditWorkout.Handler(
+		var result = await UpdateWorkout.Handler(
 				editor.GetHttpContext(),
 				workout.Id.Value,
-				new EditWorkoutRequest(workoutName),
+				new UpdateWorkoutRequest(workoutName),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);

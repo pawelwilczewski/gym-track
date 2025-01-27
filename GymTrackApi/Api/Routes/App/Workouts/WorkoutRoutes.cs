@@ -12,7 +12,7 @@ internal static class WorkoutRoutes
 			.Map(new CreateWorkout())
 			.Map(new GetWorkouts())
 			.Map(new GetWorkout())
-			.Map(new EditWorkout())
+			.Map(new UpdateWorkout())
 			.Map(new DeleteWorkout())
 			.MapWorkoutExerciseRoutes();
 

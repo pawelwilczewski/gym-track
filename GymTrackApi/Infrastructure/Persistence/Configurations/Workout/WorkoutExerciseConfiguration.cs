@@ -26,5 +26,9 @@ internal sealed class WorkoutExerciseConfiguration : IEntityTypeConfiguration<Do
 			.WithMany(info => info.Exercises)
 			.HasForeignKey(exercise => exercise.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Restrict);
+
+		builder
+			.Navigation(exercise => exercise.Workout)
+			.AutoInclude();
 	}
 }

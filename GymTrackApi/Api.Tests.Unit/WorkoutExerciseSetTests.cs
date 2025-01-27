@@ -138,12 +138,12 @@ internal sealed class WorkoutExerciseSetTests
 		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
-		var result = await EditWorkoutExerciseSet.Handler(
+		var result = await UpdateWorkoutExerciseSet.Handler(
 				editor.GetHttpContext(),
 				workout.Id.Value,
 				exerciseIndex,
 				setIndex,
-				new EditWorkoutExerciseSetRequest(metric, reps),
+				new UpdateWorkoutExerciseSetRequest(metric, reps),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
@@ -179,12 +179,12 @@ internal sealed class WorkoutExerciseSetTests
 		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
 		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
 
-		var result = await EditWorkoutExerciseSetDisplayOrder.Handler(
+		var result = await UpdateWorkoutExerciseSetDisplayOrder.Handler(
 				editor.GetHttpContext(),
 				workout.Id.Value,
 				exerciseIndex,
 				setIndex,
-				new EditDisplayOrderRequest(displayOrder),
+				new UpdateDisplayOrderRequest(displayOrder),
 				dataContext,
 				CancellationToken.None)
 			.ConfigureAwait(false);
