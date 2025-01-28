@@ -32,7 +32,7 @@ internal sealed class CreateTrackedWorkoutHandler
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
 		var workout = await dataContext.Workouts.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.FirstOrDefaultAsync(workout => workout.Id == request.WorkoutId, cancellationToken);
 
 		if (workout is null) return new NotFound();

@@ -21,10 +21,8 @@ public class ExerciseInfo : IOwned
 	public virtual List<Step> Steps { get; private set; } = [];
 	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
 
-	public Owner Owner => ownerId;
-
-	// ReSharper disable once FieldCanBeMadeReadOnly.Local
-	private Guid? ownerId;
+	public Guid? OwnerId { get; private set; }
+	public Owner Owner => OwnerId;
 
 	private ExerciseInfo() { }
 
@@ -41,7 +39,7 @@ public class ExerciseInfo : IOwned
 		ThumbnailImage = thumbnailImage;
 		Description = description;
 		AllowedMetricTypes = allowedMetricTypes;
-		ownerId = owner;
+		OwnerId = owner;
 	}
 
 	public static ExerciseInfo CreatePublic(

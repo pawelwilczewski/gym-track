@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
-using Application.Persistence;
 using Domain.Models.Identity;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -40,7 +40,7 @@ internal static class FunctionalTestWebApplicationFactoryExtensions
 
 		using var scope = factory.Services.CreateScope();
 
-		var dataContext = scope.ServiceProvider.GetRequiredService<IDataContext>();
+		var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 		var user = await dataContext.Users.FirstAsync(user => user.Email == email).ConfigureAwait(false);
 
 		var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();

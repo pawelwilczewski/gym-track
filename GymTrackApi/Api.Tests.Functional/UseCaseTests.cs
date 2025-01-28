@@ -3,6 +3,10 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using Api.Dtos;
+using Application.Tracking.TrackedWorkout.Dtos;
+using Application.Workout.Dtos;
+using Application.Workout.Exercise.Dtos;
+using Application.Workout.Exercise.Set.Dtos;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 
@@ -25,7 +29,7 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateWorkout_InvalidEdit_Fails(FunctionalTestWebAppFactory factory)
+	public async Task CreateWorkout_InvalidUpdate_Fails(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
@@ -67,7 +71,7 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateEditDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateUpdateDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
@@ -119,12 +123,12 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateAndEditTrackedWorkouts_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateAndUpdateTrackedWorkouts_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
 		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
-		var exerciseId = CreateExerciseInfo(httpClient, antiforgeryToken!);
+		var exerciseId = await CreateExerciseInfo(httpClient, antiforgeryToken!);
 
 		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Test workout")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);

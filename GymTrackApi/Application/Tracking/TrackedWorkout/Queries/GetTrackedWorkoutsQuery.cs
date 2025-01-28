@@ -27,7 +27,7 @@ internal sealed class GetTrackedWorkoutsHandler
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
 		var trackedWorkouts = dataContext.TrackedWorkouts.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.Select(trackedWorkout => new GetTrackedWorkoutResponse(
 				trackedWorkout.Id.Value,
 				trackedWorkout.WorkoutId.Value,

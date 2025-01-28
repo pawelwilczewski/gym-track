@@ -15,19 +15,19 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 		builder
 			.HasMany(user => user.Workouts)
 			.WithOne()
-			.HasForeignKey("ownerId")
+			.HasForeignKey(workout => workout.OwnerId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
 			.HasMany(user => user.ExerciseInfos)
 			.WithOne()
-			.HasForeignKey("ownerId")
+			.HasForeignKey(exerciseInfo => exerciseInfo.OwnerId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
 			.HasMany(user => user.TrackedWorkouts)
 			.WithOne()
-			.HasForeignKey("ownerId")
+			.HasForeignKey(trackedWorkout => trackedWorkout.OwnerId)
 			.OnDelete(DeleteBehavior.Cascade);
 	}
 }

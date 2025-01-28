@@ -13,10 +13,9 @@ public class TrackedWorkout : IOwned
 	public DateTime PerformedAt { get; set; }
 	public TimeSpan Duration { get; set; }
 
-	public Owner Owner => ownerId;
-
-	// ReSharper disable once FieldCanBeMadeReadOnly.Local
-	private Guid? ownerId;
+	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
+	public Guid? OwnerId { get; private set; }
+	public Owner Owner => OwnerId;
 
 	private TrackedWorkout() { }
 
@@ -25,7 +24,7 @@ public class TrackedWorkout : IOwned
 		WorkoutId = workoutId;
 		PerformedAt = performedAt;
 		Duration = duration;
-		ownerId = userId;
+		OwnerId = userId;
 	}
 
 	public void Update(DateTime performedAt, TimeSpan duration, Guid userId)

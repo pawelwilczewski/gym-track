@@ -30,7 +30,7 @@ internal sealed class GetTrackedWorkoutHandler
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
 		var trackedWorkout = await dataContext.TrackedWorkouts.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.FirstOrDefaultAsync(workout => workout.Id == request.TrackedWorkoutId, cancellationToken);
 
 		if (trackedWorkout is null) return new NotFound();

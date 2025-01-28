@@ -4,6 +4,7 @@ using Api.Common;
 using Api.Files;
 using Api.Middleware;
 using Api.Routes;
+using Application;
 using Application.Persistence;
 using Asp.Versioning;
 using Domain.Models.Identity;
@@ -74,6 +75,7 @@ builder.Services.AddAuthorizationBuilder()
 	.AddPolicies();
 
 builder.Services
+	.AddApplicationDependencies(builder.Configuration)
 	.AddInfrastructureDependencies(builder.Configuration);
 
 builder.Services

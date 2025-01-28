@@ -2,6 +2,7 @@ namespace Domain.Common.Ownership;
 
 public interface IOwned
 {
+	Guid? OwnerId { get; }
 	Owner Owner { get; }
 }
 

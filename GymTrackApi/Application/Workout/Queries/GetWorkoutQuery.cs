@@ -30,7 +30,7 @@ internal sealed class GetWorkoutHandler
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
 		var workout = await dataContext.Workouts.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.Include(workout => workout.Exercises)
 			.FirstOrDefaultAsync(workout => workout.Id == request.WorkoutId, cancellationToken);
 

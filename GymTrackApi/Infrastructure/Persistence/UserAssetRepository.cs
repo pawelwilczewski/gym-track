@@ -8,10 +8,10 @@ namespace Infrastructure.Persistence;
 internal sealed class UserAssetRepository<TEntity> : IUserAssetRepository<TEntity> where TEntity : class, IOwned
 {
 	public IQueryable<TEntity> Readable => dbContext.Set<TEntity>()
-		.Where(entity => entity.Owner is Owner.Public || ((Owner.User)entity.Owner).UserId == userId);
+		.Where(entity => entity.OwnerId == null || entity.OwnerId == userId);
 
 	public IQueryable<TEntity> Modifiable => dbContext.Set<TEntity>()
-		.Where(entity => entity.Owner is Owner.User && ((Owner.User)entity.Owner).UserId == userId);
+		.Where(entity => entity.OwnerId == userId);
 
 	private readonly Guid userId;
 	private readonly AppDbContext dbContext;
