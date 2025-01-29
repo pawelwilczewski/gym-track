@@ -1,4 +1,3 @@
-using Domain.Common;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 
@@ -8,7 +7,7 @@ internal static class MockDataContextBuilderExtensions
 {
 	public static MockDataContextBuilder WithWorkout(this MockDataContextBuilder builder, out Workout workout, IUserInfo owner)
 	{
-		workout = Workout.CreateForUser(Placeholders.RandomName(), owner.GetHttpContext().User.GetUserId());
+		workout = Workout.CreateForUser(Placeholders.RandomName(), owner.Id);
 
 		builder.WithEntity(workout);
 		return builder;
@@ -21,7 +20,7 @@ internal static class MockDataContextBuilderExtensions
 			Placeholders.RandomFilePath(),
 			Placeholders.RandomDescription(),
 			allowedMetricTypes,
-			owner.GetHttpContext().User.GetUserId());
+			owner.Id);
 
 		builder.WithEntity(exerciseInfo);
 		return builder;
