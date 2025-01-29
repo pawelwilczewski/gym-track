@@ -30,7 +30,7 @@ internal sealed class UpdateTrackedWorkout : IEndpoint
 			.ConfigureAwait(false);
 
 		return result.Match<ResultType>(
-			success => TypedResults.NotFound(),
+			success => TypedResults.NoContent(),
 			notFound => TypedResults.NotFound());
 	}
 

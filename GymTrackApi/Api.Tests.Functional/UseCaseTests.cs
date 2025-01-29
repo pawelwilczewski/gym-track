@@ -114,7 +114,8 @@ internal sealed class UseCaseTests
 		await Assert.That(set!.Reps).IsEqualTo(8);
 		await Assert.That(set.Metric is Weight weightMetric && Math.Abs(weightMetric.Value.Value - 30.0) <= 0.0001).IsTrue();
 
-		await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+		response = await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		await Assert.That((await httpClient.GetAsync(setUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 		await Assert.That((await httpClient.GetAsync(exerciseUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
