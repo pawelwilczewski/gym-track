@@ -11,6 +11,6 @@ public readonly partial struct Reps
 
 	private static Validation Validate(int input) =>
 		input <= 0
-			? Validation.Invalid("Positive count can't be created from number <= 0.")
+			? Validation.Invalid("Reps can't be created from number <= 0")
 			: Validation.Ok;
 }
