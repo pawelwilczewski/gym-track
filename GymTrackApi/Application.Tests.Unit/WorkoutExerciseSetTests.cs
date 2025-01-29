@@ -14,24 +14,19 @@ namespace Application.Tests.Unit;
 internal sealed class WorkoutExerciseSetTests
 {
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo creator, ExerciseMetricType metricType,
-		ExerciseMetric metric, Reps reps, Type responseType)> CreateWorkoutExerciseSetData()
-	{
-		Amount.TryCreate(120.0, out var amount);
-
-		return
-		[
-			(Users.User2, Users.User1, ExerciseMetricType.Distance,
-				new Distance(amount, Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
-			(Users.Admin1, Users.Admin1, ExerciseMetricType.Distance,
-				new Distance(amount, Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
-			(Users.User1, Users.User1, ExerciseMetricType.Weight,
-				new Distance(amount, Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
-			(Users.User1, Users.User1, ExerciseMetricType.Weight,
-				new Weight(amount, Weight.Unit.Kilogram), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
-			(Users.User1, Users.User1, ExerciseMetricType.Duration,
-				new Duration(TimeSpan.FromSeconds(1000.0)), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
-		];
-	}
+		ExerciseMetric metric, Reps reps, Type responseType)> CreateWorkoutExerciseSetData() =>
+	[
+		(Users.User2, Users.User1, ExerciseMetricType.Distance,
+			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
+		(Users.Admin1, Users.Admin1, ExerciseMetricType.Distance,
+			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User1, Users.User1, ExerciseMetricType.Weight,
+			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
+		(Users.User1, Users.User1, ExerciseMetricType.Weight,
+			new Weight(Amount.From(120.0), Weight.Unit.Kilogram), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User1, Users.User1, ExerciseMetricType.Duration,
+			new Duration(TimeSpan.FromSeconds(1000.0)), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseSetData))]
@@ -126,18 +121,13 @@ internal sealed class WorkoutExerciseSetTests
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
 			ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)>
-		UpdateWorkoutExerciseSetData()
-	{
-		Amount.TryCreate(120.0, out var amount);
-
-		return
-		[
-			(Users.Admin1, Users.Admin1, ExerciseMetricType.Duration,
-				new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(Success)),
-			(Users.User1, Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight,
-				new Weight(amount, Weight.Unit.Pound), 4, typeof(Success))
-		];
-	}
+		UpdateWorkoutExerciseSetData() =>
+	[
+		(Users.Admin1, Users.Admin1, ExerciseMetricType.Duration,
+			new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(Success)),
+		(Users.User1, Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight,
+			new Weight(Amount.From(120.0), Weight.Unit.Pound), 4, typeof(Success))
+	];
 
 	[Test]
 	[MethodDataSource(nameof(UpdateWorkoutExerciseSetData))]

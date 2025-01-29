@@ -3,7 +3,7 @@ using Vogen;
 namespace Domain.Models;
 
 [ValueObject<int>(
-	parsableForStrings: ParsableForStrings.GenerateMethodsAndInterface,
+	parsableForPrimitives: ParsableForPrimitives.HoistMethodsAndInterfaces,
 	primitiveEqualityGeneration: PrimitiveEqualityGeneration.GenerateOperatorsAndMethods)]
 public readonly partial struct Reps
 {

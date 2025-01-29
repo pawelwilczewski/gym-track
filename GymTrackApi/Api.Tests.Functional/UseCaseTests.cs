@@ -97,7 +97,7 @@ internal sealed class UseCaseTests
 		await Assert.That(exercise!.Index).IsEqualTo(exerciseIndex);
 
 		const int setIndex = 0;
-		Amount.TryCreate(1000.0, out var distance);
+		var distance = Amount.From(1000.0);
 		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets", new CreateWorkoutExerciseSetRequest(new Distance(distance, Distance.Unit.Metre), 3));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var setUri = response.Headers.Location!;
@@ -105,7 +105,7 @@ internal sealed class UseCaseTests
 		var set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
 		await Assert.That(set).IsNotNull();
 
-		Amount.TryCreate(30.0, out var weight);
+		var weight = Amount.From(30.0);
 		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new UpdateWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
