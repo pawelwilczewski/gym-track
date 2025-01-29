@@ -1,14 +1,13 @@
-using Api.Tests.Unit.Mocks;
+using Application.Tests.Unit.Mocks;
 using Application.Workout.Exercise.Commands;
 using Application.Workout.Exercise.DisplayOrder.Commands;
 using Application.Workout.Exercise.Dtos;
 using Application.Workout.Exercise.Queries;
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Workout;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
-namespace Api.Tests.Unit;
+namespace Application.Tests.Unit;
 
 internal sealed class WorkoutExerciseTests
 {
@@ -73,7 +72,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		const int exerciseIndex = 0;
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync();
 
 		var handler = new GetWorkoutExerciseHandler(new UserDataContextFactory(dataContext));
@@ -109,7 +108,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		const int exerciseIndex = 0;
-		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();
 
@@ -150,7 +149,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		const int exerciseIndex = 0;
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync();
 
 		var handler = new DeleteWorkoutExerciseHandler(new UserDataContextFactory(dataContext));

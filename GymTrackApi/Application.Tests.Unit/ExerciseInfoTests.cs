@@ -1,14 +1,14 @@
-﻿using Api.Tests.Unit.Mocks;
-using Application.ExerciseInfo.Commands;
+﻿using Application.ExerciseInfo.Commands;
 using Application.ExerciseInfo.Dtos;
 using Application.ExerciseInfo.Queries;
+using Application.Tests.Unit.Mocks;
 using Domain.Common.ValueObjects;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
-namespace Api.Tests.Unit;
+namespace Application.Tests.Unit;
 
 internal sealed class ExerciseInfoTests
 {
@@ -94,7 +94,7 @@ internal sealed class ExerciseInfoTests
 
 		var handler = new GetExerciseInfoHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-			new GetExerciseInfoQuery(new Id<ExerciseInfo>(Guid.NewGuid()), Users.User1.Id),
+			new GetExerciseInfoQuery(new Id<Domain.Models.ExerciseInfo.ExerciseInfo>(Guid.NewGuid()), Users.User1.Id),
 			CancellationToken.None);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));

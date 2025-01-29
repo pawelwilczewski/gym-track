@@ -1,8 +1,7 @@
 using System.Text;
 using Domain.Common.ValueObjects;
-using Microsoft.AspNetCore.Http;
 
-namespace Api.Tests.Unit.Mocks;
+namespace Application.Tests.Unit.Mocks;
 
 internal static class Placeholders
 {
@@ -33,9 +32,9 @@ internal static class Placeholders
 		}
 	}
 
-	public static IFormFile FormFile()
+	public static NamedFile NamedFile()
 	{
 		var bytes = "Fake image content"u8.ToArray();
-		return new FormFile(new MemoryStream(bytes), 0, bytes.Length, "Image", "image.png");
+		return new NamedFile("Fake named file.png", new MemoryStream(bytes));
 	}
 }

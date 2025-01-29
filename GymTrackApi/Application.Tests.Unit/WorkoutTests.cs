@@ -1,14 +1,13 @@
-﻿using Api.Tests.Unit.Mocks;
+﻿using Application.Tests.Unit.Mocks;
 using Application.Workout.Commands;
 using Application.Workout.Dtos;
 using Application.Workout.Queries;
 using Domain.Common.ValueObjects;
 using Domain.Models;
-using Domain.Models.Workout;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
-namespace Api.Tests.Unit;
+namespace Application.Tests.Unit;
 
 internal sealed class WorkoutTests
 {
@@ -118,7 +117,7 @@ internal sealed class WorkoutTests
 
 		var handler = new GetWorkoutHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-				new GetWorkoutQuery(new Id<Workout>(new Guid()), Users.User1.Id), CancellationToken.None)
+				new GetWorkoutQuery(new Id<Domain.Models.Workout.Workout>(new Guid()), Users.User1.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));

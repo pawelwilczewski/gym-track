@@ -1,15 +1,15 @@
-﻿using Api.Tests.Unit.Mocks;
-using Application.ExerciseInfo.Step.Commands;
+﻿using Application.ExerciseInfo.Step.Commands;
 using Application.ExerciseInfo.Step.DisplayOrder.Commands;
 using Application.ExerciseInfo.Step.Dtos;
 using Application.ExerciseInfo.Step.Queries;
+using Application.Tests.Unit.Mocks;
 using Domain.Common.ValueObjects;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
-namespace Api.Tests.Unit;
+namespace Application.Tests.Unit;
 
 internal sealed class ExerciseInfoStepTests
 {
@@ -70,7 +70,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var step = new ExerciseInfo.Step(
+		var step = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
 			0,
 			Description.From("Test Description"),
@@ -96,7 +96,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var handler = new GetExerciseInfoStepHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-			new GetExerciseInfoStepQuery(new Id<ExerciseInfo>(Guid.NewGuid()), 0, Users.User1.Id),
+			new GetExerciseInfoStepQuery(new Id<Domain.Models.ExerciseInfo.ExerciseInfo>(Guid.NewGuid()), 0, Users.User1.Id),
 			CancellationToken.None);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
@@ -126,7 +126,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new ExerciseInfo.Step(
+		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
 			0,
 			Description.From("Original"),
@@ -173,7 +173,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new ExerciseInfo.Step(
+		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
 			0,
 			Description.From("Original"),
@@ -218,7 +218,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new ExerciseInfo.Step(
+		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
 			0,
 			Description.From("Original"),
