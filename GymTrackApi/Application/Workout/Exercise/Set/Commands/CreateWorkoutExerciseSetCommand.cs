@@ -17,7 +17,7 @@ public sealed record class CreateWorkoutExerciseSetCommand(
 	Id<Domain.Models.Workout.Workout> WorkoutId,
 	int ExerciseIndex,
 	ExerciseMetric Metric,
-	PositiveCount Reps,
+	Reps Reps,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

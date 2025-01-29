@@ -79,14 +79,14 @@ public class Workout : IOwned
 
 			public ExerciseMetric Metric { get; private set; } = default!;
 
-			public PositiveCount Reps { get; private set; }
+			public Reps Reps { get; private set; }
 
 			public int DisplayOrder { get; set; }
 
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
-			private Set(Exercise exercise, int index, ExerciseMetric metric, PositiveCount reps, int displayOrder)
+			private Set(Exercise exercise, int index, ExerciseMetric metric, Reps reps, int displayOrder)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;
@@ -101,7 +101,7 @@ public class Workout : IOwned
 				Exercise exercise,
 				int index,
 				ExerciseMetric metric,
-				PositiveCount reps,
+				Reps reps,
 				int displayOrder,
 				Guid userId,
 				[NotNullWhen(true)] out Set? set,
@@ -126,7 +126,7 @@ public class Workout : IOwned
 
 			public bool TryUpdate(
 				ExerciseMetric metric,
-				PositiveCount reps,
+				Reps reps,
 				Guid userId,
 				[NotNullWhen(false)] out ValidationError? error)
 			{

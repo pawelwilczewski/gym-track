@@ -5,7 +5,7 @@ namespace Domain.Models;
 [ValueObject<int>(
 	parsableForStrings: ParsableForStrings.GenerateMethodsAndInterface,
 	primitiveEqualityGeneration: PrimitiveEqualityGeneration.GenerateOperatorsAndMethods)]
-public readonly partial struct PositiveCount
+public readonly partial struct Reps
 {
 	private static int NormalizeInput(int input) => input;
 

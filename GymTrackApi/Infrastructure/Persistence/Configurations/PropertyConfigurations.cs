@@ -22,5 +22,5 @@ internal static class PropertyConfigurations
 [EfCoreConverter<Name>]
 [EfCoreConverter<Description>]
 [EfCoreConverter<FilePath>]
-[EfCoreConverter<PositiveCount>]
+[EfCoreConverter<Reps>]
 internal static partial class VogenEfCoreConverters;

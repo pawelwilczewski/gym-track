@@ -16,7 +16,7 @@ public sealed record class UpdateWorkoutExerciseSetCommand(
 	int ExerciseIndex,
 	int SetIndex,
 	ExerciseMetric Metric,
-	PositiveCount Reps,
+	Reps Reps,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

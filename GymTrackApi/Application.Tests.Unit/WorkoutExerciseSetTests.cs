@@ -14,22 +14,22 @@ namespace Application.Tests.Unit;
 internal sealed class WorkoutExerciseSetTests
 {
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo creator, ExerciseMetricType metricType,
-		ExerciseMetric metric, PositiveCount reps, Type responseType)> CreateWorkoutExerciseSetData()
+		ExerciseMetric metric, Reps reps, Type responseType)> CreateWorkoutExerciseSetData()
 	{
 		Amount.TryCreate(120.0, out var amount);
 
 		return
 		[
 			(Users.User2, Users.User1, ExerciseMetricType.Distance,
-				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(3), typeof(NotFound)),
+				new Distance(amount, Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
 			(Users.Admin1, Users.Admin1, ExerciseMetricType.Distance,
-				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
+				new Distance(amount, Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
 			(Users.User1, Users.User1, ExerciseMetricType.Weight,
-				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(1), typeof(ValidationError)),
+				new Distance(amount, Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
 			(Users.User1, Users.User1, ExerciseMetricType.Weight,
-				new Weight(amount, Weight.Unit.Kilogram), PositiveCount.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
+				new Weight(amount, Weight.Unit.Kilogram), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
 			(Users.User1, Users.User1, ExerciseMetricType.Duration,
-				new Duration(TimeSpan.FromSeconds(1000.0)), PositiveCount.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
+				new Duration(TimeSpan.FromSeconds(1000.0)), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
 		];
 	}
 
@@ -40,7 +40,7 @@ internal sealed class WorkoutExerciseSetTests
 		IUserInfo creator,
 		ExerciseMetricType metricType,
 		ExerciseMetric metric,
-		PositiveCount reps,
+		Reps reps,
 		Type responseType)
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
@@ -101,7 +101,7 @@ internal sealed class WorkoutExerciseSetTests
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
-			PositiveCount.From(2),
+			Reps.From(2),
 			0,
 			workoutOwner.Id,
 			out var set, out _))
@@ -165,7 +165,7 @@ internal sealed class WorkoutExerciseSetTests
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
-			PositiveCount.From(2),
+			Reps.From(2),
 			0,
 			workoutOwner.Id, out var set, out _))
 		{
@@ -183,7 +183,7 @@ internal sealed class WorkoutExerciseSetTests
 				exerciseIndex,
 				setIndex,
 				metric,
-				PositiveCount.From(reps),
+				Reps.From(reps),
 				editor.Id),
 			CancellationToken.None);
 
@@ -222,7 +222,7 @@ internal sealed class WorkoutExerciseSetTests
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
-			PositiveCount.From(2),
+			Reps.From(2),
 			0,
 			workoutOwner.Id, out var set, out _))
 		{
@@ -279,7 +279,7 @@ internal sealed class WorkoutExerciseSetTests
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
-			PositiveCount.From(2),
+			Reps.From(2),
 			0,
 			workoutOwner.Id, out var set, out _))
 		{
