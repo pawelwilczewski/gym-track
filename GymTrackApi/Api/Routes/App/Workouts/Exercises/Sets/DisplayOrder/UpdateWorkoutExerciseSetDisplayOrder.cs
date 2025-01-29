@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.Workout.Exercise.Set.DisplayOrder.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -23,7 +22,7 @@ internal sealed class UpdateWorkoutExerciseSetDisplayOrder : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new UpdateWorkoutExerciseSetDisplayOrderCommand(
-				new Id<Workout>(workoutId),
+				WorkoutId.From(workoutId),
 				exerciseIndex,
 				setIndex,
 				request.DisplayOrder,

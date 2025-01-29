@@ -22,7 +22,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new CreateWorkoutExerciseCommand(
-				new Id<Workout>(workoutId),
+				WorkoutId.From(workoutId),
 				new Id<ExerciseInfo>(request.ExerciseInfoId),
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

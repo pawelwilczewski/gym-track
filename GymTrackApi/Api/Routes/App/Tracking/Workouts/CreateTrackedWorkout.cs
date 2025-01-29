@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.Tracking.TrackedWorkout.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +19,7 @@ internal sealed class CreateTrackedWorkout : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new CreateTrackedWorkoutCommand(
-				new Id<Workout>(request.WorkoutId),
+				WorkoutId.From(request.WorkoutId),
 				request.PerformedAt,
 				request.Duration,
 				httpContext.User.GetUserId()), cancellationToken)

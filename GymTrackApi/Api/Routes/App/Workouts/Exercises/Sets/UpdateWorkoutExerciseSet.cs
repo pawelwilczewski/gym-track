@@ -27,7 +27,7 @@ internal sealed class UpdateWorkoutExerciseSet : IEndpoint
 		if (!repsOrError.IsSuccess) return repsOrError.Error.ToValidationProblem(nameof(request.Reps));
 
 		var result = await sender.Send(new UpdateWorkoutExerciseSetCommand(
-					new Id<Workout>(workoutId),
+					WorkoutId.From(workoutId),
 					exerciseIndex,
 					setIndex,
 					request.Metric,

@@ -1,5 +1,5 @@
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -10,7 +10,7 @@ namespace Application.Workout.Exercise.Set.DisplayOrder.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateWorkoutExerciseSetDisplayOrderCommand(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	int ExerciseIndex,
 	int SetIndex,
 	int DisplayOrder,

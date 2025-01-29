@@ -1,5 +1,6 @@
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
+using Domain.Models.Workout;
 
 namespace Domain.Models.Tracking;
 
@@ -7,7 +8,7 @@ public class TrackedWorkout : IOwned
 {
 	public Id<TrackedWorkout> Id { get; } = Id<TrackedWorkout>.New();
 
-	public Id<Workout.Workout> WorkoutId { get; }
+	public WorkoutId WorkoutId { get; }
 	public virtual Workout.Workout Workout { get; private set; } = default!;
 
 	public DateTime PerformedAt { get; set; }
@@ -19,7 +20,7 @@ public class TrackedWorkout : IOwned
 
 	private TrackedWorkout() { }
 
-	public TrackedWorkout(Id<Workout.Workout> workoutId, DateTime performedAt, TimeSpan duration, Guid userId)
+	public TrackedWorkout(WorkoutId workoutId, DateTime performedAt, TimeSpan duration, Guid userId)
 	{
 		WorkoutId = workoutId;
 		PerformedAt = performedAt;

@@ -2,6 +2,7 @@ using Application.Persistence;
 using Application.Workout.Exercise.Dtos;
 using Domain.Common;
 using Domain.Models;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -12,7 +13,7 @@ namespace Application.Workout.Exercise.Commands;
 using ResultType = OneOf<Success<GetWorkoutExerciseResponse>, NotFound>;
 
 public sealed record class CreateWorkoutExerciseCommand(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
 	Guid UserId) : IRequest<ResultType>;
 

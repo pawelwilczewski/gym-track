@@ -1,6 +1,6 @@
 using Application.Persistence;
 using Domain.Common.ValueObjects;
-using Domain.Models;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.Workout.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateWorkoutCommand(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	Name Name,
 	Guid UserId) : IRequest<ResultType>;
 

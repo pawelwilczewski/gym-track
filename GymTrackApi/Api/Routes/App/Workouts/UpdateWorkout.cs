@@ -3,7 +3,6 @@ using Api.Dtos;
 using Application.Workout.Commands;
 using Domain.Common;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -29,7 +28,7 @@ internal sealed class UpdateWorkout : IEndpoint
 		}
 
 		var result = await sender.Send(new UpdateWorkoutCommand(
-				new Id<Workout>(workoutId),
+				WorkoutId.From(workoutId),
 				nameOrError.ValueObject,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

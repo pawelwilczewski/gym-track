@@ -1,6 +1,5 @@
 using Application.Workout.Exercise.Set.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,7 +20,7 @@ internal sealed class DeleteWorkoutExerciseSet : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new DeleteWorkoutExerciseSetCommand(
-				new Id<Workout>(workoutId),
+				WorkoutId.From(workoutId),
 				exerciseIndex,
 				setIndex,
 				httpContext.User.GetUserId()), cancellationToken)

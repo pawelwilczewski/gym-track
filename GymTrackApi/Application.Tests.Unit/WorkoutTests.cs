@@ -3,7 +3,7 @@ using Application.Workout.Commands;
 using Application.Workout.Dtos;
 using Application.Workout.Queries;
 using Domain.Common.ValueObjects;
-using Domain.Models;
+using Domain.Models.Workout;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
@@ -117,7 +117,7 @@ internal sealed class WorkoutTests
 
 		var handler = new GetWorkoutHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-				new GetWorkoutQuery(new Id<Domain.Models.Workout.Workout>(new Guid()), Users.User1.Id), CancellationToken.None)
+				new GetWorkoutQuery(WorkoutId.From(new Guid()), Users.User1.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));

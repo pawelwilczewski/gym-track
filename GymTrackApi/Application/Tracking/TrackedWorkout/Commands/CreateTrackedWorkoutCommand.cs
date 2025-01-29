@@ -1,6 +1,6 @@
 using Application.Persistence;
 using Application.Tracking.TrackedWorkout.Dtos;
-using Domain.Models;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.Tracking.TrackedWorkout.Commands;
 using ResultType = OneOf<Success<GetTrackedWorkoutResponse>, NotFound>;
 
 public sealed record class CreateTrackedWorkoutCommand(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	DateTime PerformedAt,
 	TimeSpan Duration,
 	Guid UserId) : IRequest<ResultType>;

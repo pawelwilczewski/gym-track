@@ -4,6 +4,7 @@ using Domain.Common;
 using Domain.Common.Results;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -14,7 +15,7 @@ namespace Application.Workout.Exercise.Set.Commands;
 using ResultType = OneOf<Success<GetWorkoutExerciseSetResponse>, NotFound, ValidationError>;
 
 public sealed record class CreateWorkoutExerciseSetCommand(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	int ExerciseIndex,
 	ExerciseMetric Metric,
 	Reps Reps,

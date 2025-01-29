@@ -6,14 +6,27 @@ using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Tracking;
+using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.Workout;
 
+[ValueObject<Guid>]
+public readonly partial struct WorkoutId
+{
+	public static WorkoutId New() => From(Ulid.NewUlid().ToGuid());
+}
+
+[ValueObject<Guid>]
+public readonly partial struct WorkoutExerciseId;
+
+[ValueObject<Guid>]
+public readonly partial struct WorkoutExerciseSetId;
+
 public class Workout : IOwned
 {
-	public Id<Workout> Id { get; private set; } = Id<Workout>.New();
+	public WorkoutId Id { get; private set; } = WorkoutId.New();
 
 	public Name Name { get; private set; }
 
@@ -46,7 +59,7 @@ public class Workout : IOwned
 
 	public class Exercise : IIndexed, IDisplayOrdered
 	{
-		public Id<Workout> WorkoutId { get; private set; }
+		public WorkoutId WorkoutId { get; private set; }
 		public int Index { get; private set; }
 
 		public virtual Workout Workout { get; private set; } = default!;
@@ -61,7 +74,7 @@ public class Workout : IOwned
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(Id<Workout> workoutId, int index, Id<ExerciseInfo.ExerciseInfo> exerciseInfoId, int displayOrder)
+		public Exercise(WorkoutId workoutId, int index, Id<ExerciseInfo.ExerciseInfo> exerciseInfoId, int displayOrder)
 		{
 			WorkoutId = workoutId;
 			Index = index;
@@ -71,7 +84,7 @@ public class Workout : IOwned
 
 		public class Set : IIndexed, IDisplayOrdered
 		{
-			public Id<Workout> WorkoutId { get; private set; }
+			public WorkoutId WorkoutId { get; private set; }
 			public int ExerciseIndex { get; private set; }
 			public int Index { get; private set; }
 

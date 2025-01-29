@@ -1,7 +1,6 @@
 using Application.Workout.Exercise.Dtos;
 using Application.Workout.Exercise.Queries;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,7 +20,7 @@ internal sealed class GetWorkoutExercise : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new GetWorkoutExerciseQuery(
-				new Id<Workout>(workoutId),
+				WorkoutId.From(workoutId),
 				exerciseIndex,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

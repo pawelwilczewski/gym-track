@@ -19,10 +19,6 @@ internal sealed class TrackedWorkoutConfiguration : IEntityTypeConfiguration<Tra
 			.HasForeignKey(trackedWorkout => trackedWorkout.WorkoutId);
 
 		builder
-			.Property(trackedWorkout => trackedWorkout.WorkoutId)
-			.HasConversion(Id<Domain.Models.Workout.Workout>.Converter);
-
-		builder
 			.Property(trackedWorkout => trackedWorkout.Id)
 			.HasConversion(Id<TrackedWorkout>.Converter);
 	}

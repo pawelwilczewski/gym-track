@@ -1,6 +1,6 @@
 using Application.Persistence;
 using Application.Workout.Exercise.Set.Dtos;
-using Domain.Models;
+using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.Workout.Exercise.Set.Queries;
 using ResultType = OneOf<Success<GetWorkoutExerciseSetResponse>, NotFound>;
 
 public sealed record class GetWorkoutExerciseSetQuery(
-	Id<Domain.Models.Workout.Workout> WorkoutId,
+	WorkoutId WorkoutId,
 	int ExerciseIndex,
 	int SetIndex,
 	Guid UserId) : IRequest<ResultType>;
