@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.Tracking.TrackedWorkout.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Tracking;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,7 +21,7 @@ internal sealed class UpdateTrackedWorkout : IEndpoint
 	{
 		var result = await sender.Send(
 				new UpdateTrackedWorkoutCommand(
-					new Id<TrackedWorkout>(trackedWorkoutId),
+					TrackedWorkoutId.From(trackedWorkoutId),
 					request.PerformedAt,
 					request.Duration,
 					httpContext.User.GetUserId()),

@@ -1,5 +1,5 @@
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.Tracking;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -10,7 +10,7 @@ namespace Application.Tracking.TrackedWorkout.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class DeleteTrackedWorkoutCommand(
-	Id<Domain.Models.Tracking.TrackedWorkout> TrackedWorkoutId,
+	TrackedWorkoutId TrackedWorkoutId,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

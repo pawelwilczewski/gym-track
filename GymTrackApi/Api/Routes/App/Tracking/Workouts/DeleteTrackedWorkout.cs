@@ -1,6 +1,5 @@
 using Application.Tracking.TrackedWorkout.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.Tracking;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +19,7 @@ internal sealed class DeleteTrackedWorkout : IEndpoint
 	{
 		var result = await sender.Send(
 				new DeleteTrackedWorkoutCommand(
-					new Id<TrackedWorkout>(trackedWorkoutId),
+					TrackedWorkoutId.From(trackedWorkoutId),
 					httpContext.User.GetUserId()),
 				cancellationToken)
 			.ConfigureAwait(false);

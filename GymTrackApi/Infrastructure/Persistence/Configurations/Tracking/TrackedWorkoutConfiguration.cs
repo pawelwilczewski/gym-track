@@ -1,4 +1,3 @@
-using Domain.Models;
 using Domain.Models.Tracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -17,9 +16,5 @@ internal sealed class TrackedWorkoutConfiguration : IEntityTypeConfiguration<Tra
 			.HasOne(trackedWorkout => trackedWorkout.Workout)
 			.WithMany(workout => workout.TrackedWorkouts)
 			.HasForeignKey(trackedWorkout => trackedWorkout.WorkoutId);
-
-		builder
-			.Property(trackedWorkout => trackedWorkout.Id)
-			.HasConversion(Id<TrackedWorkout>.Converter);
 	}
 }

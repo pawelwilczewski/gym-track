@@ -1,12 +1,19 @@
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Models.Workout;
+using Vogen;
 
 namespace Domain.Models.Tracking;
 
+[ValueObject<Guid>]
+public readonly partial struct TrackedWorkoutId
+{
+	public static TrackedWorkoutId New() => From(Ulid.NewUlid().ToGuid());
+}
+
 public class TrackedWorkout : IOwned
 {
-	public Id<TrackedWorkout> Id { get; } = Id<TrackedWorkout>.New();
+	public TrackedWorkoutId Id { get; } = TrackedWorkoutId.New();
 
 	public WorkoutId WorkoutId { get; }
 	public virtual Workout.Workout Workout { get; private set; } = default!;
