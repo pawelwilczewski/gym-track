@@ -114,9 +114,17 @@ internal sealed class MockDataContextBuilder
 		return this;
 	}
 
-	public async Task<IDataContext> Build()
+	public async Task<AppDbContext> Build()
 	{
 		await Task.WhenAll(tasks.Select(task => task())).ConfigureAwait(false);
 		return Context;
+	}
+
+	public async Task<IUserDataContext> Build(IUserInfo forUser)
+	{
+		await Task.WhenAll(tasks.Select(task => task())).ConfigureAwait(false);
+		var factory = new UserDataContextFactory(Context);
+
+		return factory.ForUser(forUser.Id);
 	}
 }

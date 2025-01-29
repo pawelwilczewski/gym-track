@@ -25,7 +25,7 @@ internal sealed class GetExerciseInfosHandler
 
 		var exerciseInfos = dataContext.ExerciseInfos.Readable
 			.Include(exerciseInfo => exerciseInfo.Steps)
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.Select(exerciseInfo => new GetExerciseInfoResponse(
 				exerciseInfo.Id.Value,
 				exerciseInfo.Name.ToString(),

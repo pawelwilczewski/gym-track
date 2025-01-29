@@ -16,12 +16,12 @@ public sealed record class UpdateExerciseInfoStepDisplayOrderCommand(
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
-internal sealed class UpdateExerciseInfoStepHandler
+internal sealed class UpdateExerciseInfoStepDisplayOrderHandler
 	: IRequestHandler<UpdateExerciseInfoStepDisplayOrderCommand, ResultType>
 {
 	private readonly IUserDataContextFactory dataContextFactory;
 
-	public UpdateExerciseInfoStepHandler(IUserDataContextFactory dataContextFactory) =>
+	public UpdateExerciseInfoStepDisplayOrderHandler(IUserDataContextFactory dataContextFactory) =>
 		this.dataContextFactory = dataContextFactory;
 
 	public async Task<ResultType> Handle(

@@ -21,7 +21,7 @@ internal sealed class UpdateWorkoutExerciseDisplayOrder : IEndpoint
 		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var result = await sender.Send(new UpdateWorkoutExerciseDisplayOrderQuery(
+		var result = await sender.Send(new UpdateWorkoutExerciseDisplayOrderCommand(
 				new Id<Workout>(workoutId),
 				exerciseIndex,
 				request.DisplayOrder,

@@ -9,7 +9,7 @@ namespace Application.Workout.Exercise.Set.DisplayOrder.Commands;
 
 using ResultType = OneOf<Success, NotFound>;
 
-public sealed record class UpdateWorkoutExerciseSetDisplayOrderQuery(
+public sealed record class UpdateWorkoutExerciseSetDisplayOrderCommand(
 	Id<Domain.Models.Workout.Workout> WorkoutId,
 	int ExerciseIndex,
 	int SetIndex,
@@ -18,7 +18,7 @@ public sealed record class UpdateWorkoutExerciseSetDisplayOrderQuery(
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateWorkoutExerciseSetDisplayOrderHandler
-	: IRequestHandler<UpdateWorkoutExerciseSetDisplayOrderQuery, ResultType>
+	: IRequestHandler<UpdateWorkoutExerciseSetDisplayOrderCommand, ResultType>
 {
 	private readonly IUserDataContextFactory dataContextFactory;
 
@@ -26,7 +26,7 @@ internal sealed class UpdateWorkoutExerciseSetDisplayOrderHandler
 		this.dataContextFactory = dataContextFactory;
 
 	public async Task<ResultType> Handle(
-		UpdateWorkoutExerciseSetDisplayOrderQuery request,
+		UpdateWorkoutExerciseSetDisplayOrderCommand request,
 		CancellationToken cancellationToken)
 	{
 		var dataContext = dataContextFactory.ForUser(request.UserId);

@@ -62,7 +62,7 @@ internal sealed class CreateWorkoutExerciseSetHandler
 		return new Success<GetWorkoutExerciseSetResponse>(new GetWorkoutExerciseSetResponse(
 			set.Index,
 			set.Metric,
-			set.Reps.IntValue,
+			set.Reps.Value,
 			set.DisplayOrder));
 	}
 }

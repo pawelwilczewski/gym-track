@@ -1,195 +1,182 @@
-﻿using Api.Dtos;
-using Api.Routes.App.Workouts;
-using Api.Tests.Unit.Mocks;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Api.Tests.Unit.Mocks;
+using Application.Workout.Commands;
+using Application.Workout.Dtos;
+using Application.Workout.Queries;
+using Domain.Common.ValueObjects;
+using Domain.Models;
+using Domain.Models.Workout;
+using Infrastructure.Persistence;
+using OneOf.Types;
 
 namespace Api.Tests.Unit;
 
 internal sealed class WorkoutTests
 {
-	public static IEnumerable<(IUserInfo creator, string workoutName, Type responseType)> CreateWorkoutData()
+	public static IEnumerable<(IUserInfo creator, Name workoutName, Type responseType)> CreateWorkoutData()
 	{
 		List<IUserInfo> users = [Users.Admin1, Users.User1];
 		List<(string name, Type responseType)> workoutNames =
 		[
-			new("ABC Workout", typeof(Created)),
-			new("A", typeof(Created)),
-			new(",.;-", typeof(ValidationProblem)),
-			new(null!, typeof(ValidationProblem)),
-			new("", typeof(ValidationProblem))
+			new("ABC Workout", typeof(Success<GetWorkoutResponse>)),
+			new("A", typeof(Success<GetWorkoutResponse>))
 		];
 
 		foreach (var user in users)
 		{
 			foreach (var (name, responseType) in workoutNames)
 			{
-				yield return new ValueTuple<IUserInfo, string, Type>(user, name, responseType);
+				yield return new ValueTuple<IUserInfo, Name, Type>(user, Name.From(name), responseType);
 			}
 		}
 	}
 
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutData))]
-	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, string workoutName, Type responseType)
+	public async Task CreateWorkout_ReturnsCorrectResponse(IUserInfo user, Name workoutName, Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await CreateWorkout.Handler(
-				user.GetHttpContext(),
-				new CreateWorkoutRequest(workoutName),
-				dataContext,
-				CancellationToken.None)
+		var handler = new CreateWorkoutHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new CreateWorkoutCommand(workoutName, user.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
+	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
 	[
-		new([Users.Admin1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User1], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User2], Users.Admin1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User1], Users.User1, typeof(Ok<GetWorkoutResponse>)),
-		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
+		new(Users.Admin1, Users.User1, typeof(NotFound)),
+		new(Users.User1, Users.Admin1, typeof(NotFound)),
+		new(Users.User2, Users.Admin1, typeof(NotFound)),
+		new(Users.User1, Users.User1, typeof(Success<GetWorkoutResponse>)),
+		new(Users.User2, Users.User1, typeof(NotFound))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutData))]
-	public async Task GetWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo accessor, Type responseType)
+	public async Task GetWorkout_ReturnsCorrectResponse(IUserInfo owner, IUserInfo accessor, Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, owners)
+			.WithWorkout(out var workout, owner)
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await GetWorkout.Handler(
-				accessor.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
+		var handler = new GetWorkoutHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new GetWorkoutQuery(workout.Id, accessor.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IReadOnlyList<IUserInfo>> workoutsOwners, IUserInfo accessor, int returnedCount)> GetWorkoutsData() =>
+	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutsOwners, IUserInfo accessor, int returnedCount)> GetWorkoutsData() =>
 	[
-		new([[Users.Admin1], [Users.User1]], Users.User1, 2),
-		new([[Users.User1], [Users.User2], [Users.Admin1]], Users.User1, 2),
-		new([[Users.User2], [Users.User2], [Users.User2]], Users.User1, 0),
+		new([Users.Admin1, Users.User1], Users.User1, 1),
+		new([Users.User1, Users.User2, Users.Admin1], Users.User1, 1),
+		new([Users.User2, Users.User2, Users.User2], Users.User1, 0),
 		new([], Users.User1, 0),
-		new([[Users.Admin1], [Users.Admin1], [Users.User2]], Users.User2, 3)
+		new([Users.Admin1, Users.Admin1, Users.User2], Users.User2, 1)
 	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutsData))]
-	public async Task GetWorkouts_ReturnsCorrectCount(IReadOnlyList<IReadOnlyList<IUserInfo>> workoutsOwners, IUserInfo accessor, int returnedCount)
+	public async Task GetWorkouts_ReturnsCorrectCount(IReadOnlyList<IUserInfo> workoutsOwners, IUserInfo accessor, int returnedCount)
 	{
 		var builder = MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers();
 
-		foreach (var owners in workoutsOwners)
+		foreach (var owner in workoutsOwners)
 		{
-			builder.WithWorkout(out _, owners);
+			builder.WithWorkout(out _, owner);
 		}
 
-		using var dataContext = await builder
+		await using var dataContext = await builder
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await GetWorkouts.Handler(
-				accessor.GetHttpContext(),
-				dataContext,
-				CancellationToken.None)
+		var handler = new GetWorkoutsHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new GetWorkoutsQuery(accessor.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(typeof(Ok<List<GetWorkoutResponse>>));
-
-		await Assert.That(((Ok<List<GetWorkoutResponse>>)result.Result).Value?.Count).IsEqualTo(returnedCount);
+		await Assert.That(result.Value.Count).IsEqualTo(returnedCount);
 	}
 
 	[Test]
 	public async Task GetWorkout_InvalidId_ReturnsNotFound()
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out _, [])
+			.WithWorkout(out _, Users.User1)
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await GetWorkout.Handler(
-				Users.User1.GetHttpContext(),
-				new Guid(),
-				dataContext,
-				CancellationToken.None)
+		var handler = new GetWorkoutHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new GetWorkoutQuery(new Id<Workout>(new Guid()), Users.User1.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(typeof(NotFound<string>));
+		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)> EditWorkoutData() =>
+	public static IEnumerable<(IUserInfo owner, IUserInfo editor, Name workoutName, Type responseType)> UpdateWorkoutData() =>
 	[
-		new([Users.Admin1], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, "ValidName", typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, "ValidName", typeof(NoContent)),
-		new([Users.User1], Users.User1, "ValidName", typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, "ValidName", typeof(ForbidHttpResult)),
-		new([Users.User2, Users.User1], Users.User1, "ValidName", typeof(ForbidHttpResult))
+		new(Users.Admin1, Users.User1, Name.From("ValidName"), typeof(NotFound)),
+		new(Users.Admin1, Users.Admin1, Name.From("ValidName"), typeof(Success)),
+		new(Users.Admin1, Users.Admin1, Name.From("ValidName"), typeof(Success)),
+		new(Users.User1, Users.User1, Name.From("ValidName"), typeof(Success)),
+		new(Users.User2, Users.User1, Name.From("ValidName"), typeof(NotFound)),
+		new(Users.User2, Users.User1, Name.From("ValidName"), typeof(NotFound)),
+		new(Users.User2, Users.User1, Name.From("ValidName"), typeof(NotFound))
 	];
 
 	[Test]
-	[MethodDataSource(nameof(EditWorkoutData))]
-	public async Task EditWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, string workoutName, Type responseType)
+	[MethodDataSource(nameof(UpdateWorkoutData))]
+	public async Task UpdateWorkout_ReturnsCorrectResponse(IUserInfo owner, IUserInfo editor, Name workoutName, Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, owners)
+			.WithWorkout(out var workout, owner)
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await UpdateWorkout.Handler(
-				editor.GetHttpContext(),
-				workout.Id.Value,
-				new UpdateWorkoutRequest(workoutName),
-				dataContext,
-				CancellationToken.None)
+		var handler = new UpdateWorkoutHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new UpdateWorkoutCommand(workout.Id, workoutName, editor.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
+	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
 	[
-		new([Users.Admin1], Users.User1, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, typeof(NoContent)),
-		new([Users.User1], Users.User1, typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, typeof(ForbidHttpResult))
+		new(Users.Admin1, Users.User1, typeof(NotFound)),
+		new(Users.Admin1, Users.Admin1, typeof(Success)),
+		new(Users.User1, Users.User1, typeof(Success)),
+		new(Users.User2, Users.User1, typeof(NotFound)),
+		new(Users.User2, Users.User1, typeof(NotFound))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutData))]
-	public async Task DeleteWorkout_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo deleter, Type responseType)
+	public async Task DeleteWorkout_ReturnsCorrectResponse(IUserInfo owner, IUserInfo deleter, Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, owners)
+			.WithWorkout(out var workout, owner)
 			.Build()
 			.ConfigureAwait(false);
 
-		var result = await DeleteWorkout.Handler(
-				deleter.GetHttpContext(),
-				workout.Id.Value,
-				dataContext,
-				CancellationToken.None)
+		var handler = new DeleteWorkoutHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+				new DeleteWorkoutCommand(workout.Id, deleter.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 }

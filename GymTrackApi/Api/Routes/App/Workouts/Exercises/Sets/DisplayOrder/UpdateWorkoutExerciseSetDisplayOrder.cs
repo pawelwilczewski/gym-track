@@ -22,7 +22,7 @@ internal sealed class UpdateWorkoutExerciseSetDisplayOrder : IEndpoint
 		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		var result = await sender.Send(new UpdateWorkoutExerciseSetDisplayOrderQuery(
+		var result = await sender.Send(new UpdateWorkoutExerciseSetDisplayOrderCommand(
 				new Id<Workout>(workoutId),
 				exerciseIndex,
 				setIndex,

@@ -1,4 +1,5 @@
 using Domain.Common.ValueObjects;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Vogen;
 
@@ -21,4 +22,5 @@ internal static class PropertyConfigurations
 [EfCoreConverter<Name>]
 [EfCoreConverter<Description>]
 [EfCoreConverter<FilePath>]
+[EfCoreConverter<PositiveCount>]
 internal static partial class VogenEfCoreConverters;

@@ -1,251 +1,305 @@
-using Api.Dtos;
-using Api.Routes.App.Workouts.Exercises.Sets;
-using Api.Routes.App.Workouts.Exercises.Sets.DisplayOrder;
 using Api.Tests.Unit.Mocks;
+using Application.Workout.Exercise.Set.Commands;
+using Application.Workout.Exercise.Set.DisplayOrder.Commands;
+using Application.Workout.Exercise.Set.Dtos;
+using Application.Workout.Exercise.Set.Queries;
+using Domain.Common.Results;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
-using Microsoft.AspNetCore.Http.HttpResults;
-
-// ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
+using Infrastructure.Persistence;
+using OneOf.Types;
 
 namespace Api.Tests.Unit;
 
 internal sealed class WorkoutExerciseSetTests
 {
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, Type responseType)> CreateWorkoutExerciseSetData()
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo creator, ExerciseMetricType metricType,
+		ExerciseMetric metric, PositiveCount reps, Type responseType)> CreateWorkoutExerciseSetData()
 	{
 		Amount.TryCreate(120.0, out var amount);
 
 		return
 		[
-			new([Users.User2], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(ForbidHttpResult)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 3, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), -1, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Distance(amount, Distance.Unit.Metre), 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 0, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Kilogram), 1, typeof(ValidationProblem)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Kilogram), 1, typeof(Created)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 1, typeof(Created))
+			(Users.User2, Users.User1, ExerciseMetricType.Distance,
+				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(3), typeof(NotFound)),
+			(Users.Admin1, Users.Admin1, ExerciseMetricType.Distance,
+				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
+			(Users.User1, Users.User1, ExerciseMetricType.Weight,
+				new Distance(amount, Distance.Unit.Metre), PositiveCount.From(1), typeof(ValidationError)),
+			(Users.User1, Users.User1, ExerciseMetricType.Weight,
+				new Weight(amount, Weight.Unit.Kilogram), PositiveCount.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
+			(Users.User1, Users.User1, ExerciseMetricType.Duration,
+				new Duration(TimeSpan.FromSeconds(1000.0)), PositiveCount.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
 		];
 	}
 
 	[Test]
 	[MethodDataSource(nameof(CreateWorkoutExerciseSetData))]
-	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo creator, ExerciseMetricType metricType, ExerciseMetric metric, int reps, Type responseType)
+	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(
+		IUserInfo workoutOwner,
+		IUserInfo creator,
+		ExerciseMetricType metricType,
+		ExerciseMetric metric,
+		PositiveCount reps,
+		Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, workoutOwners)
-			.WithExerciseInfo(out var exerciseInfo, metricType, workoutOwners)
-			.Build()
-			.ConfigureAwait(false);
+			.WithWorkout(out var workout, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, metricType, workoutOwner)
+			.Build();
 
-		const int index = 0;
-		workout.Exercises.Add(new Workout.Exercise(workout.Id, index, exerciseInfo.Id, 0));
-		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		const int exerciseIndex = 0;
+		workout.Exercises.Add(new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		await dataContext.SaveChangesAsync();
 
-		var result = await CreateWorkoutExerciseSet.Handler(
-				creator.GetHttpContext(),
-				workout.Id.Value,
-				index,
-				new CreateWorkoutExerciseSetRequest(metric, reps),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
+		var handler = new CreateWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+			new CreateWorkoutExerciseSetCommand(
+				workout.Id,
+				exerciseIndex,
+				metric,
+				reps,
+				creator.Id),
+			CancellationToken.None);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int setIndex, int accessedSetIndex, Type responseType)> GetWorkoutExerciseSetData() =>
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo accessor,
+		int accessedSetIndex, Type responseType)> GetWorkoutExerciseSetData() =>
 	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.Admin1], Users.User1, 0, 1, typeof(NotFound<string>)),
-		new([Users.User1], Users.User1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.User1], Users.User1, 1, 1, typeof(Ok<GetWorkoutExerciseSetResponse>)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User1], Users.Admin1, 0, -1, typeof(NotFound<string>)),
-		new([Users.User1], Users.Admin1, 0, 0, typeof(Ok<GetWorkoutExerciseSetResponse>))
+		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
+		(Users.Admin1, Users.Admin1, 0, typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User1, Users.User1, 1, typeof(NotFound)),
+		(Users.User2, Users.User1, 0, typeof(NotFound)),
+		(Users.User1, Users.Admin1, -1, typeof(NotFound)),
+		(Users.User1, Users.Admin1, 0, typeof(NotFound))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(GetWorkoutExerciseSetData))]
-	public async Task GetWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo accessor, int addedSetIndex, int accessedSetIndex, Type responseType)
+	public async Task GetWorkoutExerciseSet_ReturnsCorrectResponse(
+		IUserInfo workoutOwner,
+		IUserInfo accessor,
+		int accessedSetIndex,
+		Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, workoutOwners)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwners)
-			.Build()
-			.ConfigureAwait(false);
+			.WithWorkout(out var workout, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
+			.Build();
 
 		const int exerciseIndex = 0;
-		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
-
+		const int setIndex = 0;
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, addedSetIndex, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
-		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		await dataContext.SaveChangesAsync();
 
-		var result = await GetWorkoutExerciseSet.Handler(
-				accessor.GetHttpContext(),
-				workout.Id.Value,
+		if (!Workout.Exercise.Set.TryCreate(
+			exercise,
+			setIndex,
+			new Duration(TimeSpan.FromSeconds(1000.0)),
+			PositiveCount.From(2),
+			0,
+			workoutOwner.Id,
+			out var set, out _))
+		{
+			throw new Exception("Invalid test case");
+		}
+
+		exercise.Sets.Add(set);
+		await dataContext.SaveChangesAsync();
+
+		var handler = new GetWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+			new GetWorkoutExerciseSetQuery(
+				workout.Id,
 				exerciseIndex,
 				accessedSetIndex,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
+				accessor.Id),
+			CancellationToken.None);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo editor, ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)> EditWorkoutExerciseSetData()
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
+			ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)>
+		UpdateWorkoutExerciseSetData()
 	{
 		Amount.TryCreate(120.0, out var amount);
 
 		return
 		[
-			new([], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.Admin1], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.Admin1, Users.User2], Users.Admin1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(NoContent)),
-			new([Users.User1, Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.User2], Users.User1, ExerciseMetricType.Duration, new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(ForbidHttpResult)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight, new Weight(amount, Weight.Unit.Pound), 4, typeof(NoContent)),
-			new([Users.User1], Users.User1, ExerciseMetricType.Distance, new Weight(amount, Weight.Unit.Pound), 4, typeof(ValidationProblem))
+			(Users.Admin1, Users.Admin1, ExerciseMetricType.Duration,
+				new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(Success)),
+			(Users.User1, Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight,
+				new Weight(amount, Weight.Unit.Pound), 4, typeof(Success))
 		];
 	}
 
 	[Test]
-	[MethodDataSource(nameof(EditWorkoutExerciseSetData))]
-	public async Task EditWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)
+	[MethodDataSource(nameof(UpdateWorkoutExerciseSetData))]
+	public async Task UpdateWorkoutExerciseSet_ReturnsCorrectResponse(
+		IUserInfo workoutOwner,
+		IUserInfo editor,
+		ExerciseMetricType allowedMetricTypes,
+		ExerciseMetric metric,
+		int reps,
+		Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, owners)
-			.WithExerciseInfo(out var exerciseInfo, allowedMetricTypes, owners)
-			.Build()
-			.ConfigureAwait(false);
+			.WithWorkout(out var workout, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, allowedMetricTypes, workoutOwner)
+			.Build();
 
 		const int exerciseIndex = 0;
 		const int setIndex = 0;
-		if (!PositiveCount.TryCreate(2, out var originalReps)) throw new Exception("Invalid test case");
-
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
-		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		await dataContext.SaveChangesAsync();
 
-		var result = await UpdateWorkoutExerciseSet.Handler(
-				editor.GetHttpContext(),
-				workout.Id.Value,
+		if (!Workout.Exercise.Set.TryCreate(
+			exercise,
+			setIndex,
+			new Duration(TimeSpan.FromSeconds(1000.0)),
+			PositiveCount.From(2),
+			0,
+			workoutOwner.Id, out var set, out _))
+		{
+			throw new Exception("Invalid test case");
+		}
+
+		exercise.Sets.Add(set);
+
+		await dataContext.SaveChangesAsync();
+
+		var handler = new UpdateWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+			new UpdateWorkoutExerciseSetCommand(
+				workout.Id,
 				exerciseIndex,
 				setIndex,
-				new UpdateWorkoutExerciseSetRequest(metric, reps),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
+				metric,
+				PositiveCount.From(reps),
+				editor.Id),
+			CancellationToken.None);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)> EditWorkoutExerciseSetDisplayOrderData() =>
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
+		int displayOrder, Type responseType)> UpdateWorkoutExerciseSetDisplayOrderData() =>
 	[
-		new([Users.Admin1], Users.Admin1, 4, typeof(NoContent)),
-		new([Users.Admin1], Users.User1, 6, typeof(ForbidHttpResult)),
-		new([Users.User1], Users.User1, 2, typeof(NoContent)),
-		new([Users.User1], Users.User1, 7, typeof(NoContent))
+		(Users.Admin1, Users.Admin1, 4, typeof(Success)),
+		(Users.User1, Users.User1, 2, typeof(Success)),
+		(Users.User1, Users.User1, 7, typeof(Success))
 	];
 
 	[Test]
-	[MethodDataSource(nameof(EditWorkoutExerciseSetDisplayOrderData))]
-	public async Task EditWorkoutExerciseSetDisplayOrder_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> owners, IUserInfo editor, int displayOrder, Type responseType)
+	[MethodDataSource(nameof(UpdateWorkoutExerciseSetDisplayOrderData))]
+	public async Task UpdateWorkoutExerciseSetDisplayOrder_ReturnsCorrectResponse(
+		IUserInfo workoutOwner,
+		IUserInfo editor,
+		int displayOrder,
+		Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, owners)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, owners)
-			.Build()
-			.ConfigureAwait(false);
+			.WithWorkout(out var workout, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, workoutOwner)
+			.Build();
 
 		const int exerciseIndex = 0;
 		const int setIndex = 0;
-		if (!PositiveCount.TryCreate(2, out var originalReps)) throw new Exception("Invalid test case");
-
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, setIndex, new Duration(TimeSpan.FromSeconds(1000.0)), originalReps, 0));
-		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		await dataContext.SaveChangesAsync();
 
-		var result = await UpdateWorkoutExerciseSetDisplayOrder.Handler(
-				editor.GetHttpContext(),
-				workout.Id.Value,
+		if (!Workout.Exercise.Set.TryCreate(
+			exercise,
+			setIndex,
+			new Duration(TimeSpan.FromSeconds(1000.0)),
+			PositiveCount.From(2),
+			0,
+			workoutOwner.Id, out var set, out _))
+		{
+			throw new Exception("Invalid test case");
+		}
+
+		exercise.Sets.Add(set);
+
+		await dataContext.SaveChangesAsync();
+
+		var handler = new UpdateWorkoutExerciseSetDisplayOrderHandler(
+			new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+			new UpdateWorkoutExerciseSetDisplayOrderCommand(
+				workout.Id,
 				exerciseIndex,
 				setIndex,
-				new UpdateDisplayOrderRequest(displayOrder),
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
+				displayOrder,
+				editor.Id),
+			CancellationToken.None);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
-		if (result.Result is not Ok or NoContent) return;
-
-		await GetWorkoutExerciseSet.Handler(
-				editor.GetHttpContext(),
-				workout.Id.Value,
-				exerciseIndex,
-				setIndex,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
-
-		await Assert.That(result.Result).IsTypeOf(typeof(Ok));
-
-		var response = (Ok<GetWorkoutExerciseSetResponse>)result.Result;
-		await Assert.That(response.Value!.DisplayOrder).IsEqualTo(displayOrder);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int exerciseIndex, int deletedExerciseIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo deleter,
+		int deletedSetIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
 	[
-		new([Users.Admin1], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.Admin1], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.Admin1, Users.User2], Users.Admin1, 0, 0, typeof(NoContent)),
-		new([Users.User1], Users.User1, 0, 0, typeof(NoContent)),
-		new([Users.User1, Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult)),
-		new([Users.User2], Users.User1, 0, 0, typeof(ForbidHttpResult))
+		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
+		(Users.Admin1, Users.Admin1, 0, typeof(Success)),
+		(Users.User1, Users.User1, 0, typeof(Success))
 	];
 
 	[Test]
 	[MethodDataSource(nameof(DeleteWorkoutExerciseSetData))]
-	public async Task DeleteWorkoutExerciseSet_ReturnsCorrectResponse(IReadOnlyList<IUserInfo> workoutOwners, IUserInfo deleter, int setIndex, int deletedSetIndex, Type responseType)
+	public async Task DeleteWorkoutExerciseSet_ReturnsCorrectResponse(
+		IUserInfo workoutOwner,
+		IUserInfo deleter,
+		int deletedSetIndex,
+		Type responseType)
 	{
-		using var dataContext = await MockDataContextBuilder.CreateEmpty()
+		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithWorkout(out var workout, workoutOwners)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwners)
-			.Build()
-			.ConfigureAwait(false);
+			.WithWorkout(out var workout, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
+			.Build();
 
 		const int exerciseIndex = 0;
-		const int index = 0;
-		if (!PositiveCount.TryCreate(2, out var reps)) throw new Exception("Invalid test case");
-
+		const int setIndex = 0;
 		var exercise = new Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
-		exercise.Sets.Add(new Workout.Exercise.Set(exercise, index, new Duration(TimeSpan.FromSeconds(1000.0)), reps, 0));
-		await dataContext.SaveChangesAsync(default).ConfigureAwait(false);
+		await dataContext.SaveChangesAsync();
 
-		var result = await DeleteWorkoutExerciseSet.Handler(
-				deleter.GetHttpContext(),
-				workout.Id.Value,
+		if (!Workout.Exercise.Set.TryCreate(
+			exercise,
+			setIndex,
+			new Duration(TimeSpan.FromSeconds(1000.0)),
+			PositiveCount.From(2),
+			0,
+			workoutOwner.Id, out var set, out _))
+		{
+			throw new Exception("Invalid test case");
+		}
+
+		exercise.Sets.Add(set);
+
+		await dataContext.SaveChangesAsync();
+
+		var handler = new DeleteWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
+		var result = await handler.Handle(
+			new DeleteWorkoutExerciseSetCommand(
+				workout.Id,
 				exerciseIndex,
 				deletedSetIndex,
-				dataContext,
-				CancellationToken.None)
-			.ConfigureAwait(false);
+				deleter.Id),
+			CancellationToken.None);
 
-		await Assert.That(result.Result).IsTypeOf(responseType);
+		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 }

@@ -22,13 +22,14 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 		[FromServices] ISender sender,
 		CancellationToken cancellationToken)
 	{
-		if (!PositiveCount.TryCreate(request.Reps, out var repsCount)) return ValidationErrors.NonPositiveCount("Reps");
+		var repsOrError = PositiveCount.TryFrom(request.Reps);
+		if (!repsOrError.IsSuccess) return repsOrError.Error.ToValidationProblem(nameof(request.Reps));
 
 		var result = await sender.Send(new CreateWorkoutExerciseSetCommand(
 					new Id<Workout>(workoutId),
 					exerciseIndex,
 					request.Metric,
-					repsCount,
+					repsOrError.ValueObject,
 					httpContext.User.GetUserId()),
 				cancellationToken)
 			.ConfigureAwait(false);

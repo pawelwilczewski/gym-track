@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +28,6 @@ internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration
 				set.ExerciseIndex
 			})
 			.OnDelete(DeleteBehavior.Cascade);
-
-		builder.Property(set => set.Reps)
-			.HasConversion(PositiveCount.Converter);
 
 		builder.Property(exerciseSet => exerciseSet.Metric)
 			.HasConversion(

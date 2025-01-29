@@ -1,29 +1,19 @@
 using System.Text;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Api.Tests.Unit.Mocks;
 
 internal static class Placeholders
 {
-	public static Name RandomName()
-	{
-		Name.TryCreate($"Name_{Guid.NewGuid()}", out var name, out _);
-		return name!;
-	}
+	public static Name RandomName() => Name.From($"Name_{Guid.NewGuid()}");
 
-	public static Description RandomDescription()
-	{
-		Description.TryCreate($"Description_{Guid.NewGuid()}", out var description, out _);
-		return description!;
-	}
+	public static Description RandomDescription() => Description.From($"Description_{Guid.NewGuid()}");
 
 	public static FilePath RandomFilePath()
 	{
 		var pathProvider = new TempFileStoragePathProvider();
-		FilePath.TryCreate(Path.Combine(pathProvider.RootPath, $"Files/File_{Guid.NewGuid()}"), out var filePath, out _);
-		return filePath!;
+		return FilePath.From(Path.Combine(pathProvider.RootPath, $"Files/File_{Guid.NewGuid()}"));
 	}
 
 	public static string RandomStringNCharacters(int n = 10)

@@ -39,7 +39,7 @@ internal sealed class CreateWorkoutExerciseHandler
 		if (workout is null) return new NotFound();
 
 		var exerciseInfo = await dataContext.ExerciseInfos.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == request.ExerciseInfoId, cancellationToken)
 			.ConfigureAwait(false);
 

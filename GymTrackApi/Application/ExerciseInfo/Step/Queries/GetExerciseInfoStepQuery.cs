@@ -31,7 +31,7 @@ internal sealed class GetExerciseInfoStepHandler
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
 		var exerciseInfo = await dataContext.ExerciseInfos.Readable
-			.AsNoTracking()
+			.AsNoTrackingWithIdentityResolution()
 			.Include(exerciseInfo => exerciseInfo.Steps.Where(step => step.Index == request.StepIndex))
 			.FirstOrDefaultAsync(exerciseInfo => exerciseInfo.Id == request.ExerciseInfoId, cancellationToken);
 

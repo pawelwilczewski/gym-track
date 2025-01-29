@@ -16,13 +16,13 @@ public sealed record class DeleteExerciseInfoStepCommand(
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
-internal sealed class DeleteExerciseInfoHandler
+internal sealed class DeleteExerciseInfoStepHandler
 	: IRequestHandler<DeleteExerciseInfoStepCommand, ResultType>
 {
 	private readonly IUserDataContextFactory dataContextFactory;
 	private readonly IFileStoragePathProvider fileStoragePathProvider;
 
-	public DeleteExerciseInfoHandler(IUserDataContextFactory dataContextFactory, IFileStoragePathProvider fileStoragePathProvider)
+	public DeleteExerciseInfoStepHandler(IUserDataContextFactory dataContextFactory, IFileStoragePathProvider fileStoragePathProvider)
 	{
 		this.dataContextFactory = dataContextFactory;
 		this.fileStoragePathProvider = fileStoragePathProvider;
