@@ -3,7 +3,6 @@ using Api.Files;
 using Application.ExerciseInfo.Commands;
 using Domain.Common;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -48,7 +47,7 @@ internal sealed class UpdateExerciseInfo : IEndpoint
 		}
 
 		var response = await sender.Send(new UpdateExerciseInfoCommand(
-				new Id<ExerciseInfo>(exerciseInfoId),
+				ExerciseInfoId.From(exerciseInfoId),
 				nameOrError.ValueObject,
 				descriptionOrError.ValueObject,
 				replaceThumbnailImage,

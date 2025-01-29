@@ -1,5 +1,6 @@
 using Domain.Common.ValueObjects;
 using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 using Vogen;
@@ -21,8 +22,7 @@ internal static class PropertyConfigurations
 }
 
 [EfCoreConverter<WorkoutId>]
-[EfCoreConverter<WorkoutExerciseId>]
-[EfCoreConverter<WorkoutExerciseSetId>]
+[EfCoreConverter<ExerciseInfoId>]
 [EfCoreConverter<Name>]
 [EfCoreConverter<Description>]
 [EfCoreConverter<FilePath>]

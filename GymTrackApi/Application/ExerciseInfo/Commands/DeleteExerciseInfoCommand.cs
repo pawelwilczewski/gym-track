@@ -1,6 +1,6 @@
 using Application.Files;
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.ExerciseInfo.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class DeleteExerciseInfoCommand(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

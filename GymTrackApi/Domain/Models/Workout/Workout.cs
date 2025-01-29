@@ -18,12 +18,6 @@ public readonly partial struct WorkoutId
 	public static WorkoutId New() => From(Ulid.NewUlid().ToGuid());
 }
 
-[ValueObject<Guid>]
-public readonly partial struct WorkoutExerciseId;
-
-[ValueObject<Guid>]
-public readonly partial struct WorkoutExerciseSetId;
-
 public class Workout : IOwned
 {
 	public WorkoutId Id { get; private set; } = WorkoutId.New();
@@ -64,7 +58,7 @@ public class Workout : IOwned
 
 		public virtual Workout Workout { get; private set; } = default!;
 
-		public Id<ExerciseInfo.ExerciseInfo> ExerciseInfoId { get; private set; }
+		public ExerciseInfoId ExerciseInfoId { get; private set; }
 		public virtual ExerciseInfo.ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 		public int DisplayOrder { get; set; }
@@ -74,7 +68,7 @@ public class Workout : IOwned
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(WorkoutId workoutId, int index, Id<ExerciseInfo.ExerciseInfo> exerciseInfoId, int displayOrder)
+		public Exercise(WorkoutId workoutId, int index, ExerciseInfoId exerciseInfoId, int displayOrder)
 		{
 			WorkoutId = workoutId;
 			Index = index;

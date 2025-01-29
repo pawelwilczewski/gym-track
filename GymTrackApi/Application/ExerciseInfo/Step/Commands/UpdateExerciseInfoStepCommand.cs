@@ -1,7 +1,7 @@
 using Application.Files;
 using Application.Persistence;
 using Domain.Common.ValueObjects;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -12,7 +12,7 @@ namespace Application.ExerciseInfo.Step.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateExerciseInfoStepCommand(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	int StepIndex,
 	Description Description,
 	bool ReplaceImage,

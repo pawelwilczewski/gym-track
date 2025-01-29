@@ -1,7 +1,6 @@
 using Application.ExerciseInfo.Step.Dtos;
 using Application.ExerciseInfo.Step.Queries;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,7 +21,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 	{
 		var response = await sender.Send(
 				new GetExerciseInfoStepQuery(
-					new Id<ExerciseInfo>(exerciseInfoId),
+					ExerciseInfoId.From(exerciseInfoId),
 					stepIndex, httpContext.User.GetUserId()),
 				cancellationToken)
 			.ConfigureAwait(false);

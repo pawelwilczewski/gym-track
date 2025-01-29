@@ -2,14 +2,21 @@ using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
+using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.ExerciseInfo;
 
+[ValueObject<Guid>]
+public readonly partial struct ExerciseInfoId
+{
+	public static ExerciseInfoId New() => From(Ulid.NewUlid().ToGuid());
+}
+
 public class ExerciseInfo : IOwned
 {
-	public Id<ExerciseInfo> Id { get; } = Id<ExerciseInfo>.New();
+	public ExerciseInfoId Id { get; } = ExerciseInfoId.New();
 
 	public Name Name { get; private set; }
 
@@ -27,7 +34,7 @@ public class ExerciseInfo : IOwned
 	private ExerciseInfo() { }
 
 	private ExerciseInfo(
-		Id<ExerciseInfo> id,
+		ExerciseInfoId id,
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
@@ -47,8 +54,8 @@ public class ExerciseInfo : IOwned
 		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
-		Id<ExerciseInfo>? id = null) =>
-		new(id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.Public());
+		ExerciseInfoId? id = null) =>
+		new(id ?? ExerciseInfoId.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.Public());
 
 	public static ExerciseInfo CreateForUser(
 		Name name,
@@ -56,10 +63,10 @@ public class ExerciseInfo : IOwned
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
 		Guid userId,
-		Id<ExerciseInfo>? id = null)
+		ExerciseInfoId? id = null)
 	{
 		var exerciseInfo = new ExerciseInfo(
-			id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.User(userId));
+			id ?? ExerciseInfoId.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.User(userId));
 		return exerciseInfo;
 	}
 
@@ -82,7 +89,7 @@ public class ExerciseInfo : IOwned
 
 	public class Step : IIndexed, IDisplayOrdered
 	{
-		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
+		public ExerciseInfoId ExerciseInfoId { get; private set; }
 		public int Index { get; private set; }
 
 		public ExerciseInfo ExerciseInfo { get; private set; } = default!;
@@ -94,7 +101,7 @@ public class ExerciseInfo : IOwned
 
 		private Step() { }
 
-		public Step(Id<ExerciseInfo> exerciseInfoId, int index, Description description, FilePath? imageFile, int displayOrder)
+		public Step(ExerciseInfoId exerciseInfoId, int index, Description description, FilePath? imageFile, int displayOrder)
 		{
 			ExerciseInfoId = exerciseInfoId;
 			Index = index;

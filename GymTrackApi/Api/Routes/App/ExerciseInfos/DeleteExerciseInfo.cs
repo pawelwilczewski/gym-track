@@ -1,6 +1,5 @@
 using Application.ExerciseInfo.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +19,7 @@ internal sealed class DeleteExerciseInfo : IEndpoint
 	{
 		var result = await sender.Send(
 				new DeleteExerciseInfoCommand(
-					new Id<ExerciseInfo>(exerciseInfoId),
+					ExerciseInfoId.From(exerciseInfoId),
 					httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);
 

@@ -1,6 +1,6 @@
 using Application.ExerciseInfo.Dtos;
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.ExerciseInfo.Queries;
 using ResultType = OneOf<Success<GetExerciseInfoResponse>, NotFound>;
 
 public sealed record class GetExerciseInfoQuery(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

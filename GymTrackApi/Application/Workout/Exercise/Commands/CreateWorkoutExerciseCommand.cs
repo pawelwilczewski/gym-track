@@ -1,7 +1,7 @@
 using Application.Persistence;
 using Application.Workout.Exercise.Dtos;
 using Domain.Common;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,7 @@ using ResultType = OneOf<Success<GetWorkoutExerciseResponse>, NotFound>;
 
 public sealed record class CreateWorkoutExerciseCommand(
 	WorkoutId WorkoutId,
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

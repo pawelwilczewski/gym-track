@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.Workout.Exercise.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using MediatR;
@@ -23,7 +22,7 @@ internal sealed class CreateWorkoutExercise : IEndpoint
 	{
 		var result = await sender.Send(new CreateWorkoutExerciseCommand(
 				WorkoutId.From(workoutId),
-				new Id<ExerciseInfo>(request.ExerciseInfoId),
+				ExerciseInfoId.From(request.ExerciseInfoId),
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);
 

@@ -1,6 +1,6 @@
 using Application.ExerciseInfo.Step.Dtos;
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -11,7 +11,7 @@ namespace Application.ExerciseInfo.Step.Queries;
 using ResultType = OneOf<Success<GetExerciseInfoStepResponse>, NotFound>;
 
 public sealed record class GetExerciseInfoStepQuery(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	int StepIndex,
 	Guid UserId) : IRequest<ResultType>;
 

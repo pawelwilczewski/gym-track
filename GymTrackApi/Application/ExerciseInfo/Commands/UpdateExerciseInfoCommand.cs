@@ -1,7 +1,6 @@
 using Application.Files;
 using Application.Persistence;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ namespace Application.ExerciseInfo.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateExerciseInfoCommand(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	Name Name,
 	Description Description,
 	bool ReplaceThumbnailImage,

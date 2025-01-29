@@ -1,6 +1,5 @@
 using Application.ExerciseInfo.Step.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +19,7 @@ internal sealed class DeleteExerciseInfoStep : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new DeleteExerciseInfoStepCommand(
-				new Id<ExerciseInfo>(exerciseInfoId),
+				ExerciseInfoId.From(exerciseInfoId),
 				stepIndex,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

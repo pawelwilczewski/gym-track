@@ -3,7 +3,6 @@ using Application.ExerciseInfo.Dtos;
 using Application.ExerciseInfo.Queries;
 using Application.Tests.Unit.Mocks;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
 using OneOf.Types;
@@ -94,7 +93,7 @@ internal sealed class ExerciseInfoTests
 
 		var handler = new GetExerciseInfoHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-			new GetExerciseInfoQuery(new Id<Domain.Models.ExerciseInfo.ExerciseInfo>(Guid.NewGuid()), Users.User1.Id),
+			new GetExerciseInfoQuery(ExerciseInfoId.From(Guid.NewGuid()), Users.User1.Id),
 			CancellationToken.None);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));

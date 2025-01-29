@@ -3,7 +3,6 @@ using Api.Files;
 using Application.ExerciseInfo.Step.Commands;
 using Domain.Common;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -32,7 +31,7 @@ internal sealed class UpdateExerciseInfoStep : IEndpoint
 		}
 
 		var result = await sender.Send(new UpdateExerciseInfoStepCommand(
-				new Id<ExerciseInfo>(exerciseInfoId),
+				ExerciseInfoId.From(exerciseInfoId),
 				stepIndex,
 				descriptionOrError.ValueObject,
 				replaceImage,

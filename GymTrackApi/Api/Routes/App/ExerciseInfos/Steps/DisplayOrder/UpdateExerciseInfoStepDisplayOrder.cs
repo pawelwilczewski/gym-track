@@ -1,7 +1,6 @@
 using Api.Dtos;
 using Application.ExerciseInfo.Step.DisplayOrder.Commands;
 using Domain.Common;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,7 +21,7 @@ internal sealed class UpdateExerciseInfoStepDisplayOrder : IEndpoint
 		CancellationToken cancellationToken)
 	{
 		var result = await sender.Send(new UpdateExerciseInfoStepDisplayOrderCommand(
-				new Id<ExerciseInfo>(exerciseInfoId),
+				ExerciseInfoId.From(exerciseInfoId),
 				stepIndex,
 				request.DisplayOrder,
 				httpContext.User.GetUserId()), cancellationToken)

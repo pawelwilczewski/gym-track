@@ -2,7 +2,6 @@ using Application.ExerciseInfo.Dtos;
 using Application.Files;
 using Application.Persistence;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using MediatR;
 using OneOf.Types;
@@ -37,7 +36,7 @@ internal sealed class CreateExerciseInfoHandler
 	{
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
-		var id = Id<Domain.Models.ExerciseInfo.ExerciseInfo>.New();
+		var id = ExerciseInfoId.New();
 
 		var exerciseInfo = Domain.Models.ExerciseInfo.ExerciseInfo.CreateForUser(
 			request.Name, null, request.Description, request.AllowedMetricTypes, request.UserId, id);

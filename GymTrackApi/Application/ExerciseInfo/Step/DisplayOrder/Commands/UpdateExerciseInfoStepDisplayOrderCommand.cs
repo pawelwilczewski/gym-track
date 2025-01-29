@@ -1,5 +1,5 @@
 using Application.Persistence;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -10,7 +10,7 @@ namespace Application.ExerciseInfo.Step.DisplayOrder.Commands;
 using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateExerciseInfoStepDisplayOrderCommand(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	int StepIndex,
 	int DisplayOrder,
 	Guid UserId) : IRequest<ResultType>;

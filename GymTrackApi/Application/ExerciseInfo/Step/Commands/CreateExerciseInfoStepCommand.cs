@@ -3,7 +3,7 @@ using Application.Files;
 using Application.Persistence;
 using Domain.Common;
 using Domain.Common.ValueObjects;
-using Domain.Models;
+using Domain.Models.ExerciseInfo;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -14,7 +14,7 @@ namespace Application.ExerciseInfo.Step.Commands;
 using ResultType = OneOf<Success<GetExerciseInfoStepResponse>, NotFound>;
 
 public sealed record class CreateExerciseInfoStepCommand(
-	Id<Domain.Models.ExerciseInfo.ExerciseInfo> ExerciseInfoId,
+	ExerciseInfoId ExerciseInfoId,
 	Description Description,
 	NamedFile? Image,
 	Guid UserId) : IRequest<ResultType>;

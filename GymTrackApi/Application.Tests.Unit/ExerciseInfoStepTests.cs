@@ -4,7 +4,6 @@ using Application.ExerciseInfo.Step.Dtos;
 using Application.ExerciseInfo.Step.Queries;
 using Application.Tests.Unit.Mocks;
 using Domain.Common.ValueObjects;
-using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
 using OneOf.Types;
@@ -96,7 +95,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var handler = new GetExerciseInfoStepHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-			new GetExerciseInfoStepQuery(new Id<Domain.Models.ExerciseInfo.ExerciseInfo>(Guid.NewGuid()), 0, Users.User1.Id),
+			new GetExerciseInfoStepQuery(ExerciseInfoId.From(Guid.NewGuid()), 0, Users.User1.Id),
 			CancellationToken.None);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
