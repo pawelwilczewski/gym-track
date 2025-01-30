@@ -50,7 +50,7 @@ internal sealed class DeleteExerciseInfoStepHandler
 				fileStoragePathProvider)
 			.ConfigureAwait(false);
 
-		exerciseInfo.Steps.Remove(exerciseInfoStep);
+		exerciseInfo.RemoveStep(exerciseInfoStep, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();

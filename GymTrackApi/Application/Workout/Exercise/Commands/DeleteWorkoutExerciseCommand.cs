@@ -39,7 +39,7 @@ internal sealed class DeleteWorkoutExerciseHandler
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == request.ExerciseIndex);
 		if (exercise is null) return new NotFound();
 
-		workout.Exercises.Remove(exercise);
+		workout.RemoveExercise(exercise, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();

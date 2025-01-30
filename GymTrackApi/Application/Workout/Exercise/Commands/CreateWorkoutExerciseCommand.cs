@@ -50,7 +50,7 @@ internal sealed class CreateWorkoutExerciseHandler
 		var displayOrder = workout.Exercises.GetNextDisplayOrder();
 		var exercise = new Domain.Models.Workout.Workout.Exercise(request.WorkoutId, index, request.ExerciseInfoId, displayOrder);
 
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<GetWorkoutExerciseResponse>(new GetWorkoutExerciseResponse(

@@ -44,7 +44,7 @@ internal sealed class DeleteWorkoutExerciseSetHandler
 		var set = exercise.Sets.FirstOrDefault(set => set.Index == request.SetIndex);
 		if (set is null) return new NotFound();
 
-		exercise.Sets.Remove(set);
+		exercise.RemoveSet(set, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();

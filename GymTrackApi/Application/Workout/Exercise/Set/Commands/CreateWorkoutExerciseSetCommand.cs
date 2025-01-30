@@ -57,7 +57,7 @@ internal sealed class CreateWorkoutExerciseSetHandler
 			return error.Value;
 		}
 
-		exercise.Sets.Add(set);
+		exercise.AddSet(set, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<GetWorkoutExerciseSetResponse>(new GetWorkoutExerciseSetResponse(

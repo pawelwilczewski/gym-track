@@ -54,7 +54,7 @@ internal sealed class CreateExerciseInfoStepHandler
 			null,
 			displayOrder);
 
-		exerciseInfo.Steps.Add(step);
+		exerciseInfo.AddStep(step, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		var imagePath = await request.Image.SaveOrOverrideImage(

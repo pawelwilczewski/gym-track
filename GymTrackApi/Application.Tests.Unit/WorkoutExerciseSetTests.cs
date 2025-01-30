@@ -46,7 +46,9 @@ internal sealed class WorkoutExerciseSetTests
 			.Build();
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		workout.AddExercise(
+			new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0),
+			workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new CreateWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
@@ -90,7 +92,7 @@ internal sealed class WorkoutExerciseSetTests
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
@@ -105,7 +107,7 @@ internal sealed class WorkoutExerciseSetTests
 			throw new Exception("Invalid test case");
 		}
 
-		exercise.Sets.Add(set);
+		exercise.AddSet(set, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new GetWorkoutExerciseSetHandler(new UserDataContextFactory(dataContext));
@@ -149,7 +151,7 @@ internal sealed class WorkoutExerciseSetTests
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
@@ -163,7 +165,7 @@ internal sealed class WorkoutExerciseSetTests
 			throw new Exception("Invalid test case");
 		}
 
-		exercise.Sets.Add(set);
+		exercise.AddSet(set, workoutOwner.Id);
 
 		await dataContext.SaveChangesAsync();
 
@@ -206,7 +208,7 @@ internal sealed class WorkoutExerciseSetTests
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
@@ -220,7 +222,7 @@ internal sealed class WorkoutExerciseSetTests
 			throw new Exception("Invalid test case");
 		}
 
-		exercise.Sets.Add(set);
+		exercise.AddSet(set, workoutOwner.Id);
 
 		await dataContext.SaveChangesAsync();
 
@@ -263,7 +265,7 @@ internal sealed class WorkoutExerciseSetTests
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
@@ -277,7 +279,7 @@ internal sealed class WorkoutExerciseSetTests
 			throw new Exception("Invalid test case");
 		}
 
-		exercise.Sets.Add(set);
+		exercise.AddSet(set, workoutOwner.Id);
 
 		await dataContext.SaveChangesAsync();
 

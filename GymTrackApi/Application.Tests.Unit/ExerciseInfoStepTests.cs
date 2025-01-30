@@ -75,7 +75,7 @@ internal sealed class ExerciseInfoStepTests
 			Description.From("Test Description"),
 			null,
 			0);
-		exerciseInfo.Steps.Add(step);
+		exerciseInfo.AddStep(step, owner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new GetExerciseInfoStepHandler(new UserDataContextFactory(dataContext));
@@ -131,7 +131,7 @@ internal sealed class ExerciseInfoStepTests
 			Description.From("Original"),
 			null,
 			0);
-		exerciseInfo.Steps.Add(originalStep);
+		exerciseInfo.AddStep(originalStep, owner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new UpdateExerciseInfoStepHandler(
@@ -178,7 +178,7 @@ internal sealed class ExerciseInfoStepTests
 			Description.From("Original"),
 			null,
 			0);
-		exerciseInfo.Steps.Add(originalStep);
+		exerciseInfo.AddStep(originalStep, owner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new UpdateExerciseInfoStepDisplayOrderHandler(
@@ -223,7 +223,7 @@ internal sealed class ExerciseInfoStepTests
 			Description.From("Original"),
 			null,
 			0);
-		exerciseInfo.Steps.Add(originalStep);
+		exerciseInfo.AddStep(originalStep, owner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new DeleteExerciseInfoStepHandler(

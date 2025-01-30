@@ -73,7 +73,8 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new GetWorkoutExerciseHandler(new UserDataContextFactory(dataContext));
@@ -110,7 +111,7 @@ internal sealed class WorkoutExerciseTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
-		workout.Exercises.Add(exercise);
+		workout.AddExercise(exercise, owner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new UpdateWorkoutExerciseDisplayOrderHandler(new UserDataContextFactory(dataContext));
@@ -150,7 +151,8 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
+		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
 		var handler = new DeleteWorkoutExerciseHandler(new UserDataContextFactory(dataContext));

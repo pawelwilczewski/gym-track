@@ -30,11 +30,13 @@ public class Workout : IOwned
 
 	public Name Name { get; private set; }
 
-	public virtual List<Exercise> Exercises { get; private set; } = [];
-	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
+	public virtual IReadOnlyList<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
 
 	public Guid? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
+
+	public IReadOnlyList<Exercise> Exercises => exercises.AsReadOnly();
+	private readonly List<Exercise> exercises = [];
 
 	private Workout() { }
 
@@ -57,6 +59,20 @@ public class Workout : IOwned
 		Name = name;
 	}
 
+	public void AddExercise(Exercise exercise, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		exercises.Add(exercise);
+	}
+
+	public void RemoveExercise(Exercise exercise, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		exercises.Remove(exercise);
+	}
+
 	public class Exercise : IIndexed<WorkoutExerciseIndex>, IDisplayOrdered
 	{
 		public WorkoutId WorkoutId { get; private set; }
@@ -69,7 +85,8 @@ public class Workout : IOwned
 
 		public int DisplayOrder { get; set; }
 
-		public virtual List<Set> Sets { get; private set; } = [];
+		public IReadOnlyList<Set> Sets => sets.AsReadOnly();
+		private readonly List<Set> sets = [];
 
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
@@ -80,6 +97,20 @@ public class Workout : IOwned
 			Index = index;
 			ExerciseInfoId = exerciseInfoId;
 			DisplayOrder = displayOrder;
+		}
+
+		public void AddSet(Set set, Guid userId)
+		{
+			if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
+			sets.Add(set);
+		}
+
+		public void RemoveSet(Set set, Guid userId)
+		{
+			if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
+			sets.Remove(set);
 		}
 
 		public class Set : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrdered

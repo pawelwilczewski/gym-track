@@ -28,11 +28,13 @@ public class ExerciseInfo : IOwned
 
 	public ExerciseMetricType AllowedMetricTypes { get; private set; }
 
-	public virtual List<Step> Steps { get; private set; } = [];
 	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
 
 	public Guid? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
+
+	public IReadOnlyList<Step> Steps => steps.AsReadOnly();
+	private readonly List<Step> steps = [];
 
 	private ExerciseInfo() { }
 
@@ -88,6 +90,20 @@ public class ExerciseInfo : IOwned
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		ThumbnailImage = thumbnailImage;
+	}
+
+	public void AddStep(Step step, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		steps.Add(step);
+	}
+
+	public void RemoveStep(Step step, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		steps.Remove(step);
 	}
 
 	public class Step : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
