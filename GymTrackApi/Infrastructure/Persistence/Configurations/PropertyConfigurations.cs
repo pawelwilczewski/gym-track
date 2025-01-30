@@ -23,7 +23,10 @@ internal static class PropertyConfigurations
 }
 
 [EfCoreConverter<WorkoutId>]
+[EfCoreConverter<WorkoutExerciseIndex>]
+[EfCoreConverter<WorkoutExerciseSetIndex>]
 [EfCoreConverter<ExerciseInfoId>]
+[EfCoreConverter<ExerciseInfoStepIndex>]
 [EfCoreConverter<TrackedWorkoutId>]
 [EfCoreConverter<Name>]
 [EfCoreConverter<Description>]

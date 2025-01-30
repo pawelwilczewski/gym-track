@@ -41,7 +41,7 @@ internal sealed class GetExerciseInfoStepHandler
 		if (step is null) return new NotFound();
 
 		return new Success<GetExerciseInfoStepResponse>(new GetExerciseInfoStepResponse(
-			step.Index,
+			step.Index.Value,
 			step.Description.ToString(),
 			step.ImageFile?.ToString(),
 			step.DisplayOrder));

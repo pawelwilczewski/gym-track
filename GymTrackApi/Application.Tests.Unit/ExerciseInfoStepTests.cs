@@ -71,7 +71,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var step = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
-			0,
+			ExerciseInfoStepIndex.From(0),
 			Description.From("Test Description"),
 			null,
 			0);
@@ -127,7 +127,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
-			0,
+			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),
 			null,
 			0);
@@ -174,7 +174,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
-			0,
+			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),
 			null,
 			0);
@@ -219,7 +219,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
 			exerciseInfo.Id,
-			0,
+			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),
 			null,
 			0);

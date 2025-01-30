@@ -6,6 +6,7 @@ using Application.Workout.Exercise.Set.Queries;
 using Domain.Common.Results;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.Workout;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
@@ -44,7 +45,7 @@ internal sealed class WorkoutExerciseSetTests
 			.WithExerciseInfo(out var exerciseInfo, metricType, workoutOwner)
 			.Build();
 
-		const int exerciseIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync();
 
@@ -86,8 +87,8 @@ internal sealed class WorkoutExerciseSetTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
 			.Build();
 
-		const int exerciseIndex = 0;
-		const int setIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
+		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();
@@ -145,8 +146,8 @@ internal sealed class WorkoutExerciseSetTests
 			.WithExerciseInfo(out var exerciseInfo, allowedMetricTypes, workoutOwner)
 			.Build();
 
-		const int exerciseIndex = 0;
-		const int setIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
+		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();
@@ -202,8 +203,8 @@ internal sealed class WorkoutExerciseSetTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, workoutOwner)
 			.Build();
 
-		const int exerciseIndex = 0;
-		const int setIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
+		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();
@@ -259,8 +260,8 @@ internal sealed class WorkoutExerciseSetTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
 			.Build();
 
-		const int exerciseIndex = 0;
-		const int setIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
+		var setIndex = WorkoutExerciseSetIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();

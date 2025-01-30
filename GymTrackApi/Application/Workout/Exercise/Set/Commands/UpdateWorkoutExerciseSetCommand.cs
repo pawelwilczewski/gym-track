@@ -14,8 +14,8 @@ using ResultType = OneOf<Success, NotFound, ValidationError>;
 
 public sealed record class UpdateWorkoutExerciseSetCommand(
 	WorkoutId WorkoutId,
-	int ExerciseIndex,
-	int SetIndex,
+	WorkoutExerciseIndex ExerciseIndex,
+	WorkoutExerciseSetIndex SetIndex,
 	ExerciseMetric Metric,
 	Reps Reps,
 	Guid UserId) : IRequest<ResultType>;

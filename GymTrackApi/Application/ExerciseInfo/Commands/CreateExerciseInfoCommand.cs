@@ -60,7 +60,7 @@ internal sealed class CreateExerciseInfoHandler
 			exerciseInfo.AllowedMetricTypes,
 			exerciseInfo.ThumbnailImage?.ToString(),
 			exerciseInfo.Steps
-				.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index))
+				.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index.Value))
 				.ToList()));
 	}
 }

@@ -16,7 +16,7 @@ using ResultType = OneOf<Success<GetWorkoutExerciseSetResponse>, NotFound, Valid
 
 public sealed record class CreateWorkoutExerciseSetCommand(
 	WorkoutId WorkoutId,
-	int ExerciseIndex,
+	WorkoutExerciseIndex ExerciseIndex,
 	ExerciseMetric Metric,
 	Reps Reps,
 	Guid UserId) : IRequest<ResultType>;
@@ -61,7 +61,7 @@ internal sealed class CreateWorkoutExerciseSetHandler
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<GetWorkoutExerciseSetResponse>(new GetWorkoutExerciseSetResponse(
-			set.Index,
+			set.Index.Value,
 			set.Metric,
 			set.Reps.Value,
 			set.DisplayOrder));

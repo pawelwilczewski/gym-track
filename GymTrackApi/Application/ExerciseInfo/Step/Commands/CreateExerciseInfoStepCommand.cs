@@ -69,7 +69,7 @@ internal sealed class CreateExerciseInfoStepHandler
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<GetExerciseInfoStepResponse>(new GetExerciseInfoStepResponse(
-			step.Index,
+			step.Index.Value,
 			step.Description.ToString(),
 			step.ImageFile?.ToString(),
 			step.DisplayOrder));

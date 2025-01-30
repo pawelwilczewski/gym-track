@@ -22,7 +22,7 @@ internal sealed class UpdateWorkoutExerciseDisplayOrder : IEndpoint
 	{
 		var result = await sender.Send(new UpdateWorkoutExerciseDisplayOrderCommand(
 				WorkoutId.From(workoutId),
-				exerciseIndex,
+				WorkoutExerciseIndex.From(exerciseIndex),
 				request.DisplayOrder,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

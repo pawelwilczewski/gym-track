@@ -11,7 +11,7 @@ using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class UpdateWorkoutExerciseDisplayOrderCommand(
 	WorkoutId WorkoutId,
-	int ExerciseIndex,
+	WorkoutExerciseIndex ExerciseIndex,
 	int DisplayOrder,
 	Guid UserId) : IRequest<ResultType>;
 

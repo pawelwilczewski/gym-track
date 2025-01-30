@@ -42,11 +42,11 @@ internal sealed class GetWorkoutExerciseHandler
 		if (exercise is null) return new NotFound();
 
 		return new Success<GetWorkoutExerciseResponse>(new GetWorkoutExerciseResponse(
-			exercise.Index,
+			exercise.Index.Value,
 			exercise.ExerciseInfoId.Value,
 			exercise.DisplayOrder,
 			exercise.Sets
-				.Select(set => new WorkoutExerciseSetKey(exercise.WorkoutId.Value, exercise.Index, set.Index))
+				.Select(set => new WorkoutExerciseSetKey(exercise.WorkoutId.Value, exercise.Index.Value, set.Index.Value))
 				.ToList()));
 	}
 }

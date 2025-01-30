@@ -33,7 +33,7 @@ internal sealed class GetExerciseInfosHandler
 				exerciseInfo.AllowedMetricTypes,
 				exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.ToString() : null,
 				exerciseInfo.Steps
-					.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index))
+					.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index.Value))
 					.ToList()));
 
 		return new Success<List<GetExerciseInfoResponse>>(await exerciseInfos

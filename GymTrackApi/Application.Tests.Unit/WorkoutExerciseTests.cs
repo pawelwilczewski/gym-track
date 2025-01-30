@@ -4,6 +4,7 @@ using Application.Workout.Exercise.DisplayOrder.Commands;
 using Application.Workout.Exercise.Dtos;
 using Application.Workout.Exercise.Queries;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.Workout;
 using Infrastructure.Persistence;
 using OneOf.Types;
 
@@ -71,7 +72,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		const int exerciseIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync();
 
@@ -107,7 +108,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		const int exerciseIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.Exercises.Add(exercise);
 		await dataContext.SaveChangesAsync();
@@ -148,7 +149,7 @@ internal sealed class WorkoutExerciseTests
 			.Build()
 			.ConfigureAwait(false);
 
-		const int exerciseIndex = 0;
+		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		workout.Exercises.Add(new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0));
 		await dataContext.SaveChangesAsync();
 

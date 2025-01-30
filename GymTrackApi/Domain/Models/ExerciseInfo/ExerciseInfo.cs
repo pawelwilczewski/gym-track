@@ -14,6 +14,9 @@ public readonly partial struct ExerciseInfoId
 	public static ExerciseInfoId New() => From(Ulid.NewUlid().ToGuid());
 }
 
+[ValueObject<int>]
+public readonly partial struct ExerciseInfoStepIndex : IValueObject<int, ExerciseInfoStepIndex>;
+
 public class ExerciseInfo : IOwned
 {
 	public ExerciseInfoId Id { get; } = ExerciseInfoId.New();
@@ -87,10 +90,10 @@ public class ExerciseInfo : IOwned
 		ThumbnailImage = thumbnailImage;
 	}
 
-	public class Step : IIndexed, IDisplayOrdered
+	public class Step : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
 	{
 		public ExerciseInfoId ExerciseInfoId { get; private set; }
-		public int Index { get; private set; }
+		public ExerciseInfoStepIndex Index { get; private set; }
 
 		public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
@@ -101,7 +104,7 @@ public class ExerciseInfo : IOwned
 
 		private Step() { }
 
-		public Step(ExerciseInfoId exerciseInfoId, int index, Description description, FilePath? imageFile, int displayOrder)
+		public Step(ExerciseInfoId exerciseInfoId, ExerciseInfoStepIndex index, Description description, FilePath? imageFile, int displayOrder)
 		{
 			ExerciseInfoId = exerciseInfoId;
 			Index = index;

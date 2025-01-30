@@ -35,7 +35,7 @@ internal sealed class CreateWorkoutHandler
 		return new Success<GetWorkoutResponse>(new GetWorkoutResponse(
 			workout.Id.Value,
 			workout.Name.ToString(),
-			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index))
+			workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index.Value))
 				.ToList()));
 	}
 }

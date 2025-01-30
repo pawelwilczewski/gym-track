@@ -22,7 +22,7 @@ internal sealed class GetWorkoutExerciseSet : IEndpoint
 	{
 		var result = await sender.Send(new GetWorkoutExerciseSetQuery(
 				WorkoutId.From(workoutId),
-				exerciseIndex,
+				WorkoutExerciseIndex.From(exerciseIndex),
 				setIndex,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);

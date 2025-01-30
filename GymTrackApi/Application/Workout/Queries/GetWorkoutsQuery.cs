@@ -31,7 +31,7 @@ internal sealed class GetWorkoutsHandler
 			.Select(workout => new GetWorkoutResponse(
 				workout.Id.Value,
 				workout.Name.ToString(),
-				workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index)).ToList()));
+				workout.Exercises.Select(exercise => new WorkoutExerciseKey(workout.Id.Value, exercise.Index.Value)).ToList()));
 
 		return new Success<List<GetWorkoutResponse>>(await workouts
 			.ToListAsync(cancellationToken)

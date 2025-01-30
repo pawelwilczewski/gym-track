@@ -18,6 +18,12 @@ public readonly partial struct WorkoutId
 	public static WorkoutId New() => From(Ulid.NewUlid().ToGuid());
 }
 
+[ValueObject<int>]
+public readonly partial struct WorkoutExerciseIndex : IValueObject<int, WorkoutExerciseIndex>;
+
+[ValueObject<int>]
+public readonly partial struct WorkoutExerciseSetIndex : IValueObject<int, WorkoutExerciseSetIndex>;
+
 public class Workout : IOwned
 {
 	public WorkoutId Id { get; private set; } = WorkoutId.New();
@@ -51,10 +57,10 @@ public class Workout : IOwned
 		Name = name;
 	}
 
-	public class Exercise : IIndexed, IDisplayOrdered
+	public class Exercise : IIndexed<WorkoutExerciseIndex>, IDisplayOrdered
 	{
 		public WorkoutId WorkoutId { get; private set; }
-		public int Index { get; private set; }
+		public WorkoutExerciseIndex Index { get; private set; }
 
 		public virtual Workout Workout { get; private set; } = default!;
 
@@ -68,7 +74,7 @@ public class Workout : IOwned
 		// ReSharper disable once UnusedMember.Local
 		private Exercise() { }
 
-		public Exercise(WorkoutId workoutId, int index, ExerciseInfoId exerciseInfoId, int displayOrder)
+		public Exercise(WorkoutId workoutId, WorkoutExerciseIndex index, ExerciseInfoId exerciseInfoId, int displayOrder)
 		{
 			WorkoutId = workoutId;
 			Index = index;
@@ -76,11 +82,11 @@ public class Workout : IOwned
 			DisplayOrder = displayOrder;
 		}
 
-		public class Set : IIndexed, IDisplayOrdered
+		public class Set : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrdered
 		{
 			public WorkoutId WorkoutId { get; private set; }
-			public int ExerciseIndex { get; private set; }
-			public int Index { get; private set; }
+			public WorkoutExerciseIndex ExerciseIndex { get; private set; }
+			public WorkoutExerciseSetIndex Index { get; private set; }
 
 			public virtual Exercise Exercise { get; private set; } = default!;
 
@@ -93,7 +99,7 @@ public class Workout : IOwned
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
 
-			private Set(Exercise exercise, int index, ExerciseMetric metric, Reps reps, int displayOrder)
+			private Set(Exercise exercise, WorkoutExerciseSetIndex index, ExerciseMetric metric, Reps reps, int displayOrder)
 			{
 				WorkoutId = exercise.WorkoutId;
 				ExerciseIndex = exercise.Index;
@@ -106,7 +112,7 @@ public class Workout : IOwned
 
 			public static bool TryCreate(
 				Exercise exercise,
-				int index,
+				WorkoutExerciseSetIndex index,
 				ExerciseMetric metric,
 				Reps reps,
 				int displayOrder,

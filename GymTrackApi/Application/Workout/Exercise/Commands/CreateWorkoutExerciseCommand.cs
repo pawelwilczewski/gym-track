@@ -54,11 +54,11 @@ internal sealed class CreateWorkoutExerciseHandler
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<GetWorkoutExerciseResponse>(new GetWorkoutExerciseResponse(
-			exercise.Index,
+			exercise.Index.Value,
 			exercise.ExerciseInfoId.Value,
 			exercise.DisplayOrder,
 			exercise.Sets
-				.Select(set => new WorkoutExerciseSetKey(exercise.WorkoutId.Value, exercise.Index, set.Index))
+				.Select(set => new WorkoutExerciseSetKey(exercise.WorkoutId.Value, exercise.Index.Value, set.Index.Value))
 				.ToList()));
 	}
 }

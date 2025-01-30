@@ -12,7 +12,7 @@ using ResultType = OneOf<Success<GetWorkoutExerciseSetResponse>, NotFound>;
 
 public sealed record class GetWorkoutExerciseSetQuery(
 	WorkoutId WorkoutId,
-	int ExerciseIndex,
+	WorkoutExerciseIndex ExerciseIndex,
 	int SetIndex,
 	Guid UserId) : IRequest<ResultType>;
 
@@ -47,7 +47,7 @@ internal sealed class GetWorkoutExerciseSetHandler
 		if (set is null) return new NotFound();
 
 		return new Success<GetWorkoutExerciseSetResponse>(new GetWorkoutExerciseSetResponse(
-			set.Index,
+			set.Index.Value,
 			set.Metric,
 			set.Reps.Value,
 			set.DisplayOrder));

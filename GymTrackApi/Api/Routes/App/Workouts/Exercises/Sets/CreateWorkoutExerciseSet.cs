@@ -27,7 +27,7 @@ internal sealed class CreateWorkoutExerciseSet : IEndpoint
 
 		var result = await sender.Send(new CreateWorkoutExerciseSetCommand(
 					WorkoutId.From(workoutId),
-					exerciseIndex,
+					WorkoutExerciseIndex.From(exerciseIndex),
 					request.Metric,
 					repsOrError.ValueObject,
 					httpContext.User.GetUserId()),

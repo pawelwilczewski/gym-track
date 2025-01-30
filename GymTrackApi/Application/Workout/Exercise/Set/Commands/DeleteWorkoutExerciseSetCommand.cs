@@ -11,7 +11,7 @@ using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class DeleteWorkoutExerciseSetCommand(
 	WorkoutId WorkoutId,
-	int ExerciseIndex,
+	WorkoutExerciseIndex ExerciseIndex,
 	int SetIndex,
 	Guid UserId) : IRequest<ResultType>;
 

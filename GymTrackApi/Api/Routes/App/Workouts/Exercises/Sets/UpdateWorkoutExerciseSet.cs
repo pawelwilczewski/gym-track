@@ -28,8 +28,8 @@ internal sealed class UpdateWorkoutExerciseSet : IEndpoint
 
 		var result = await sender.Send(new UpdateWorkoutExerciseSetCommand(
 					WorkoutId.From(workoutId),
-					exerciseIndex,
-					setIndex,
+					WorkoutExerciseIndex.From(exerciseIndex),
+					WorkoutExerciseSetIndex.From(setIndex),
 					request.Metric,
 					repsOrError.ValueObject,
 					httpContext.User.GetUserId()),

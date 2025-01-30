@@ -21,7 +21,7 @@ internal sealed class DeleteWorkoutExerciseSet : IEndpoint
 	{
 		var result = await sender.Send(new DeleteWorkoutExerciseSetCommand(
 				WorkoutId.From(workoutId),
-				exerciseIndex,
+				WorkoutExerciseIndex.From(exerciseIndex),
 				setIndex,
 				httpContext.User.GetUserId()), cancellationToken)
 			.ConfigureAwait(false);
