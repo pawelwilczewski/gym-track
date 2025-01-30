@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.App.ExerciseInfos;
 
+using ResultType = Ok<List<GetExerciseInfoResponse>>;
+
 internal sealed class GetExerciseInfos : IEndpoint
 {
-	public static async Task<Ok<List<GetExerciseInfoResponse>>> Handler(
+	public static async Task<ResultType> Handler(
 		HttpContext httpContext,
 		[FromServices] ISender sender,
 		CancellationToken cancellationToken)

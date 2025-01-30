@@ -12,24 +12,23 @@ using ResultType = Results<Ok<GetExerciseInfoResponse>, NotFound>;
 
 internal sealed class GetExerciseInfo : IEndpoint
 {
-	public static async Task<ResultType> Handler(
-		HttpContext httpContext,
-		[FromRoute] Guid exerciseInfoId,
-		[FromServices] ISender sender,
-		CancellationToken cancellationToken)
-	{
-		var response = await sender.Send(
-				new GetExerciseInfoQuery(ExerciseInfoId.From(exerciseInfoId), httpContext.User.GetUserId()), cancellationToken)
-			.ConfigureAwait(false);
-
-		return response.Match<ResultType>(
-			success => TypedResults.Ok(success.Value),
-			notFound => TypedResults.NotFound());
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{exerciseInfoId:guid}", Handler);
+		builder.MapGet("{exerciseInfoId:guid}", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromRoute] Guid exerciseInfoId,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var response = await sender.Send(
+					new GetExerciseInfoQuery(ExerciseInfoId.From(exerciseInfoId), httpContext.User.GetUserId()), cancellationToken)
+				.ConfigureAwait(false);
+
+			return response.Match<ResultType>(
+				success => TypedResults.Ok(success.Value),
+				notFound => TypedResults.NotFound());
+		});
+
 		return builder;
 	}
 }

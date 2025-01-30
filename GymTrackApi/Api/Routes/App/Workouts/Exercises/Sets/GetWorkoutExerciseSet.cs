@@ -12,29 +12,28 @@ using ResultType = Results<Ok<GetWorkoutExerciseSetResponse>, NotFound>;
 
 internal sealed class GetWorkoutExerciseSet : IEndpoint
 {
-	public static async Task<ResultType> Handler(
-		HttpContext httpContext,
-		[FromRoute] Guid workoutId,
-		[FromRoute] int exerciseIndex,
-		[FromRoute] int setIndex,
-		[FromServices] ISender sender,
-		CancellationToken cancellationToken)
-	{
-		var result = await sender.Send(new GetWorkoutExerciseSetQuery(
-				WorkoutId.From(workoutId),
-				WorkoutExerciseIndex.From(exerciseIndex),
-				setIndex,
-				httpContext.User.GetUserId()), cancellationToken)
-			.ConfigureAwait(false);
-
-		return result.Match<ResultType>(
-			success => TypedResults.Ok(success.Value),
-			notFound => TypedResults.NotFound());
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("{setIndex:int}", Handler);
+		builder.MapGet("{setIndex:int}", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromRoute] Guid workoutId,
+			[FromRoute] int exerciseIndex,
+			[FromRoute] int setIndex,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var result = await sender.Send(new GetWorkoutExerciseSetQuery(
+					WorkoutId.From(workoutId),
+					WorkoutExerciseIndex.From(exerciseIndex),
+					setIndex,
+					httpContext.User.GetUserId()), cancellationToken)
+				.ConfigureAwait(false);
+
+			return result.Match<ResultType>(
+				success => TypedResults.Ok(success.Value),
+				notFound => TypedResults.NotFound());
+		});
+
 		return builder;
 	}
 }

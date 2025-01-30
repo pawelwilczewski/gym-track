@@ -14,33 +14,32 @@ using ResultType = Results<NoContent, NotFound, ValidationProblem>;
 
 internal sealed class UpdateWorkout : IEndpoint
 {
-	public static async Task<ResultType> Handler(
-		HttpContext httpContext,
-		[FromRoute] Guid workoutId,
-		[FromBody] UpdateWorkoutRequest request,
-		[FromServices] ISender sender,
-		CancellationToken cancellationToken)
-	{
-		var nameOrError = Name.TryFrom(request.Name);
-		if (!nameOrError.IsSuccess)
-		{
-			return nameOrError.Error.ToValidationProblem(nameof(request.Name));
-		}
-
-		var result = await sender.Send(new UpdateWorkoutCommand(
-				WorkoutId.From(workoutId),
-				nameOrError.ValueObject,
-				httpContext.User.GetUserId()), cancellationToken)
-			.ConfigureAwait(false);
-
-		return result.Match<ResultType>(
-			success => TypedResults.NoContent(),
-			notFound => TypedResults.NotFound());
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPut("{workoutId:guid}", Handler);
+		builder.MapPut("{workoutId:guid}", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromRoute] Guid workoutId,
+			[FromBody] UpdateWorkoutRequest request,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var nameOrError = Name.TryFrom(request.Name);
+			if (!nameOrError.IsSuccess)
+			{
+				return nameOrError.Error.ToValidationProblem(nameof(request.Name));
+			}
+
+			var result = await sender.Send(new UpdateWorkoutCommand(
+					WorkoutId.From(workoutId),
+					nameOrError.ValueObject,
+					httpContext.User.GetUserId()), cancellationToken)
+				.ConfigureAwait(false);
+
+			return result.Match<ResultType>(
+				success => TypedResults.NoContent(),
+				notFound => TypedResults.NotFound());
+		});
+
 		return builder;
 	}
 }

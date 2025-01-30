@@ -14,35 +14,34 @@ using ResultType = Results<Created, NotFound, ValidationProblem>;
 
 internal sealed class CreateExerciseInfoStep : IEndpoint
 {
-	public static async Task<ResultType> Handler(
-		HttpContext httpContext,
-		[FromRoute] Guid exerciseInfoId,
-		[FromForm] string description,
-		IFormFile? image,
-		[FromServices] ISender sender,
-		CancellationToken cancellationToken)
-	{
-		var descriptionOrError = Description.TryFrom(description);
-		if (!descriptionOrError.IsSuccess)
-		{
-			return descriptionOrError.Error.ToValidationProblem(nameof(description));
-		}
-
-		var response = await sender.Send(new CreateExerciseInfoStepCommand(
-				ExerciseInfoId.From(exerciseInfoId),
-				descriptionOrError.ValueObject,
-				image?.AsNamedFile(),
-				httpContext.User.GetUserId()), cancellationToken)
-			.ConfigureAwait(false);
-
-		return response.Match<ResultType>(
-			success => TypedResults.Created($"{httpContext.Request.Path}/{success.Value.Index}"),
-			notFound => TypedResults.NotFound());
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("", Handler);
+		builder.MapPost("", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromRoute] Guid exerciseInfoId,
+			[FromForm] string description,
+			IFormFile? image,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var descriptionOrError = Description.TryFrom(description);
+			if (!descriptionOrError.IsSuccess)
+			{
+				return descriptionOrError.Error.ToValidationProblem(nameof(description));
+			}
+
+			var response = await sender.Send(new CreateExerciseInfoStepCommand(
+					ExerciseInfoId.From(exerciseInfoId),
+					descriptionOrError.ValueObject,
+					image?.AsNamedFile(),
+					httpContext.User.GetUserId()), cancellationToken)
+				.ConfigureAwait(false);
+
+			return response.Match<ResultType>(
+				success => TypedResults.Created($"{httpContext.Request.Path}/{success.Value.Index}"),
+				notFound => TypedResults.NotFound());
+		});
+
 		return builder;
 	}
 }

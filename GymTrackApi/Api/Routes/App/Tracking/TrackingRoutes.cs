@@ -6,10 +6,16 @@ internal static class TrackingRoutes
 {
 	public static IEndpointRouteBuilder MapTrackingRoutes(this IEndpointRouteBuilder builder)
 	{
-		builder.MapGroup("tracking")
+		var tracking = builder.MapGroup("tracking")
 			.RequireAuthorization()
-			.WithTags("Tracking")
-			.MapTrackedWorkoutRoutes();
+			.WithTags("Tracking");
+
+		tracking.MapGroup("workouts")
+			.Map(new GetTrackedWorkout())
+			.Map(new GetTrackedWorkouts())
+			.Map(new CreateTrackedWorkout())
+			.Map(new UpdateTrackedWorkout())
+			.Map(new DeleteTrackedWorkout());
 
 		return builder;
 	}

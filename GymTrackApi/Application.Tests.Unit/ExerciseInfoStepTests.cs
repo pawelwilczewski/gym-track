@@ -46,14 +46,14 @@ internal sealed class ExerciseInfoStepTests
 		await Assert.That(result.Value).IsTypeOf(responseType);
 	}
 
-	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, int accessedIndex, Type responseType)>
+	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, ExerciseInfoStepIndex accessedIndex, Type responseType)>
 		GetExerciseInfoStepData() =>
 	[
-		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, 0, typeof(Success<GetExerciseInfoStepResponse>)),
-		(Users.User1, Users.Admin1, 0, typeof(NotFound)),
-		(Users.User2, Users.User1, 0, typeof(NotFound)),
-		(Users.User1, Users.User1, 1, typeof(NotFound))
+		(Users.Admin1, Users.User1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
+		(Users.Admin1, Users.Admin1, ExerciseInfoStepIndex.From(0), typeof(Success<GetExerciseInfoStepResponse>)),
+		(Users.User1, Users.Admin1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
+		(Users.User2, Users.User1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
+		(Users.User1, Users.User1, ExerciseInfoStepIndex.From(1), typeof(NotFound))
 	];
 
 	[Test]
@@ -61,7 +61,7 @@ internal sealed class ExerciseInfoStepTests
 	public async Task GetExerciseInfoStep_ReturnsCorrectResponse(
 		IUserInfo owner,
 		IUserInfo accessor,
-		int accessedIndex,
+		ExerciseInfoStepIndex accessedIndex,
 		Type responseType)
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
@@ -95,7 +95,7 @@ internal sealed class ExerciseInfoStepTests
 
 		var handler = new GetExerciseInfoStepHandler(new UserDataContextFactory(dataContext));
 		var result = await handler.Handle(
-			new GetExerciseInfoStepQuery(ExerciseInfoId.From(Guid.NewGuid()), 0, Users.User1.Id),
+			new GetExerciseInfoStepQuery(ExerciseInfoId.From(Guid.NewGuid()), ExerciseInfoStepIndex.From(0), Users.User1.Id),
 			CancellationToken.None);
 
 		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));

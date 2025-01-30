@@ -12,7 +12,7 @@ using ResultType = OneOf<Success<GetExerciseInfoStepResponse>, NotFound>;
 
 public sealed record class GetExerciseInfoStepQuery(
 	ExerciseInfoId ExerciseInfoId,
-	int StepIndex,
+	ExerciseInfoStepIndex StepIndex,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
