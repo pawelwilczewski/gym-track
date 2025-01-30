@@ -28,7 +28,7 @@ internal sealed class ExerciseInfoStepTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, user)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), user)
 			.Build();
 
 		var handler = new CreateExerciseInfoStepHandler(
@@ -66,7 +66,7 @@ internal sealed class ExerciseInfoStepTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var step = new ExerciseInfoStep(
@@ -122,7 +122,7 @@ internal sealed class ExerciseInfoStepTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var originalStep = new ExerciseInfoStep(
@@ -169,7 +169,7 @@ internal sealed class ExerciseInfoStepTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var originalStep = new ExerciseInfoStep(
@@ -214,7 +214,7 @@ internal sealed class ExerciseInfoStepTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var originalStep = new ExerciseInfoStep(

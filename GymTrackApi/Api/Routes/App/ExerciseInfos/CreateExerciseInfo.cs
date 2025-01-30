@@ -37,11 +37,17 @@ internal sealed class CreateExerciseInfo : IEndpoint
 				return descriptionOrError.Error.ToValidationProblem(nameof(description));
 			}
 
+			var metricTypesOrError = SomeExerciseMetricTypes.TryFrom(allowedMetricTypes);
+			if (!metricTypesOrError.IsSuccess)
+			{
+				return metricTypesOrError.Error.ToValidationProblem(nameof(allowedMetricTypes));
+			}
+
 			var result = await sender.Send(new CreateExerciseInfoCommand(
 					nameOrError.ValueObject,
 					descriptionOrError.ValueObject,
 					thumbnailImage?.AsNamedFile(),
-					allowedMetricTypes,
+					metricTypesOrError.ValueObject,
 					httpContext.User.GetUserId()), cancellationToken)
 				.ConfigureAwait(false);
 

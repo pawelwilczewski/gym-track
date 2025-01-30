@@ -17,7 +17,7 @@ public class ExerciseInfo : IOwned
 	public FilePath? ThumbnailImage { get; private set; }
 	public Description Description { get; private set; }
 
-	public ExerciseMetricType AllowedMetricTypes { get; private set; }
+	public SomeExerciseMetricTypes AllowedMetricTypes { get; private set; }
 
 	public virtual List<WorkoutExercise> Exercises { get; private set; } = [];
 
@@ -34,7 +34,7 @@ public class ExerciseInfo : IOwned
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
-		ExerciseMetricType allowedMetricTypes,
+		SomeExerciseMetricTypes allowedMetricTypes,
 		Owner owner)
 	{
 		Id = id;
@@ -49,7 +49,7 @@ public class ExerciseInfo : IOwned
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
-		ExerciseMetricType allowedMetricTypes,
+		SomeExerciseMetricTypes allowedMetricTypes,
 		ExerciseInfoId? id = null) =>
 		new(id ?? ExerciseInfoId.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.Public());
 
@@ -57,7 +57,7 @@ public class ExerciseInfo : IOwned
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
-		ExerciseMetricType allowedMetricTypes,
+		SomeExerciseMetricTypes allowedMetricTypes,
 		Guid userId,
 		ExerciseInfoId? id = null)
 	{
@@ -66,7 +66,7 @@ public class ExerciseInfo : IOwned
 		return exerciseInfo;
 	}
 
-	public void Update(Name name, Description description, FilePath? thumbnailImage, ExerciseMetricType allowedMetricTypes, Guid userId)
+	public void Update(Name name, Description description, FilePath? thumbnailImage, SomeExerciseMetricTypes allowedMetricTypes, Guid userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 

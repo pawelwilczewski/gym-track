@@ -12,18 +12,18 @@ namespace Application.Tests.Unit;
 internal sealed class ExerciseInfoTests
 {
 	public static IEnumerable<(IUserInfo user, Name name, Description description,
-		ExerciseMetricType allowedMetricTypes, Type responseType)> CreateExerciseInfoData() =>
+		SomeExerciseMetricTypes allowedMetricTypes, Type responseType)> CreateExerciseInfoData() =>
 	[
 		(Users.Admin1, Name.From("ValidName"), Description.From("ValidDesc"),
-			ExerciseMetricType.Distance, typeof(Success<GetExerciseInfoResponse>)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.User1, Name.From("ValidName"), Description.From("ValidDesc"),
-			ExerciseMetricType.Distance, typeof(Success<GetExerciseInfoResponse>)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.User1, Name.From("dsad"), Description.From("ValidDesc"),
-			ExerciseMetricType.Distance, typeof(Success<GetExerciseInfoResponse>)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.User1, Name.From("LongName1234567890123456789012345678901234"),
-			Description.From("ValidDesc"), ExerciseMetricType.Distance, typeof(Success<GetExerciseInfoResponse>)),
+			Description.From("ValidDesc"), SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.Admin1, Name.From("ValidName"), Description.From("Valid"),
-			ExerciseMetricType.Distance, typeof(Success<GetExerciseInfoResponse>))
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>))
 	];
 
 	[Test]
@@ -32,7 +32,7 @@ internal sealed class ExerciseInfoTests
 		IUserInfo user,
 		Name name,
 		Description description,
-		ExerciseMetricType allowedMetricTypes,
+		SomeExerciseMetricTypes allowedMetricTypes,
 		Type responseType)
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
@@ -73,7 +73,7 @@ internal sealed class ExerciseInfoTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var handler = new GetExerciseInfoHandler(new UserDataContextFactory(dataContext));
@@ -100,17 +100,17 @@ internal sealed class ExerciseInfoTests
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor,
-			Name name, Description description, ExerciseMetricType metricTypes, Type responseType)>
+			Name name, Description description, SomeExerciseMetricTypes metricTypes, Type responseType)>
 		UpdateExerciseInfoData() =>
 	[
 		(Users.Admin1, Users.Admin1, Name.From("NewName"), Description.From("NewDesc"),
-			ExerciseMetricType.Duration, typeof(Success)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Duration), typeof(Success)),
 		(Users.User1, Users.User1, Name.From("Valid"), Description.From(""),
-			ExerciseMetricType.Weight, typeof(Success)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Weight), typeof(Success)),
 		(Users.Admin1, Users.User1, Name.From("Valid"), Description.From("Desc"),
-			ExerciseMetricType.Distance, typeof(NotFound)),
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(NotFound)),
 		(Users.User1, Users.Admin1, Name.From("Invalid"), Description.From("Desc"),
-			ExerciseMetricType.Distance, typeof(NotFound))
+			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(NotFound))
 	];
 
 	[Test]
@@ -120,12 +120,12 @@ internal sealed class ExerciseInfoTests
 		IUserInfo editor,
 		Name name,
 		Description description,
-		ExerciseMetricType metricTypes,
+		SomeExerciseMetricTypes metricTypes,
 		Type responseType)
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var handler = new UpdateExerciseInfoHandler(
@@ -164,7 +164,7 @@ internal sealed class ExerciseInfoTests
 	{
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), owner)
 			.Build();
 
 		var handler = new DeleteExerciseInfoHandler(

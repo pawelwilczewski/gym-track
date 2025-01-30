@@ -14,7 +14,7 @@ public sealed record class CreateExerciseInfoCommand(
 	Name Name,
 	Description Description,
 	NamedFile? ThumbnailImage,
-	ExerciseMetricType AllowedMetricTypes,
+	SomeExerciseMetricTypes AllowedMetricTypes,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
@@ -58,9 +58,9 @@ internal sealed class CreateExerciseInfoHandler
 
 		return new Success<GetExerciseInfoResponse>(new GetExerciseInfoResponse(
 			exerciseInfo.Id.Value,
-			exerciseInfo.Name.ToString(),
-			exerciseInfo.Description.ToString(),
-			exerciseInfo.AllowedMetricTypes,
+			exerciseInfo.Name.Value,
+			exerciseInfo.Description.Value,
+			exerciseInfo.AllowedMetricTypes.Value,
 			exerciseInfo.ThumbnailImage?.ToString(),
 			exerciseInfo.Steps
 				.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index.Value))

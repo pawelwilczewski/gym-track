@@ -28,10 +28,10 @@ internal sealed class GetExerciseInfosHandler
 			.AsNoTrackingWithIdentityResolution()
 			.Select(exerciseInfo => new GetExerciseInfoResponse(
 				exerciseInfo.Id.Value,
-				exerciseInfo.Name.ToString(),
-				exerciseInfo.Description.ToString(),
-				exerciseInfo.AllowedMetricTypes,
-				exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.ToString() : null,
+				exerciseInfo.Name.Value,
+				exerciseInfo.Description.Value,
+				exerciseInfo.AllowedMetricTypes.Value,
+				exerciseInfo.ThumbnailImage != null ? exerciseInfo.ThumbnailImage.Value.Value : null,
 				exerciseInfo.Steps
 					.Select(step => new ExerciseInfoStepKey(exerciseInfo.Id.Value, step.Index.Value))
 					.ToList()));

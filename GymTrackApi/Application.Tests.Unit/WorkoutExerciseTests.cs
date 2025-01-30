@@ -3,6 +3,7 @@ using Application.Workout.Exercise.Commands;
 using Application.Workout.Exercise.DisplayOrder.Commands;
 using Application.Workout.Exercise.Dtos;
 using Application.Workout.Exercise.Queries;
+using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Infrastructure.Persistence;
@@ -31,7 +32,7 @@ internal sealed class WorkoutExerciseTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, creator)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, exerciseInfoOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), exerciseInfoOwner)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -68,7 +69,7 @@ internal sealed class WorkoutExerciseTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, workoutOwner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), workoutOwner)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -105,7 +106,7 @@ internal sealed class WorkoutExerciseTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, owner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, owner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.All), owner)
 			.Build()
 			.ConfigureAwait(false);
 
@@ -146,7 +147,7 @@ internal sealed class WorkoutExerciseTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, workoutOwner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), workoutOwner)
 			.Build()
 			.ConfigureAwait(false);
 

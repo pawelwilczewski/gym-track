@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Domain.Common.ValueObjects;
 
 namespace Domain.Models.ExerciseInfo;
 
@@ -8,15 +9,15 @@ namespace Domain.Models.ExerciseInfo;
 public abstract record class ExerciseMetric
 {
 	[JsonIgnore]
-	public abstract ExerciseMetricType Type { get; }
+	public abstract SingleExerciseMetricType Type { get; }
 }
 
 public sealed record class Weight(
-	Amount Value,
+	WeightValue Value,
 	Weight.Unit Units) : ExerciseMetric
 {
 	[JsonIgnore]
-	public override ExerciseMetricType Type => ExerciseMetricType.Weight;
+	public override SingleExerciseMetricType Type => SingleExerciseMetricType.From(ExerciseMetricType.Weight);
 
 	public enum Unit
 	{
@@ -29,15 +30,15 @@ public sealed record class Duration(
 	TimeSpan Time) : ExerciseMetric
 {
 	[JsonIgnore]
-	public override ExerciseMetricType Type => ExerciseMetricType.Duration;
+	public override SingleExerciseMetricType Type => SingleExerciseMetricType.From(ExerciseMetricType.Duration);
 }
 
 public sealed record class Distance(
-	Amount Value,
+	WeightValue Value,
 	Distance.Unit Units) : ExerciseMetric
 {
 	[JsonIgnore]
-	public override ExerciseMetricType Type => ExerciseMetricType.Distance;
+	public override SingleExerciseMetricType Type => SingleExerciseMetricType.From(ExerciseMetricType.Distance);
 
 	public enum Unit
 	{

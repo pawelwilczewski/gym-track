@@ -17,7 +17,7 @@ public sealed record class UpdateExerciseInfoCommand(
 	Description Description,
 	bool ReplaceThumbnailImage,
 	NamedFile? ThumbnailImage,
-	ExerciseMetricType AllowedMetricTypes,
+	SomeExerciseMetricTypes AllowedMetricTypes,
 	Guid UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global

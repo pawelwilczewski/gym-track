@@ -1,4 +1,4 @@
-using Domain.Models.ExerciseInfo;
+using Domain.Common.ValueObjects;
 
 namespace Application.Tests.Unit.Mocks;
 
@@ -12,7 +12,7 @@ internal static class MockDataContextBuilderExtensions
 		return builder;
 	}
 
-	public static MockDataContextBuilder WithExerciseInfo(this MockDataContextBuilder builder, out Domain.Models.ExerciseInfo.ExerciseInfo exerciseInfo, ExerciseMetricType allowedMetricTypes, IUserInfo owner)
+	public static MockDataContextBuilder WithExerciseInfo(this MockDataContextBuilder builder, out Domain.Models.ExerciseInfo.ExerciseInfo exerciseInfo, SomeExerciseMetricTypes allowedMetricTypes, IUserInfo owner)
 	{
 		exerciseInfo = Domain.Models.ExerciseInfo.ExerciseInfo.CreateForUser(
 			Placeholders.RandomName(),

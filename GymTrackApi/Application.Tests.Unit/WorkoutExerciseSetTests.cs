@@ -4,6 +4,7 @@ using Application.Workout.Exercise.Set.DisplayOrder.Commands;
 using Application.Workout.Exercise.Set.Dtos;
 using Application.Workout.Exercise.Set.Queries;
 using Domain.Common.Results;
+using Domain.Common.ValueObjects;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
@@ -14,18 +15,18 @@ namespace Application.Tests.Unit;
 
 internal sealed class WorkoutExerciseSetTests
 {
-	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo creator, ExerciseMetricType metricType,
+	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo creator, SomeExerciseMetricTypes metricType,
 		ExerciseMetric metric, Reps reps, Type responseType)> CreateWorkoutExerciseSetData() =>
 	[
-		(Users.User2, Users.User1, ExerciseMetricType.Distance,
-			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, ExerciseMetricType.Distance,
-			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
-		(Users.User1, Users.User1, ExerciseMetricType.Weight,
-			new Distance(Amount.From(120.0), Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
-		(Users.User1, Users.User1, ExerciseMetricType.Weight,
-			new Weight(Amount.From(120.0), Weight.Unit.Kilogram), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
-		(Users.User1, Users.User1, ExerciseMetricType.Duration,
+		(Users.User2, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance),
+			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
+		(Users.Admin1, Users.Admin1, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance),
+			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Weight),
+			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
+		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Weight),
+			new Weight(WeightValue.From(120.0), Weight.Unit.Kilogram), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration),
 			new Duration(TimeSpan.FromSeconds(1000.0)), Reps.From(1), typeof(Success<GetWorkoutExerciseSetResponse>))
 	];
 
@@ -34,7 +35,7 @@ internal sealed class WorkoutExerciseSetTests
 	public async Task CreateWorkoutExerciseSet_ReturnsCorrectResponse(
 		IUserInfo workoutOwner,
 		IUserInfo creator,
-		ExerciseMetricType metricType,
+		SomeExerciseMetricTypes metricType,
 		ExerciseMetric metric,
 		Reps reps,
 		Type responseType)
@@ -86,7 +87,7 @@ internal sealed class WorkoutExerciseSetTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, workoutOwner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration), workoutOwner)
 			.Build();
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
@@ -123,13 +124,13 @@ internal sealed class WorkoutExerciseSetTests
 	}
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
-			ExerciseMetricType allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)>
+			SomeExerciseMetricTypes allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)>
 		UpdateWorkoutExerciseSetData() =>
 	[
-		(Users.Admin1, Users.Admin1, ExerciseMetricType.Duration,
+		(Users.Admin1, Users.Admin1, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration),
 			new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(Success)),
-		(Users.User1, Users.User1, ExerciseMetricType.Duration | ExerciseMetricType.Weight,
-			new Weight(Amount.From(120.0), Weight.Unit.Pound), 4, typeof(Success))
+		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration | ExerciseMetricType.Weight),
+			new Weight(WeightValue.From(120.0), Weight.Unit.Pound), 4, typeof(Success))
 	];
 
 	[Test]
@@ -137,7 +138,7 @@ internal sealed class WorkoutExerciseSetTests
 	public async Task UpdateWorkoutExerciseSet_ReturnsCorrectResponse(
 		IUserInfo workoutOwner,
 		IUserInfo editor,
-		ExerciseMetricType allowedMetricTypes,
+		SomeExerciseMetricTypes allowedMetricTypes,
 		ExerciseMetric metric,
 		int reps,
 		Type responseType)
@@ -202,7 +203,7 @@ internal sealed class WorkoutExerciseSetTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, workoutOwner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.All, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.All), workoutOwner)
 			.Build();
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
@@ -259,7 +260,7 @@ internal sealed class WorkoutExerciseSetTests
 		await using var dataContext = await MockDataContextBuilder.CreateEmpty()
 			.WithAllUsers()
 			.WithWorkout(out var workout, workoutOwner)
-			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Duration, workoutOwner)
+			.WithExerciseInfo(out var exerciseInfo, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration), workoutOwner)
 			.Build();
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);

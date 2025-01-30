@@ -54,7 +54,7 @@ public class WorkoutExerciseSet : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrd
 		var exerciseInfo = exercise.ExerciseInfo;
 		if (!exerciseInfo.CanBeReadBy(userId)) throw new PermissionError();
 
-		if (!exerciseInfo.AllowedMetricTypes.HasFlag(metric.Type))
+		if (!exerciseInfo.AllowedMetricTypes.Value.HasFlag(metric.Type.Value))
 		{
 			error = new ValidationError("Invalid metric type.");
 			set = null;
@@ -77,7 +77,7 @@ public class WorkoutExerciseSet : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrd
 		var exerciseInfo = Exercise.ExerciseInfo;
 		if (!exerciseInfo.CanBeReadBy(userId)) throw new PermissionError();
 
-		if (!exerciseInfo.AllowedMetricTypes.HasFlag(metric.Type))
+		if (!exerciseInfo.AllowedMetricTypes.Value.HasFlag(metric.Type.Value))
 		{
 			error = new ValidationError("Invalid metric type.");
 			return false;

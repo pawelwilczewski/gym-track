@@ -48,13 +48,19 @@ internal sealed class UpdateExerciseInfo : IEndpoint
 				return descriptionOrError.Error.ToValidationProblem(nameof(ExerciseInfo.Description));
 			}
 
+			var metricTypesOrError = SomeExerciseMetricTypes.TryFrom(allowedMetricTypes);
+			if (!metricTypesOrError.IsSuccess)
+			{
+				return metricTypesOrError.Error.ToValidationProblem(nameof(allowedMetricTypes));
+			}
+
 			var result = await sender.Send(new UpdateExerciseInfoCommand(
 					ExerciseInfoId.From(exerciseInfoId),
 					nameOrError.ValueObject,
 					descriptionOrError.ValueObject,
 					replaceThumbnailImage,
 					thumbnailImage?.AsNamedFile(),
-					allowedMetricTypes,
+					metricTypesOrError.ValueObject,
 					httpContext.User.GetUserId()), cancellationToken)
 				.ConfigureAwait(false);
 

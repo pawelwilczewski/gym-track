@@ -3,7 +3,7 @@ using Vogen;
 
 namespace Domain.Common.ValueObjects;
 
-[ValueObject(typeof(string))]
+[ValueObject<string>]
 public readonly partial struct Name
 {
 	public const int MAX_LENGTH = 50;

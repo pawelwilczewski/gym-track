@@ -38,10 +38,10 @@ internal sealed class GetExerciseInfoHandler
 
 		return new Success<GetExerciseInfoResponse>(new GetExerciseInfoResponse(
 			exerciseInfo.Id.Value,
-			exerciseInfo.Name.ToString(),
-			exerciseInfo.Description.ToString(),
-			exerciseInfo.AllowedMetricTypes,
-			exerciseInfo.ThumbnailImage?.ToString(),
+			exerciseInfo.Name.Value,
+			exerciseInfo.Description.Value,
+			exerciseInfo.AllowedMetricTypes.Value,
+			exerciseInfo.ThumbnailImage?.Value,
 			exerciseInfo.Steps
 				.Select(step => new ExerciseInfoStepKey(request.ExerciseInfoId.Value, step.Index.Value))
 				.ToList()));
