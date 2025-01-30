@@ -1,11 +1,12 @@
+using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
-internal sealed class WorkoutExerciseConfiguration : IEntityTypeConfiguration<Domain.Models.Workout.Workout.Exercise>
+internal sealed class WorkoutExerciseConfiguration : IEntityTypeConfiguration<WorkoutExercise>
 {
-	public void Configure(EntityTypeBuilder<Domain.Models.Workout.Workout.Exercise> builder)
+	public void Configure(EntityTypeBuilder<WorkoutExercise> builder)
 	{
 		builder
 			.ToTable("WorkoutExercises", Schemas.WORKOUT)

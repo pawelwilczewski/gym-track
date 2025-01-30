@@ -51,7 +51,7 @@ internal sealed class CreateWorkoutExerciseSetHandler
 
 		var index = exercise.Sets.GetNextIndex();
 		var displayOrder = exercise.Sets.GetNextDisplayOrder();
-		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
+		if (!WorkoutExerciseSet.TryCreate(
 			exercise, index, request.Metric, request.Reps, displayOrder, request.UserId, out var set, out var error))
 		{
 			return error.Value;

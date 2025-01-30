@@ -1,14 +1,15 @@
 using System.Text.Json;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.Workout;
 using Infrastructure.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.Workout;
 
-internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration<Domain.Models.Workout.Workout.Exercise.Set>
+internal sealed class WorkoutExerciseSetConfiguration : IEntityTypeConfiguration<WorkoutExerciseSet>
 {
-	public void Configure(EntityTypeBuilder<Domain.Models.Workout.Workout.Exercise.Set> builder)
+	public void Configure(EntityTypeBuilder<WorkoutExerciseSet> builder)
 	{
 		builder
 			.ToTable("WorkoutExerciseSets", Schemas.WORKOUT)

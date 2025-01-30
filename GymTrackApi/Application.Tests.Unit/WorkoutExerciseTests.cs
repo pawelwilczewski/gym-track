@@ -73,7 +73,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -110,7 +110,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, owner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -151,7 +151,7 @@ internal sealed class WorkoutExerciseTests
 			.ConfigureAwait(false);
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 

@@ -69,7 +69,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var step = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
+		var step = new ExerciseInfoStep(
 			exerciseInfo.Id,
 			ExerciseInfoStepIndex.From(0),
 			Description.From("Test Description"),
@@ -125,7 +125,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
+		var originalStep = new ExerciseInfoStep(
 			exerciseInfo.Id,
 			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),
@@ -172,7 +172,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
+		var originalStep = new ExerciseInfoStep(
 			exerciseInfo.Id,
 			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),
@@ -217,7 +217,7 @@ internal sealed class ExerciseInfoStepTests
 			.WithExerciseInfo(out var exerciseInfo, ExerciseMetricType.Distance, owner)
 			.Build();
 
-		var originalStep = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
+		var originalStep = new ExerciseInfoStep(
 			exerciseInfo.Id,
 			ExerciseInfoStepIndex.From(0),
 			Description.From("Original"),

@@ -1,21 +1,12 @@
-using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
+using Domain.Models.Workout;
 using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.ExerciseInfo;
-
-[ValueObject<Guid>]
-public readonly partial struct ExerciseInfoId
-{
-	public static ExerciseInfoId New() => From(Ulid.NewUlid().ToGuid());
-}
-
-[ValueObject<int>]
-public readonly partial struct ExerciseInfoStepIndex : IValueObject<int, ExerciseInfoStepIndex>;
 
 public class ExerciseInfo : IOwned
 {
@@ -28,13 +19,13 @@ public class ExerciseInfo : IOwned
 
 	public ExerciseMetricType AllowedMetricTypes { get; private set; }
 
-	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
+	public virtual List<WorkoutExercise> Exercises { get; private set; } = [];
 
 	public Guid? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
 
-	public IReadOnlyList<Step> Steps => steps.AsReadOnly();
-	private readonly List<Step> steps = [];
+	public IReadOnlyList<ExerciseInfoStep> Steps => steps.AsReadOnly();
+	private readonly List<ExerciseInfoStep> steps = [];
 
 	private ExerciseInfo() { }
 
@@ -92,56 +83,23 @@ public class ExerciseInfo : IOwned
 		ThumbnailImage = thumbnailImage;
 	}
 
-	public void AddStep(Step step, Guid userId)
+	public void AddStep(ExerciseInfoStep step, Guid userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		steps.Add(step);
 	}
 
-	public void RemoveStep(Step step, Guid userId)
+	public void RemoveStep(ExerciseInfoStep step, Guid userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		steps.Remove(step);
 	}
+}
 
-	public class Step : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
-	{
-		public ExerciseInfoId ExerciseInfoId { get; private set; }
-		public ExerciseInfoStepIndex Index { get; private set; }
-
-		public ExerciseInfo ExerciseInfo { get; private set; } = default!;
-
-		public Description Description { get; private set; }
-		public FilePath? ImageFile { get; private set; }
-
-		public int DisplayOrder { get; private set; }
-
-		private Step() { }
-
-		public Step(ExerciseInfoId exerciseInfoId, ExerciseInfoStepIndex index, Description description, FilePath? imageFile, int displayOrder)
-		{
-			ExerciseInfoId = exerciseInfoId;
-			Index = index;
-			Description = description;
-			ImageFile = imageFile;
-			DisplayOrder = displayOrder;
-		}
-
-		public void Update(Description description, FilePath? imageFile, Guid userId)
-		{
-			if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
-
-			Description = description;
-			ImageFile = imageFile;
-		}
-
-		public void UpdateDisplayOrder(int displayOrder, Guid userId)
-		{
-			if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
-
-			DisplayOrder = displayOrder;
-		}
-	}
+[ValueObject<Guid>]
+public readonly partial struct ExerciseInfoId
+{
+	public static ExerciseInfoId New() => From(Ulid.NewUlid().ToGuid());
 }

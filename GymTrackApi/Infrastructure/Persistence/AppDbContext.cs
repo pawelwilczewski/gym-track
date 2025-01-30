@@ -14,11 +14,11 @@ namespace Infrastructure.Persistence;
 internal sealed class AppDbContext : IdentityDbContext<User, Role, Guid>
 {
 	public DbSet<Workout> Workouts { get; private set; } = null!;
-	public DbSet<Workout.Exercise> WorkoutExercises { get; private set; } = null!;
-	public DbSet<Workout.Exercise.Set> WorkoutExerciseSets { get; private set; } = null!;
+	public DbSet<WorkoutExercise> WorkoutExercises { get; private set; } = null!;
+	public DbSet<WorkoutExerciseSet> WorkoutExerciseSets { get; private set; } = null!;
 
 	public DbSet<ExerciseInfo> ExerciseInfos { get; private set; } = null!;
-	public DbSet<ExerciseInfo.Step> ExerciseInfoSteps { get; private set; } = null!;
+	public DbSet<ExerciseInfoStep> ExerciseInfoSteps { get; private set; } = null!;
 
 	public DbSet<TrackedWorkout> TrackedWorkouts { get; private set; } = null!;
 

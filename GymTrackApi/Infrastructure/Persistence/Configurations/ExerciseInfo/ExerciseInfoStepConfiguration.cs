@@ -1,11 +1,12 @@
+using Domain.Models.ExerciseInfo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations.ExerciseInfo;
 
-internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<Domain.Models.ExerciseInfo.ExerciseInfo.Step>
+internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<ExerciseInfoStep>
 {
-	public void Configure(EntityTypeBuilder<Domain.Models.ExerciseInfo.ExerciseInfo.Step> builder)
+	public void Configure(EntityTypeBuilder<ExerciseInfoStep> builder)
 	{
 		const string tableName = "ExerciseInfoSteps";
 

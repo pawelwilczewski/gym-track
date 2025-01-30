@@ -48,7 +48,7 @@ internal sealed class CreateWorkoutExerciseHandler
 
 		var index = workout.Exercises.GetNextIndex();
 		var displayOrder = workout.Exercises.GetNextDisplayOrder();
-		var exercise = new Domain.Models.Workout.Workout.Exercise(request.WorkoutId, index, request.ExerciseInfoId, displayOrder);
+		var exercise = new WorkoutExercise(request.WorkoutId, index, request.ExerciseInfoId, displayOrder);
 
 		workout.AddExercise(exercise, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

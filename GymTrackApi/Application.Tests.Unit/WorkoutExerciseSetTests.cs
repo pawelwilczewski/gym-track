@@ -47,7 +47,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		workout.AddExercise(
-			new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0),
+			new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0),
 			workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -91,11 +91,11 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
-		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
+		if (!WorkoutExerciseSet.TryCreate(
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
@@ -150,11 +150,11 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
-		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
+		if (!WorkoutExerciseSet.TryCreate(
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
@@ -207,11 +207,11 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
-		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
+		if (!WorkoutExerciseSet.TryCreate(
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),
@@ -264,11 +264,11 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new Domain.Models.Workout.Workout.Exercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
-		if (!Domain.Models.Workout.Workout.Exercise.Set.TryCreate(
+		if (!WorkoutExerciseSet.TryCreate(
 			exercise,
 			setIndex,
 			new Duration(TimeSpan.FromSeconds(1000.0)),

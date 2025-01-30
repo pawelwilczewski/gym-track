@@ -47,7 +47,7 @@ internal sealed class CreateExerciseInfoStepHandler
 
 		var index = exerciseInfo.Steps.GetNextIndex();
 		var displayOrder = exerciseInfo.Steps.GetNextDisplayOrder();
-		var step = new Domain.Models.ExerciseInfo.ExerciseInfo.Step(
+		var step = new ExerciseInfoStep(
 			request.ExerciseInfoId,
 			index,
 			request.Description,
