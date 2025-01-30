@@ -48,7 +48,7 @@ internal sealed class UpdateExerciseInfo : IEndpoint
 				return descriptionOrError.Error.ToValidationProblem(nameof(ExerciseInfo.Description));
 			}
 
-			var response = await sender.Send(new UpdateExerciseInfoCommand(
+			var result = await sender.Send(new UpdateExerciseInfoCommand(
 					ExerciseInfoId.From(exerciseInfoId),
 					nameOrError.ValueObject,
 					descriptionOrError.ValueObject,
@@ -58,7 +58,7 @@ internal sealed class UpdateExerciseInfo : IEndpoint
 					httpContext.User.GetUserId()), cancellationToken)
 				.ConfigureAwait(false);
 
-			return response.Match<ResultType>(
+			return result.Match<ResultType>(
 				success => TypedResults.NoContent(),
 				notFound => TypedResults.NotFound());
 		});

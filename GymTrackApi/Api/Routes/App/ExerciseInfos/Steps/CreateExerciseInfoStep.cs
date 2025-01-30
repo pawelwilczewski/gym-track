@@ -30,14 +30,14 @@ internal sealed class CreateExerciseInfoStep : IEndpoint
 				return descriptionOrError.Error.ToValidationProblem(nameof(description));
 			}
 
-			var response = await sender.Send(new CreateExerciseInfoStepCommand(
+			var result = await sender.Send(new CreateExerciseInfoStepCommand(
 					ExerciseInfoId.From(exerciseInfoId),
 					descriptionOrError.ValueObject,
 					image?.AsNamedFile(),
 					httpContext.User.GetUserId()), cancellationToken)
 				.ConfigureAwait(false);
 
-			return response.Match<ResultType>(
+			return result.Match<ResultType>(
 				success => TypedResults.Created($"{httpContext.Request.Path}/{success.Value.Index}"),
 				notFound => TypedResults.NotFound());
 		});

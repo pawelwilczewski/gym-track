@@ -36,10 +36,13 @@ internal sealed class CreateExerciseInfoHandler
 	{
 		var dataContext = dataContextFactory.ForUser(request.UserId);
 
-		var id = ExerciseInfoId.New();
-
 		var exerciseInfo = Domain.Models.ExerciseInfo.ExerciseInfo.CreateForUser(
-			request.Name, null, request.Description, request.AllowedMetricTypes, request.UserId, id);
+			request.Name,
+			null,
+			request.Description,
+			request.AllowedMetricTypes,
+			request.UserId,
+			ExerciseInfoId.New());
 
 		var thumbnailImagePath = await request.ThumbnailImage.SaveOrOverrideImage(
 				exerciseInfo.GetThumbnailImageBaseName(),

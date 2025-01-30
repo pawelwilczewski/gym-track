@@ -21,7 +21,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 			[FromServices] ISender sender,
 			CancellationToken cancellationToken) =>
 		{
-			var response = await sender.Send(
+			var result = await sender.Send(
 					new GetExerciseInfoStepQuery(
 						ExerciseInfoId.From(exerciseInfoId),
 						ExerciseInfoStepIndex.From(stepIndex),
@@ -29,7 +29,7 @@ internal sealed class GetExerciseInfoStep : IEndpoint
 					cancellationToken)
 				.ConfigureAwait(false);
 
-			return response.Match<ResultType>(
+			return result.Match<ResultType>(
 				success => TypedResults.Ok(success.Value),
 				notFound => TypedResults.NotFound());
 		});

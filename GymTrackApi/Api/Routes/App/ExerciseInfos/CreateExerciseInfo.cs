@@ -25,26 +25,24 @@ internal sealed class CreateExerciseInfo : IEndpoint
 			[FromServices] ISender sender,
 			CancellationToken cancellationToken) =>
 		{
-			var nameResult = Name.TryFrom(name);
-			if (!nameResult.IsSuccess)
+			var nameOrError = Name.TryFrom(name);
+			if (!nameOrError.IsSuccess)
 			{
-				return nameResult.Error.ToValidationProblem(nameof(name));
+				return nameOrError.Error.ToValidationProblem(nameof(name));
 			}
 
-			var descriptionResult = Description.TryFrom(description);
-			if (!descriptionResult.IsSuccess)
+			var descriptionOrError = Description.TryFrom(description);
+			if (!descriptionOrError.IsSuccess)
 			{
-				return descriptionResult.Error.ToValidationProblem(nameof(description));
+				return descriptionOrError.Error.ToValidationProblem(nameof(description));
 			}
-
-			var userId = httpContext.User.GetUserId();
 
 			var result = await sender.Send(new CreateExerciseInfoCommand(
-					nameResult.ValueObject,
-					descriptionResult.ValueObject,
+					nameOrError.ValueObject,
+					descriptionOrError.ValueObject,
 					thumbnailImage?.AsNamedFile(),
 					allowedMetricTypes,
-					userId), cancellationToken)
+					httpContext.User.GetUserId()), cancellationToken)
 				.ConfigureAwait(false);
 
 			return TypedResults.Created($"{httpContext.Request.Path}/{result.Value.Id}");
