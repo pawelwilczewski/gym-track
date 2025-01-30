@@ -5,12 +5,6 @@ using Vogen;
 
 namespace Domain.Models.Tracking;
 
-[ValueObject<Guid>]
-public readonly partial struct TrackedWorkoutId
-{
-	public static TrackedWorkoutId New() => From(Ulid.NewUlid().ToGuid());
-}
-
 public class TrackedWorkout : IOwned
 {
 	public TrackedWorkoutId Id { get; } = TrackedWorkoutId.New();
@@ -42,4 +36,10 @@ public class TrackedWorkout : IOwned
 		PerformedAt = performedAt;
 		Duration = duration;
 	}
+}
+
+[ValueObject<Guid>]
+public readonly partial struct TrackedWorkoutId
+{
+	public static TrackedWorkoutId New() => From(Ulid.NewUlid().ToGuid());
 }
