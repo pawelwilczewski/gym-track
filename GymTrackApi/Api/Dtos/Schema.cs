@@ -12,74 +12,24 @@ public sealed record class CreateWorkoutExerciseSetRequest(
 public sealed record class CreateWorkoutRequest(
 	string Name);
 
-public sealed record class EditWorkoutExerciseSetRequest(
+public sealed record class UpdateWorkoutExerciseSetRequest(
 	ExerciseMetric Metric,
 	int Reps);
 
-public sealed record class EditDisplayOrderRequest(
+public sealed record class UpdateDisplayOrderRequest(
 	int DisplayOrder);
 
-public sealed record class EditWorkoutRequest(
+public sealed record class UpdateWorkoutRequest(
 	string Name);
-
-public sealed record class ExerciseInfoStepKey(
-	Guid ExerciseInfoId,
-	int StepIndex);
-
-public sealed record class GetExerciseInfoResponse(
-	Guid Id,
-	string Name,
-	string Description,
-	ExerciseMetricType AllowedMetricTypes,
-	string? ThumbnailUrl,
-	List<ExerciseInfoStepKey> Steps);
-
-public sealed record class GetExerciseInfoStepResponse(
-	int Index,
-	string Description,
-	string? ImageUrl,
-	int DisplayOrder);
-
-public sealed record class GetWorkoutExerciseResponse(
-	int Index,
-	Guid ExerciseInfoId,
-	int DisplayOrder,
-	List<WorkoutExerciseSetKey> Sets);
-
-public sealed record class GetWorkoutExerciseSetResponse(
-	int Index,
-	ExerciseMetric Metric,
-	int Reps,
-	int DisplayOrder);
-
-public sealed record class GetWorkoutResponse(
-	Guid Id,
-	string Name,
-	List<WorkoutExerciseKey> Exercises);
-
-public sealed record class WorkoutExerciseKey(
-	Guid WorkoutId,
-	int ExerciseIndex);
-
-public sealed record class WorkoutExerciseSetKey(
-	Guid WorkoutId,
-	int ExerciseIndex,
-	int SetIndex);
 
 public sealed record class GetAntiforgeryTokenResponse(
 	string Token);
-
-public sealed record class GetTrackedWorkoutResponse(
-	Guid Id,
-	Guid WorkoutId,
-	DateTime PerformedAt,
-	TimeSpan Duration);
 
 public sealed record class CreateTrackedWorkoutRequest(
 	Guid WorkoutId,
 	DateTime PerformedAt,
 	TimeSpan Duration);
 
-public sealed record class EditTrackedWorkoutRequest(
+public sealed record class UpdateTrackedWorkoutRequest(
 	DateTime PerformedAt,
 	TimeSpan Duration);

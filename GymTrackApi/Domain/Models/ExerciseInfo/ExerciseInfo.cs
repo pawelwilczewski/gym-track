@@ -1,85 +1,124 @@
-using System.Security.Claims;
 using Domain.Common;
+using Domain.Common.Exceptions;
+using Domain.Common.Ownership;
+using Domain.Common.ValueObjects;
+using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.ExerciseInfo;
 
-public class ExerciseInfo
+[ValueObject<Guid>]
+public readonly partial struct ExerciseInfoId
 {
-	public Id<ExerciseInfo> Id { get; } = Id<ExerciseInfo>.New();
+	public static ExerciseInfoId New() => From(Ulid.NewUlid().ToGuid());
+}
+
+[ValueObject<int>]
+public readonly partial struct ExerciseInfoStepIndex : IValueObject<int, ExerciseInfoStepIndex>;
+
+public class ExerciseInfo : IOwned
+{
+	public ExerciseInfoId Id { get; } = ExerciseInfoId.New();
 
 	public Name Name { get; private set; }
 
-	public FilePath? ThumbnailImage { get; set; }
+	public FilePath? ThumbnailImage { get; private set; }
 	public Description Description { get; private set; }
 
-	public ExerciseMetricType AllowedMetricTypes { get; set; }
+	public ExerciseMetricType AllowedMetricTypes { get; private set; }
 
 	public virtual List<Step> Steps { get; private set; } = [];
 	public virtual List<Workout.Workout.Exercise> Exercises { get; private set; } = [];
-	public virtual List<UserExerciseInfo> Users { get; private set; } = [];
+
+	public Guid? OwnerId { get; private set; }
+	public Owner Owner => OwnerId;
 
 	private ExerciseInfo() { }
 
 	private ExerciseInfo(
-		Id<ExerciseInfo> id,
+		ExerciseInfoId id,
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
-		ExerciseMetricType allowedMetricTypes)
+		ExerciseMetricType allowedMetricTypes,
+		Owner owner)
 	{
 		Id = id;
 		Name = name;
 		ThumbnailImage = thumbnailImage;
 		Description = description;
 		AllowedMetricTypes = allowedMetricTypes;
+		OwnerId = owner;
 	}
 
-	public static ExerciseInfo CreateForEveryone(
+	public static ExerciseInfo CreatePublic(
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
-		Id<ExerciseInfo>? id = null) =>
-		new(id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
+		ExerciseInfoId? id = null) =>
+		new(id ?? ExerciseInfoId.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.Public());
 
 	public static ExerciseInfo CreateForUser(
 		Name name,
 		FilePath? thumbnailImage,
 		Description description,
 		ExerciseMetricType allowedMetricTypes,
-		ClaimsPrincipal user,
-		Id<ExerciseInfo>? id = null)
+		Guid userId,
+		ExerciseInfoId? id = null)
 	{
 		var exerciseInfo = new ExerciseInfo(
-			id ?? Id<ExerciseInfo>.New(), name, thumbnailImage, description, allowedMetricTypes);
-		var userExerciseInfo = new UserExerciseInfo(user.GetUserId(), exerciseInfo.Id);
-		exerciseInfo.Users.Add(userExerciseInfo);
+			id ?? ExerciseInfoId.New(), name, thumbnailImage, description, allowedMetricTypes, new Owner.User(userId));
 		return exerciseInfo;
 	}
 
-	public class Step : IIndexed, IDisplayOrdered
+	public void Update(Name name, Description description, FilePath? thumbnailImage, ExerciseMetricType allowedMetricTypes, Guid userId)
 	{
-		public Id<ExerciseInfo> ExerciseInfoId { get; private set; }
-		public int Index { get; private set; }
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		Name = name;
+		Description = description;
+		ThumbnailImage = thumbnailImage;
+		AllowedMetricTypes = allowedMetricTypes;
+	}
+
+	public void UpdateThumbnailImage(FilePath? thumbnailImage, Guid userId)
+	{
+		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
+
+		ThumbnailImage = thumbnailImage;
+	}
+
+	public class Step : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
+	{
+		public ExerciseInfoId ExerciseInfoId { get; private set; }
+		public ExerciseInfoStepIndex Index { get; private set; }
 
 		public ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
 		public Description Description { get; private set; }
-		public FilePath? ImageFile { get; set; }
+		public FilePath? ImageFile { get; private set; }
 
 		public int DisplayOrder { get; set; }
 
 		private Step() { }
 
-		public Step(Id<ExerciseInfo> exerciseInfoId, int index, Description description, FilePath? imageFile, int displayOrder)
+		public Step(ExerciseInfoId exerciseInfoId, ExerciseInfoStepIndex index, Description description, FilePath? imageFile, int displayOrder)
 		{
 			ExerciseInfoId = exerciseInfoId;
 			Index = index;
 			Description = description;
 			ImageFile = imageFile;
 			DisplayOrder = displayOrder;
+		}
+
+		public void Update(Description description, FilePath? imageFile, Guid userId)
+		{
+			if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
+
+			Description = description;
+			ImageFile = imageFile;
 		}
 	}
 }

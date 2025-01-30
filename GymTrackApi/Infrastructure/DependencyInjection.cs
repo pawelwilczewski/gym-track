@@ -17,7 +17,7 @@ public static class DependencyInjection
 		var connectionString = dbSection["ConnectionString"];
 
 		services
-			.AddDbContext<IDataContext, AppDbContext>(options =>
+			.AddDbContext<AppDbContext>(options =>
 			{
 				options
 					.UseNpgsql(connectionString);
@@ -26,7 +26,8 @@ public static class DependencyInjection
 				{
 					options.EnableSensitiveDataLogging();
 				}
-			});
+			})
+			.AddScoped<IUserDataContextFactory, UserDataContextFactory>();
 
 		services
 			.AddIdentityCore<User>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -34,6 +35,9 @@ public static class DependencyInjection
 			.AddEntityFrameworkStores<AppDbContext>();
 
 		services.AddSingleton<IEmailSender<User>, SendGridIdentityEmailSender>();
+
+		services.AddMediatR(config =>
+			config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
 		return services;
 	}

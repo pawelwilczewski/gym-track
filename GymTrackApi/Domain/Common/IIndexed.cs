@@ -1,12 +1,14 @@
+using Domain.Common.ValueObjects;
+
 namespace Domain.Common;
 
-public interface IIndexed
+public interface IIndexed<out T> where T : IValueObject<int, T>
 {
-	int Index { get; }
+	T Index { get; }
 }
 
 public static class IndexedExtensions
 {
-	public static int GetNextIndex(this IReadOnlyCollection<IIndexed> indexed) =>
-		indexed.Count > 0 ? indexed.Select(i => i.Index).Max() + 1 : 0;
+	public static T GetNextIndex<T>(this IReadOnlyCollection<IIndexed<T>> indexed) where T : IValueObject<int, T> =>
+		T.From(indexed.Count > 0 ? indexed.Select(i => i.Index.Value).Max() + 1 : 0);
 }

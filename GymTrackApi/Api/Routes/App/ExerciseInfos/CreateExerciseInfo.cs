@@ -1,60 +1,55 @@
 using Api.Common;
 using Api.Files;
-using Application.Persistence;
-using Domain.Models;
+using Application.ExerciseInfo.Commands;
+using Domain.Common;
+using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Identity;
-using Domain.Models.Workout;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.App.ExerciseInfos;
 
+using ResultType = Results<Created, ValidationProblem>;
+
 internal sealed class CreateExerciseInfo : IEndpoint
 {
-	public static async Task<Results<Created, ValidationProblem>> Handler(
-		HttpContext httpContext,
-		[FromForm] string name,
-		[FromForm] string description,
-		[FromForm] ExerciseMetricType allowedMetricTypes,
-		IFormFile? thumbnailImage,
-		[FromServices] IDataContext dataContext,
-		[FromServices] IFileStoragePathProvider fileStoragePathProvider,
-		CancellationToken cancellationToken)
-	{
-		if (!Name.TryCreate(name, out var exerciseInfoName, out var error))
-		{
-			return error.ToValidationProblem(nameof(name));
-		}
-
-		if (!Description.TryCreate(description, out var exerciseInfoDescription, out error))
-		{
-			return error.ToValidationProblem(nameof(description));
-		}
-
-		var id = Id<ExerciseInfo>.New();
-
-		var exerciseInfo = httpContext.User.IsInRole(Role.ADMINISTRATOR)
-			? ExerciseInfo.CreateForEveryone(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, id)
-			: ExerciseInfo.CreateForUser(exerciseInfoName, null, exerciseInfoDescription, allowedMetricTypes, httpContext.User, id);
-
-		var thumbnailImagePath = await thumbnailImage.SaveOrOverrideImage(
-				exerciseInfo.GetThumbnailImageBaseName(),
-				Paths.EXERCISE_INFO_THUMBNAILS_DIRECTORY_URL,
-				fileStoragePathProvider,
-				cancellationToken)
-			.ConfigureAwait(false);
-		exerciseInfo.ThumbnailImage = thumbnailImagePath;
-
-		dataContext.ExerciseInfos.Add(exerciseInfo);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		return TypedResults.Created($"{httpContext.Request.Path}/{exerciseInfo.Id}");
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("", Handler);
+		builder.MapPost("", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromForm] string name,
+			[FromForm] string description,
+			[FromForm] ExerciseMetricType allowedMetricTypes,
+			IFormFile? thumbnailImage,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var nameResult = Name.TryFrom(name);
+			if (!nameResult.IsSuccess)
+			{
+				return nameResult.Error.ToValidationProblem(nameof(name));
+			}
+
+			var descriptionResult = Description.TryFrom(description);
+			if (!descriptionResult.IsSuccess)
+			{
+				return descriptionResult.Error.ToValidationProblem(nameof(description));
+			}
+
+			var userId = httpContext.User.GetUserId();
+
+			var result = await sender.Send(new CreateExerciseInfoCommand(
+					nameResult.ValueObject,
+					descriptionResult.ValueObject,
+					thumbnailImage?.AsNamedFile(),
+					allowedMetricTypes,
+					userId), cancellationToken)
+				.ConfigureAwait(false);
+
+			return TypedResults.Created($"{httpContext.Request.Path}/{result.Value.Id}");
+		});
+
 		return builder;
 	}
 }

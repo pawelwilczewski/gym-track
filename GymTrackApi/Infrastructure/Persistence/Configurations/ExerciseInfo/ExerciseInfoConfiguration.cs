@@ -1,5 +1,3 @@
-using Domain.Models;
-using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,13 +9,5 @@ internal sealed class ExerciseInfoConfiguration : IEntityTypeConfiguration<Domai
 	{
 		builder.ToTable("ExerciseInfos", Schemas.WORKOUT)
 			.HasKey(exerciseInfo => exerciseInfo.Id);
-
-		builder.Property(exerciseInfo => exerciseInfo.Id)
-			.HasConversion(Id<Domain.Models.ExerciseInfo.ExerciseInfo>.Converter);
-
-		builder.Property(info => info.ThumbnailImage).ConfigureFilePath();
-
-		builder.Property(info => info.Name).ConfigureName();
-		builder.Property(info => info.Description).ConfigureDescription();
 	}
 }

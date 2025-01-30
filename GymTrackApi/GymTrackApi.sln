@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{A207EE63-AAC8-4F0D-B640-C46E7EBDEF3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests.Unit", "Api.Tests.Unit\Api.Tests.Unit.csproj", "{13224C81-1879-4772-93EC-87A6D7420673}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests.Unit", "Application.Tests.Unit\Application.Tests.Unit.csproj", "{13224C81-1879-4772-93EC-87A6D7420673}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests.Functional", "Api.Tests.Functional\Api.Tests.Functional.csproj", "{72711097-E886-4920-A26B-1A7A7E814EC2}"
 EndProject

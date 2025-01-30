@@ -1,4 +1,3 @@
-using Infrastructure.Persistence.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,14 +17,14 @@ internal sealed class ExerciseInfoStepConfiguration : IEntityTypeConfiguration<D
 				step.Index
 			});
 
-		builder.Property(step => step.Description).ConfigureDescription();
-
-		builder.Property(step => step.ImageFile).ConfigureOptionalFilePath();
-
 		builder
 			.HasOne(step => step.ExerciseInfo)
 			.WithMany(exerciseInfo => exerciseInfo.Steps)
 			.HasForeignKey(step => step.ExerciseInfoId)
 			.OnDelete(DeleteBehavior.Cascade);
+
+		builder
+			.Navigation(step => step.ExerciseInfo)
+			.AutoInclude();
 	}
 }

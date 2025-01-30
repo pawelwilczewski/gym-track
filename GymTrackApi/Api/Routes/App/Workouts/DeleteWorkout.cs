@@ -1,37 +1,34 @@
-using Application.Persistence;
-using Domain.Models;
-using Domain.Models.Common;
+using Application.Workout.Commands;
+using Domain.Common;
 using Domain.Models.Workout;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Routes.App.Workouts;
 
+using ResultType = Results<NoContent, NotFound>;
+
 internal sealed class DeleteWorkout : IEndpoint
 {
-	public static async Task<Results<NoContent, NotFound<string>, ForbidHttpResult>> Handler(
-		HttpContext httpContext,
-		[FromRoute] Guid workoutId,
-		[FromServices] IDataContext dataContext,
-		CancellationToken cancellationToken)
-	{
-		var typedWorkoutId = new Id<Workout>(workoutId);
-		var workout = await dataContext.Workouts.Include(workout => workout.Users)
-			.FirstOrDefaultAsync(workout => workout.Id == typedWorkoutId, cancellationToken)
-			.ConfigureAwait(false);
-
-		if (workout is null) return TypedResults.NotFound("Workout not found.");
-		if (!httpContext.User.CanModifyOrDelete(workout.Users)) return TypedResults.Forbid();
-
-		dataContext.Workouts.Remove(workout);
-		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-		return TypedResults.NoContent();
-	}
-
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapDelete("{workoutId:guid}", Handler);
+		builder.MapDelete("{workoutId:guid}", async Task<ResultType> (
+			HttpContext httpContext,
+			[FromRoute] Guid workoutId,
+			[FromServices] ISender sender,
+			CancellationToken cancellationToken) =>
+		{
+			var result = await sender.Send(new DeleteWorkoutCommand(
+					WorkoutId.From(workoutId),
+					httpContext.User.GetUserId()), cancellationToken)
+				.ConfigureAwait(false);
+
+			return result.Match<ResultType>(
+				success => TypedResults.NoContent(),
+				notFound => TypedResults.NotFound());
+		});
+
 		return builder;
 	}
 }

@@ -3,6 +3,10 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using Api.Dtos;
+using Application.Tracking.TrackedWorkout.Dtos;
+using Application.Workout.Dtos;
+using Application.Workout.Exercise.Dtos;
+using Application.Workout.Exercise.Set.Dtos;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
 
@@ -25,7 +29,7 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateWorkout_InvalidEdit_Fails(FunctionalTestWebAppFactory factory)
+	public async Task CreateWorkout_InvalidUpdate_Fails(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
@@ -36,7 +40,7 @@ internal sealed class UseCaseTests
 		var workout = await httpClient.GetFromJsonAsync<GetWorkoutResponse>(workoutUri).ConfigureAwait(false);
 		await Assert.That(workout).IsNotNull();
 
-		response = await httpClient.PutAsJsonAsync(workoutUri, new EditWorkoutRequest(" ,,,,")).ConfigureAwait(false);
+		response = await httpClient.PutAsJsonAsync(workoutUri, new UpdateWorkoutRequest(" ,,,,")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
 	}
 
@@ -67,7 +71,7 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateEditDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateUpdateDeleteMultipleAssets_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
@@ -93,7 +97,7 @@ internal sealed class UseCaseTests
 		await Assert.That(exercise!.Index).IsEqualTo(exerciseIndex);
 
 		const int setIndex = 0;
-		Amount.TryCreate(1000.0, out var distance);
+		var distance = Amount.From(1000.0);
 		response = await httpClient.PostAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets", new CreateWorkoutExerciseSetRequest(new Distance(distance, Distance.Unit.Metre), 3));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
 		var setUri = response.Headers.Location!;
@@ -101,8 +105,8 @@ internal sealed class UseCaseTests
 		var set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
 		await Assert.That(set).IsNotNull();
 
-		Amount.TryCreate(30.0, out var weight);
-		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new EditWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
+		var weight = Amount.From(30.0);
+		response = await httpClient.PutAsJsonAsync($"{workoutUri}/exercises/{exerciseIndex}/sets/{setIndex}", new UpdateWorkoutExerciseSetRequest(new Weight(weight, Weight.Unit.Kilogram), 8));
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		set = await httpClient.GetFromJsonAsync<GetWorkoutExerciseSetResponse>(setUri).ConfigureAwait(false);
@@ -110,7 +114,8 @@ internal sealed class UseCaseTests
 		await Assert.That(set!.Reps).IsEqualTo(8);
 		await Assert.That(set.Metric is Weight weightMetric && Math.Abs(weightMetric.Value.Value - 30.0) <= 0.0001).IsTrue();
 
-		await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+		response = await httpClient.DeleteAsync(workoutUri).ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		await Assert.That((await httpClient.GetAsync(setUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 		await Assert.That((await httpClient.GetAsync(exerciseUri).ConfigureAwait(false)).StatusCode).IsEqualTo(HttpStatusCode.NotFound);
@@ -119,12 +124,12 @@ internal sealed class UseCaseTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
-	public async Task CreateAndEditTrackedWorkouts_Valid_Succeeds(FunctionalTestWebAppFactory factory)
+	public async Task CreateAndUpdateTrackedWorkouts_Valid_Succeeds(FunctionalTestWebAppFactory factory)
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
 		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
-		var exerciseId = CreateExerciseInfo(httpClient, antiforgeryToken!);
+		var exerciseId = await CreateExerciseInfo(httpClient, antiforgeryToken!);
 
 		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Test workout")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);
@@ -151,7 +156,7 @@ internal sealed class UseCaseTests
 		performedAt = DateTime.Today - TimeSpan.FromDays(1);
 		duration = TimeSpan.FromMinutes(40.0);
 		response = await httpClient.PutAsJsonAsync($"api/v1/tracking/workouts/{trackedWorkout.Id}",
-				new EditTrackedWorkoutRequest(performedAt, duration))
+				new UpdateTrackedWorkoutRequest(performedAt, duration))
 			.ConfigureAwait(false);
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
