@@ -83,7 +83,7 @@ public class Workout : IOwned
 		public ExerciseInfoId ExerciseInfoId { get; private set; }
 		public virtual ExerciseInfo.ExerciseInfo ExerciseInfo { get; private set; } = default!;
 
-		public int DisplayOrder { get; set; }
+		public int DisplayOrder { get; private set; }
 
 		public IReadOnlyList<Set> Sets => sets.AsReadOnly();
 		private readonly List<Set> sets = [];
@@ -113,6 +113,13 @@ public class Workout : IOwned
 			sets.Remove(set);
 		}
 
+		public void UpdateDisplayOrder(int displayOrder, Guid userId)
+		{
+			if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
+			DisplayOrder = displayOrder;
+		}
+
 		public class Set : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrdered
 		{
 			public WorkoutId WorkoutId { get; private set; }
@@ -125,7 +132,7 @@ public class Workout : IOwned
 
 			public Reps Reps { get; private set; }
 
-			public int DisplayOrder { get; set; }
+			public int DisplayOrder { get; private set; }
 
 			// ReSharper disable once UnusedMember.Local
 			private Set() { }
@@ -174,6 +181,8 @@ public class Workout : IOwned
 				Guid userId,
 				[NotNullWhen(false)] out ValidationError? error)
 			{
+				if (!Exercise.Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
 				var exerciseInfo = Exercise.ExerciseInfo;
 				if (!exerciseInfo.CanBeReadBy(userId)) throw new PermissionError();
 
@@ -188,6 +197,13 @@ public class Workout : IOwned
 
 				error = null;
 				return true;
+			}
+
+			public void UpdateDisplayOrder(int displayOrder, Guid userId)
+			{
+				if (!Exercise.Workout.CanBeModifiedBy(userId)) throw new PermissionError();
+
+				DisplayOrder = displayOrder;
 			}
 		}
 	}

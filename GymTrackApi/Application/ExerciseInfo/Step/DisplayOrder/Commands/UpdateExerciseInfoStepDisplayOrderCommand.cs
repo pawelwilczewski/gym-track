@@ -40,8 +40,7 @@ internal sealed class UpdateExerciseInfoStepDisplayOrderHandler
 		var step = exerciseInfo.Steps.SingleOrDefault(step => step.Index == request.StepIndex);
 		if (step is null) return new NotFound();
 
-		step.DisplayOrder = request.DisplayOrder;
-
+		step.UpdateDisplayOrder(request.DisplayOrder, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();

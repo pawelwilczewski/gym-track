@@ -40,8 +40,7 @@ internal sealed class UpdateWorkoutExerciseDisplayOrderHandler
 		var exercise = workout.Exercises.FirstOrDefault(exercise => exercise.Index == request.ExerciseIndex);
 		if (exercise is null) return new NotFound();
 
-		exercise.DisplayOrder = request.DisplayOrder;
-
+		exercise.UpdateDisplayOrder(request.DisplayOrder, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();

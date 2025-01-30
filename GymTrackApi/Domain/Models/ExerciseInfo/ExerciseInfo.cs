@@ -116,7 +116,7 @@ public class ExerciseInfo : IOwned
 		public Description Description { get; private set; }
 		public FilePath? ImageFile { get; private set; }
 
-		public int DisplayOrder { get; set; }
+		public int DisplayOrder { get; private set; }
 
 		private Step() { }
 
@@ -135,6 +135,13 @@ public class ExerciseInfo : IOwned
 
 			Description = description;
 			ImageFile = imageFile;
+		}
+
+		public void UpdateDisplayOrder(int displayOrder, Guid userId)
+		{
+			if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
+
+			DisplayOrder = displayOrder;
 		}
 	}
 }

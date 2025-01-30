@@ -45,8 +45,7 @@ internal sealed class UpdateWorkoutExerciseSetDisplayOrderHandler
 		var set = exercise.Sets.FirstOrDefault(set => set.Index == request.SetIndex);
 		if (set is null) return new NotFound();
 
-		set.DisplayOrder = request.DisplayOrder;
-
+		set.UpdateDisplayOrder(request.DisplayOrder, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();
