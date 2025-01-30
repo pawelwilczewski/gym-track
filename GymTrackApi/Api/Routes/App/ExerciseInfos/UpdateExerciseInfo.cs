@@ -27,15 +27,6 @@ internal sealed class UpdateExerciseInfo : IEndpoint
 			[FromServices] ISender sender,
 			CancellationToken cancellationToken) =>
 		{
-			// TODO Pawel: figure out what to do about this - we don't check in create, would be best if we could have ValueObject based on this enum
-			if ((allowedMetricTypes & ExerciseMetricType.All) == 0)
-			{
-				return TypedResults.ValidationProblem(new Dictionary<string, string[]>
-				{
-					{ "AllowedMetricTypes", ["At least one metric type must be selected."] }
-				});
-			}
-
 			var nameOrError = Name.TryFrom(name);
 			if (!nameOrError.IsSuccess)
 			{
