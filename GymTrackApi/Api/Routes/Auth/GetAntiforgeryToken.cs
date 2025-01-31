@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Routes.Auth;
 
-internal sealed class AntiforgeryToken : IEndpoint
+internal sealed class GetAntiforgeryToken : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{

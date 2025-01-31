@@ -18,8 +18,8 @@ internal static class AuthRoutes
 
 	public static IEndpointRouteBuilder MapAuthRoutes(this IEndpointRouteBuilder builder)
 	{
-		var root = builder.MapGroup("auth");
-		root
+		var auth = builder
+			.MapGroup("auth")
 			.WithTags("Auth")
 			.Map(new Login())
 			.Map(new Logout())
@@ -29,8 +29,12 @@ internal static class AuthRoutes
 			.Map(new ResendConfirmationEmail())
 			.Map(new ForgotPassword())
 			.Map(new ResetPassword())
-			.Map(new AntiforgeryToken())
-			.MapManageRoutes();
+			.Map(new GetAntiforgeryToken());
+
+		auth.MapGroup("manage")
+			.RequireAuthorization()
+			.Map(new Info())
+			.Map(new TwoFactor());
 
 		return builder;
 	}
