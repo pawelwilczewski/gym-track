@@ -45,10 +45,14 @@ public static class DependencyInjection
 
 		services.AddMassTransit(configurator =>
 		{
+			configurator.UsingInMemory((context, busConfigurator) =>
+				busConfigurator.ConfigureEndpoints(context));
+
 			configurator.AddEntityFrameworkOutbox<AppDbContext>(efConfigurator =>
 			{
 				efConfigurator.QueryDelay = TimeSpan.FromSeconds(10);
-				efConfigurator.UsePostgres().UseBusOutbox();
+				efConfigurator.UsePostgres();
+				efConfigurator.UseBusOutbox();
 			});
 		});
 
