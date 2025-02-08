@@ -1,5 +1,5 @@
-using Domain.Models.Identity;
 using Domain.Models.Tracking;
+using Domain.Models.User;
 
 namespace Application.Persistence;
 

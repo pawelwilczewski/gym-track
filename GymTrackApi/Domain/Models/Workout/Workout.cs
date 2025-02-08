@@ -1,14 +1,16 @@
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
 using Domain.Models.Tracking;
+using Domain.Models.User;
 using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.Workout;
 
-public class Workout : IOwned
+public class Workout : AggregateRoot, IOwned
 {
 	public WorkoutId Id { get; private set; } = WorkoutId.New();
 
@@ -16,7 +18,7 @@ public class Workout : IOwned
 
 	public virtual IReadOnlyList<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
 
-	public Guid? OwnerId { get; private set; }
+	public UserId? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
 
 	public IReadOnlyList<WorkoutExercise> Exercises => exercises.AsReadOnly();
@@ -33,24 +35,24 @@ public class Workout : IOwned
 	public static Workout CreatePublic(Name name) =>
 		new(name, new Owner.Public());
 
-	public static Workout CreateForUser(Name name, Guid userId) =>
+	public static Workout CreateForUser(Name name, UserId userId) =>
 		new(name, new Owner.User(userId));
 
-	public void Update(Name name, Guid userId)
+	public void Update(Name name, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		Name = name;
 	}
 
-	public void AddExercise(WorkoutExercise exercise, Guid userId)
+	public void AddExercise(WorkoutExercise exercise, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		exercises.Add(exercise);
 	}
 
-	public void RemoveExercise(WorkoutExercise exercise, Guid userId)
+	public void RemoveExercise(WorkoutExercise exercise, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 

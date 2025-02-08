@@ -1,62 +1,30 @@
-using System.Text;
-using Domain.Models.Identity;
+using Application.Auth.Commands;
+using Domain.Common;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Api.Routes.Auth;
+
+using ResultType = Results<NoContent, UnauthorizedHttpResult>;
 
 internal sealed class ConfirmEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("/confirm-email", async Task<Results<ContentHttpResult, UnauthorizedHttpResult>> (
-				[FromQuery] string userId,
+		builder.MapGet("/confirm-email", async Task<ResultType> (
+				HttpContext httpContext,
 				[FromQuery] string code,
-				[FromQuery] string? changedEmail,
-				[FromServices] UserManager<User> userManager) =>
+				[FromServices] ISender sender,
+				CancellationToken cancellationToken) =>
 			{
-				if (await userManager.FindByIdAsync(userId) is not { } user)
-				{
-					// We could respond with a 404 instead of a 401 like Identity UI,
-					// but that feels like unnecessary information.
-					return TypedResults.Unauthorized();
-				}
+				var result = await sender.Send(new ConfirmEmailCommand(
+						code, httpContext.User.GetUserId()), cancellationToken)
+					.ConfigureAwait(false);
 
-				try
-				{
-					code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-				}
-				catch (FormatException)
-				{
-					return TypedResults.Unauthorized();
-				}
-
-				IdentityResult result;
-
-				if (string.IsNullOrEmpty(changedEmail))
-				{
-					result = await userManager.ConfirmEmailAsync(user, code);
-				}
-				else
-				{
-					// As with Identity UI, email and username are one and the same. So when we update the email,
-					// we need to update the username.
-					result = await userManager.ChangeEmailAsync(user, changedEmail, code);
-
-					if (result.Succeeded)
-					{
-						result = await userManager.SetUserNameAsync(user, changedEmail);
-					}
-				}
-
-				if (!result.Succeeded)
-				{
-					return TypedResults.Unauthorized();
-				}
-
-				return TypedResults.Text("Thank you for confirming your email.");
+				return result.Match<ResultType>(
+					success => TypedResults.NoContent(),
+					unauthorized => TypedResults.Unauthorized());
 			})
 			.Add(endpointBuilder =>
 			{

@@ -13,6 +13,8 @@ internal static class PropertyConfigurations
 		builder.Properties<Name>().HaveMaxLength(Name.MAX_LENGTH);
 		builder.Properties<Description>().HaveMaxLength(Description.MAX_LENGTH);
 		builder.Properties<FilePath>().HaveMaxLength(FilePath.MAX_LENGTH);
+		builder.Properties<PasswordHash>().HaveMaxLength(Password.MAX_LENGTH);
+		builder.Properties<EmailAddress>().HaveMaxLength(EmailAddress.MAX_LENGTH);
 
 		builder.Properties<SomeExerciseMetricTypes>().HaveConversion<SomeExerciseMetricTypesConverter>();
 		builder.Properties<SingleExerciseMetricType>().HaveConversion<SingleExerciseMetricTypeConverter>();

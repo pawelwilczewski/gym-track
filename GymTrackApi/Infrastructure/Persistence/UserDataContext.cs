@@ -1,7 +1,7 @@
 using Application.Persistence;
 using Domain.Models.ExerciseInfo;
-using Domain.Models.Identity;
 using Domain.Models.Tracking;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +13,10 @@ internal sealed class UserDataContext : IUserDataContext
 	public IUserAssetRepository<Workout> Workouts { get; }
 	public IUserAssetRepository<TrackedWorkout> TrackedWorkouts { get; }
 
-	private readonly Guid userId;
+	private readonly UserId userId;
 	private readonly AppDbContext dbContext;
 
-	public UserDataContext(Guid userId, AppDbContext dbContext)
+	public UserDataContext(UserId userId, AppDbContext dbContext)
 	{
 		this.userId = userId;
 		this.dbContext = dbContext;

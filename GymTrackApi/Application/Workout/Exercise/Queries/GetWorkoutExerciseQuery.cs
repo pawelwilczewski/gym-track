@@ -1,5 +1,6 @@
 using Application.Persistence;
 using Application.Workout.Exercise.Dtos;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using ResultType = OneOf<Success<GetWorkoutExerciseResponse>, NotFound>;
 public sealed record class GetWorkoutExerciseQuery(
 	WorkoutId WorkoutId,
 	int ExerciseIndex,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class GetWorkoutExerciseHandler

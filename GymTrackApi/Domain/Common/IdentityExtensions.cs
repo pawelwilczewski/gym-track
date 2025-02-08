@@ -1,12 +1,13 @@
 using System.Security.Claims;
+using Domain.Models.User;
 
 namespace Domain.Common;
 
 public static class IdentityExtensions
 {
-	public static Guid GetUserId(this ClaimsPrincipal principal)
+	public static UserId GetUserId(this ClaimsPrincipal principal)
 	{
 		var claim = principal.FindFirst(ClaimTypes.NameIdentifier)!;
-		return new Guid(claim.Value);
+		return UserId.From(new Guid(claim.Value));
 	}
 }

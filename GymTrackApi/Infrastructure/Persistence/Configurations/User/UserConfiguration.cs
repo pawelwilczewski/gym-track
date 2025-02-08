@@ -1,16 +1,19 @@
-using Domain.Models.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations.Identity;
+namespace Infrastructure.Persistence.Configurations.User;
 
-internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
+internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Models.User.User>
 {
-	public void Configure(EntityTypeBuilder<User> builder)
+	public void Configure(EntityTypeBuilder<Domain.Models.User.User> builder)
 	{
 		builder
-			.Property(u => u.Id)
-			.HasDefaultValueSql("uuid_generate_v4()");
+			.ToTable("Users", Schemas.AUTHENTICATION)
+			.HasKey(user => user.Id);
+
+		builder
+			.HasIndex(user => user.Email)
+			.IsUnique();
 
 		builder
 			.HasMany(user => user.Workouts)

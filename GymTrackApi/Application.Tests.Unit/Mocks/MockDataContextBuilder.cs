@@ -1,6 +1,6 @@
 using System.ComponentModel.Design;
 using Application.Persistence;
-using Domain.Models.Identity;
+using Domain.Models.User;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,8 +14,6 @@ namespace Application.Tests.Unit.Mocks;
 internal sealed class MockDataContextBuilder
 {
 	private AppDbContext Context { get; init; } = default!;
-	private UserManager<User> UserManager { get; init; } = default!;
-	private RoleManager<Role> RoleManager { get; init; } = default!;
 	private readonly List<Func<Task>> tasks = [];
 
 	public static MockDataContextBuilder CreateEmpty()

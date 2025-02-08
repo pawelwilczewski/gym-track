@@ -1,5 +1,6 @@
 using Application.ExerciseInfo.Dtos;
 using Application.Persistence;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf.Types;
@@ -8,7 +9,7 @@ namespace Application.ExerciseInfo.Queries;
 
 using ResultType = Success<List<GetExerciseInfoResponse>>;
 
-public sealed record class GetExerciseInfosQuery(Guid UserId) : IRequest<ResultType>;
+public sealed record class GetExerciseInfosQuery(UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class GetExerciseInfosHandler

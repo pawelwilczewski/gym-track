@@ -1,4 +1,5 @@
 using Application.Persistence;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ using ResultType = OneOf<Success, NotFound>;
 
 public sealed record class DeleteWorkoutCommand(
 	WorkoutId WorkoutId,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class DeleteWorkoutHandler

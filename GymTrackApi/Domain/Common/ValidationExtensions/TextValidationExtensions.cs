@@ -104,4 +104,78 @@ internal static class TextValidationExtensions
 		error = null;
 		return true;
 	}
+
+	public static bool HasMinUpperCaseCharacters(
+		this string text,
+		int minUpperCaseCount,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (minUpperCaseCount >= 0 && text.Count(char.IsUpper) < minUpperCaseCount)
+		{
+			error = new ValidationError($"Not enough upper case characters (min {minUpperCaseCount}).");
+			return false;
+		}
+
+		error = null;
+		return true;
+	}
+
+	public static bool HasMinLowerCaseCharacters(
+		this string text,
+		int minLowerCaseCount,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (minLowerCaseCount >= 0 && text.Count(char.IsLower) < minLowerCaseCount)
+		{
+			error = new ValidationError($"Not enough lower case characters (min {minLowerCaseCount}).");
+			return false;
+		}
+
+		error = null;
+		return true;
+	}
+
+	public static bool HasMinDigitCharacters(
+		this string text,
+		int minDigitCount,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (minDigitCount >= 0 && text.Count(char.IsDigit) < minDigitCount)
+		{
+			error = new ValidationError($"Not enough digit characters (min {minDigitCount}).");
+			return false;
+		}
+
+		error = null;
+		return true;
+	}
+
+	public static bool HasMinSpecialCharacters(
+		this string text,
+		int minSpecialCount,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (minSpecialCount >= 0 && text.Count(char.IsSymbol) < minSpecialCount)
+		{
+			error = new ValidationError($"Not enough special characters (min {minSpecialCount}).");
+			return false;
+		}
+
+		error = null;
+		return true;
+	}
+
+	public static bool HasNoWhiteSpaceCharacters(
+		this string text,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (text.Any(char.IsWhiteSpace))
+		{
+			error = new ValidationError("Should not have any whitespace characters.");
+			return false;
+		}
+
+		error = null;
+		return true;
+	}
 }

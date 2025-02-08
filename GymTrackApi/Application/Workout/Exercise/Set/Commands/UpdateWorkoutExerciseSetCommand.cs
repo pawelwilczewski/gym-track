@@ -2,6 +2,7 @@ using Application.Persistence;
 using Domain.Common.Results;
 using Domain.Models;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ public sealed record class UpdateWorkoutExerciseSetCommand(
 	WorkoutExerciseSetIndex SetIndex,
 	ExerciseMetric Metric,
 	Reps Reps,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateWorkoutExerciseSetHandler

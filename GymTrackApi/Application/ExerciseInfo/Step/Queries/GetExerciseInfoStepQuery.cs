@@ -1,6 +1,7 @@
 using Application.ExerciseInfo.Step.Dtos;
 using Application.Persistence;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -13,7 +14,7 @@ using ResultType = OneOf<Success<GetExerciseInfoStepResponse>, NotFound>;
 public sealed record class GetExerciseInfoStepQuery(
 	ExerciseInfoId ExerciseInfoId,
 	ExerciseInfoStepIndex StepIndex,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class GetExerciseInfoStepHandler

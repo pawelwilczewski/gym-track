@@ -1,6 +1,7 @@
 using Application.Persistence;
 using Application.Tracking.TrackedWorkout.Dtos;
 using Domain.Models.Tracking;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -12,7 +13,7 @@ using ResultType = OneOf<Success<GetTrackedWorkoutResponse>, NotFound>;
 
 public sealed record class GetTrackedWorkoutQuery(
 	TrackedWorkoutId TrackedWorkoutId,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class GetTrackedWorkoutHandler

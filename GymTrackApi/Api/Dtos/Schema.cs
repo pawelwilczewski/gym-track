@@ -2,6 +2,20 @@ using Domain.Models.ExerciseInfo;
 
 namespace Api.Dtos;
 
+public sealed record class RegisterRequest(
+	string Email,
+	string Password);
+
+public sealed record class LoginRequest(
+	string Email,
+	string Password);
+
+public sealed record class LoginResponse(
+	string Token);
+
+public sealed record class ForgotPasswordRequest(
+	string Email);
+
 public sealed record class CreateWorkoutExerciseRequest(
 	Guid ExerciseInfoId);
 

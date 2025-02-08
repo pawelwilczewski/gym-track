@@ -2,6 +2,7 @@ using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
+using Domain.Models.User;
 using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -31,7 +32,7 @@ public class ExerciseInfoStep : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
 		DisplayOrder = displayOrder;
 	}
 
-	public void Update(Description description, FilePath? imageFile, Guid userId)
+	public void Update(Description description, FilePath? imageFile, UserId userId)
 	{
 		if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
 
@@ -39,7 +40,7 @@ public class ExerciseInfoStep : IIndexed<ExerciseInfoStepIndex>, IDisplayOrdered
 		ImageFile = imageFile;
 	}
 
-	public void UpdateDisplayOrder(int displayOrder, Guid userId)
+	public void UpdateDisplayOrder(int displayOrder, UserId userId)
 	{
 		if (!ExerciseInfo.CanBeModifiedBy(userId)) throw new PermissionError();
 

@@ -1,4 +1,4 @@
-using Domain.Models.Identity;
+using Domain.Models.User;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +19,8 @@ internal sealed class Refresh : IEndpoint
 				[FromServices] IOptionsMonitor<BearerTokenOptions> bearerTokenOptions,
 				[FromServices] TimeProvider timeProvider) =>
 			{
+				throw new NotImplementedException();
+
 				var refreshTokenProtector = bearerTokenOptions.Get(
 						IdentityConstants.BearerScheme)
 					.RefreshTokenProtector;

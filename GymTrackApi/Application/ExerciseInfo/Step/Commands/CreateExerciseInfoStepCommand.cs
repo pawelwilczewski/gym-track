@@ -4,6 +4,7 @@ using Application.Persistence;
 using Domain.Common;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -17,7 +18,7 @@ public sealed record class CreateExerciseInfoStepCommand(
 	ExerciseInfoId ExerciseInfoId,
 	Description Description,
 	NamedFile? Image,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class CreateExerciseInfoStepHandler

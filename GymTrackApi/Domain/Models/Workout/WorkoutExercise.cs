@@ -3,6 +3,7 @@ using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -27,29 +28,35 @@ public class WorkoutExercise : IIndexed<WorkoutExerciseIndex>, IDisplayOrdered
 	// ReSharper disable once UnusedMember.Local
 	private WorkoutExercise() { }
 
-	public WorkoutExercise(WorkoutId workoutId, WorkoutExerciseIndex index, ExerciseInfoId exerciseInfoId, int displayOrder)
+	public WorkoutExercise(
+		WorkoutId workoutId,
+		WorkoutExerciseIndex index,
+		ExerciseInfoId exerciseInfoId,
+		int displayOrder,
+		Workout workout)
 	{
 		WorkoutId = workoutId;
 		Index = index;
 		ExerciseInfoId = exerciseInfoId;
 		DisplayOrder = displayOrder;
+		Workout = workout;
 	}
 
-	public void AddSet(WorkoutExerciseSet set, Guid userId)
+	public void AddSet(WorkoutExerciseSet set, UserId userId)
 	{
 		if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		sets.Add(set);
 	}
 
-	public void RemoveSet(WorkoutExerciseSet set, Guid userId)
+	public void RemoveSet(WorkoutExerciseSet set, UserId userId)
 	{
 		if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		sets.Remove(set);
 	}
 
-	public void UpdateDisplayOrder(int displayOrder, Guid userId)
+	public void UpdateDisplayOrder(int displayOrder, UserId userId)
 	{
 		if (!Workout.CanBeModifiedBy(userId)) throw new PermissionError();
 

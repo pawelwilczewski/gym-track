@@ -1,5 +1,6 @@
 using Application.Persistence;
 using Domain.Common.ValueObjects;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using ResultType = OneOf<Success, NotFound>;
 public sealed record class UpdateWorkoutCommand(
 	WorkoutId WorkoutId,
 	Name Name,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateWorkoutHandler

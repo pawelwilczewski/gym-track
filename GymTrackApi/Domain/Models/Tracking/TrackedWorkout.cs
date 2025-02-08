@@ -1,11 +1,13 @@
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using Vogen;
 
 namespace Domain.Models.Tracking;
 
-public class TrackedWorkout : IOwned
+public class TrackedWorkout : AggregateRoot, IOwned
 {
 	public TrackedWorkoutId Id { get; } = TrackedWorkoutId.New();
 
@@ -16,12 +18,12 @@ public class TrackedWorkout : IOwned
 	public TimeSpan Duration { get; set; }
 
 	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local
-	public Guid? OwnerId { get; private set; }
+	public UserId? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
 
 	private TrackedWorkout() { }
 
-	public TrackedWorkout(WorkoutId workoutId, DateTime performedAt, TimeSpan duration, Guid userId)
+	public TrackedWorkout(WorkoutId workoutId, DateTime performedAt, TimeSpan duration, UserId userId)
 	{
 		WorkoutId = workoutId;
 		PerformedAt = performedAt;
@@ -29,7 +31,7 @@ public class TrackedWorkout : IOwned
 		OwnerId = userId;
 	}
 
-	public void Update(DateTime performedAt, TimeSpan duration, Guid userId)
+	public void Update(DateTime performedAt, TimeSpan duration, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 

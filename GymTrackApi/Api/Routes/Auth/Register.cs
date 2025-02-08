@@ -1,48 +1,37 @@
-using Domain.Models.Identity;
+using Api.Common;
+using Api.Dtos;
+using Application.Auth.Commands;
+using Domain.Common.ValueObjects;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Auth;
+
+using ResultType = Results<NoContent, ValidationProblem, Conflict>;
 
 internal sealed class Register : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/register", async Task<Results<NoContent, ValidationProblem>> (
-			[FromBody] RegisterRequest registration,
-			HttpContext context,
-			[FromServices] UserManager<User> userManager,
-			[FromServices] IUserStore<User> userStore,
-			[FromServices] IEmailSender<User> emailSender,
-			[FromServices] LinkGenerator linkGenerator) =>
+		builder.MapPost("/register", async Task<ResultType> (
+			[FromBody] RegisterRequest request,
+			ISender sender,
+			CancellationToken cancellationToken) =>
 		{
-			if (!userManager.SupportsUserEmail)
-			{
-				throw new NotSupportedException("`register` requires a user store with email support.");
-			}
+			var emailOrError = EmailAddress.TryFrom(request.Email);
+			if (!emailOrError.IsSuccess) return emailOrError.Error.ToValidationProblem(nameof(request.Email));
 
-			var emailStore = (IUserEmailStore<User>)userStore;
-			var email = registration.Email;
+			var passwordOrError = Password.TryFrom(request.Password);
+			if (!passwordOrError.IsSuccess) return passwordOrError.Error.ToValidationProblem(nameof(request.Password));
 
-			if (string.IsNullOrEmpty(email) || !AuthRoutes.IsEmailValid(email))
-			{
-				return AuthRoutes.CreateValidationProblem(IdentityResult.Failed(userManager.ErrorDescriber.InvalidEmail(email)));
-			}
+			var result = await sender.Send(
+					new RegisterCommand(emailOrError.ValueObject, passwordOrError.ValueObject), cancellationToken)
+				.ConfigureAwait(false);
 
-			var user = new User();
-			await userStore.SetUserNameAsync(user, email, CancellationToken.None);
-			await emailStore.SetEmailAsync(user, email, CancellationToken.None);
-			var result = await userManager.CreateAsync(user, registration.Password);
-
-			if (!result.Succeeded)
-			{
-				return AuthRoutes.CreateValidationProblem(result);
-			}
-
-			await AuthRoutes.SendConfirmationEmailAsync(emailSender, user, userManager, context, linkGenerator, email);
-			return TypedResults.NoContent();
+			return result.Match<ResultType>(
+				success => TypedResults.NoContent(),
+				error => TypedResults.Conflict());
 		});
 
 		return builder;

@@ -1,6 +1,8 @@
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Common.ValueObjects;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using Vogen;
 
@@ -8,7 +10,7 @@ using Vogen;
 
 namespace Domain.Models.ExerciseInfo;
 
-public class ExerciseInfo : IOwned
+public class ExerciseInfo : AggregateRoot, IOwned
 {
 	public ExerciseInfoId Id { get; } = ExerciseInfoId.New();
 
@@ -21,7 +23,7 @@ public class ExerciseInfo : IOwned
 
 	public virtual List<WorkoutExercise> Exercises { get; private set; } = [];
 
-	public Guid? OwnerId { get; private set; }
+	public UserId? OwnerId { get; private set; }
 	public Owner Owner => OwnerId;
 
 	public IReadOnlyList<ExerciseInfoStep> Steps => steps.AsReadOnly();
@@ -58,7 +60,7 @@ public class ExerciseInfo : IOwned
 		FilePath? thumbnailImage,
 		Description description,
 		SomeExerciseMetricTypes allowedMetricTypes,
-		Guid userId,
+		UserId userId,
 		ExerciseInfoId? id = null)
 	{
 		var exerciseInfo = new ExerciseInfo(
@@ -66,7 +68,7 @@ public class ExerciseInfo : IOwned
 		return exerciseInfo;
 	}
 
-	public void Update(Name name, Description description, FilePath? thumbnailImage, SomeExerciseMetricTypes allowedMetricTypes, Guid userId)
+	public void Update(Name name, Description description, FilePath? thumbnailImage, SomeExerciseMetricTypes allowedMetricTypes, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
@@ -76,21 +78,21 @@ public class ExerciseInfo : IOwned
 		AllowedMetricTypes = allowedMetricTypes;
 	}
 
-	public void UpdateThumbnailImage(FilePath? thumbnailImage, Guid userId)
+	public void UpdateThumbnailImage(FilePath? thumbnailImage, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		ThumbnailImage = thumbnailImage;
 	}
 
-	public void AddStep(ExerciseInfoStep step, Guid userId)
+	public void AddStep(ExerciseInfoStep step, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 
 		steps.Add(step);
 	}
 
-	public void RemoveStep(ExerciseInfoStep step, Guid userId)
+	public void RemoveStep(ExerciseInfoStep step, UserId userId)
 	{
 		if (!this.CanBeModifiedBy(userId)) throw new PermissionError();
 

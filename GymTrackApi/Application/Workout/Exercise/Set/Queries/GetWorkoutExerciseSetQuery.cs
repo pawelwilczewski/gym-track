@@ -1,5 +1,6 @@
 using Application.Persistence;
 using Application.Workout.Exercise.Set.Dtos;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ public sealed record class GetWorkoutExerciseSetQuery(
 	WorkoutId WorkoutId,
 	WorkoutExerciseIndex ExerciseIndex,
 	int SetIndex,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class GetWorkoutExerciseSetHandler

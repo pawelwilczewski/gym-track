@@ -5,6 +5,7 @@ using Domain.Common.Ownership;
 using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -45,7 +46,7 @@ public class WorkoutExerciseSet : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrd
 		ExerciseMetric metric,
 		Reps reps,
 		int displayOrder,
-		Guid userId,
+		UserId userId,
 		[NotNullWhen(true)] out WorkoutExerciseSet? set,
 		[NotNullWhen(false)] out ValidationError? error)
 	{
@@ -69,7 +70,7 @@ public class WorkoutExerciseSet : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrd
 	public bool TryUpdate(
 		ExerciseMetric metric,
 		Reps reps,
-		Guid userId,
+		UserId userId,
 		[NotNullWhen(false)] out ValidationError? error)
 	{
 		if (!Exercise.Workout.CanBeModifiedBy(userId)) throw new PermissionError();
@@ -90,7 +91,7 @@ public class WorkoutExerciseSet : IIndexed<WorkoutExerciseSetIndex>, IDisplayOrd
 		return true;
 	}
 
-	public void UpdateDisplayOrder(int displayOrder, Guid userId)
+	public void UpdateDisplayOrder(int displayOrder, UserId userId)
 	{
 		if (!Exercise.Workout.CanBeModifiedBy(userId)) throw new PermissionError();
 

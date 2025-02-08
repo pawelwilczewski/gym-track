@@ -2,6 +2,7 @@ using Application.Files;
 using Application.Persistence;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -17,7 +18,7 @@ public sealed record class UpdateExerciseInfoStepCommand(
 	Description Description,
 	bool ReplaceImage,
 	NamedFile? Image,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateExerciseInfoStepHandler

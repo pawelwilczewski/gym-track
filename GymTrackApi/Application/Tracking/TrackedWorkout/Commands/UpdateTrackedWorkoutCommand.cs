@@ -1,5 +1,6 @@
 using Application.Persistence;
 using Domain.Models.Tracking;
+using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
@@ -13,7 +14,7 @@ public sealed record class UpdateTrackedWorkoutCommand(
 	TrackedWorkoutId TrackedWorkoutId,
 	DateTime PerformedAt,
 	TimeSpan Duration,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateTrackedWorkoutHandler

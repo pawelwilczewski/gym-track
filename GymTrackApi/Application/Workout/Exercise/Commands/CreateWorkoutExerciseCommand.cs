@@ -2,6 +2,7 @@ using Application.Persistence;
 using Application.Workout.Exercise.Dtos;
 using Domain.Common;
 using Domain.Models.ExerciseInfo;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ using ResultType = OneOf<Success<GetWorkoutExerciseResponse>, NotFound>;
 public sealed record class CreateWorkoutExerciseCommand(
 	WorkoutId WorkoutId,
 	ExerciseInfoId ExerciseInfoId,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class CreateWorkoutExerciseHandler
@@ -48,7 +49,7 @@ internal sealed class CreateWorkoutExerciseHandler
 
 		var index = workout.Exercises.GetNextIndex();
 		var displayOrder = workout.Exercises.GetNextDisplayOrder();
-		var exercise = new WorkoutExercise(request.WorkoutId, index, request.ExerciseInfoId, displayOrder);
+		var exercise = new WorkoutExercise(request.WorkoutId, index, request.ExerciseInfoId, displayOrder, workout);
 
 		workout.AddExercise(exercise, request.UserId);
 		await dataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

@@ -1,6 +1,7 @@
 using Application.Persistence;
 using Application.Workout.Dtos;
 using Domain.Common.ValueObjects;
+using Domain.Models.User;
 using MediatR;
 using OneOf.Types;
 
@@ -10,7 +11,7 @@ using ResultType = Success<GetWorkoutResponse>;
 
 public sealed record class CreateWorkoutCommand(
 	Name Name,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class CreateWorkoutHandler

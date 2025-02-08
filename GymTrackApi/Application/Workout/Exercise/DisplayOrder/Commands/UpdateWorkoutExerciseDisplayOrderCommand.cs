@@ -1,4 +1,5 @@
 using Application.Persistence;
+using Domain.Models.User;
 using Domain.Models.Workout;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ public sealed record class UpdateWorkoutExerciseDisplayOrderCommand(
 	WorkoutId WorkoutId,
 	WorkoutExerciseIndex ExerciseIndex,
 	int DisplayOrder,
-	Guid UserId) : IRequest<ResultType>;
+	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class UpdateWorkoutExerciseDisplayOrderHandler
