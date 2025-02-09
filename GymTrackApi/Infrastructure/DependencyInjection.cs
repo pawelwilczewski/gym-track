@@ -55,6 +55,8 @@ public static class DependencyInjection
 				busConfigurator.ConfigureEndpoints(context);
 				busConfigurator.UseRawJsonDeserializer();
 				busConfigurator.UseRawJsonSerializer();
+				busConfigurator.UseMessageRetry(retryConfigure =>
+					retryConfigure.Interval(4, TimeSpan.FromSeconds(1)));
 			});
 
 			configurator.AddEntityFrameworkOutbox<AppDbContext>(efConfigurator =>
