@@ -6,7 +6,7 @@ namespace Domain.Common.ValueObjects;
 public readonly partial struct PasswordHashOnly
 {
 	private static Validation Validate(string input) =>
-		input.Length == PasswordHash.HASH_LENGTH
+		input.Length >= PasswordHash.HASH_BYTES_LENGTH
 			? Validation.Ok
 			: Validation.Invalid("Invalid password hash-only length.");
 }

@@ -12,7 +12,7 @@ internal sealed class PasswordHasher : IPasswordHasher
 
 	public PasswordHash Hash(Password password)
 	{
-		var salt = RandomNumberGenerator.GetBytes(PasswordHash.SALT_LENGTH);
+		var salt = RandomNumberGenerator.GetBytes(PasswordHash.SALT_BYTES_LENGTH);
 		return Hash(password, PasswordSalt.From(Convert.ToHexString(salt)));
 	}
 
@@ -23,8 +23,8 @@ internal sealed class PasswordHasher : IPasswordHasher
 			Convert.FromHexString(salt.Value),
 			ITERATIONS,
 			algorithm,
-			PasswordHash.HASH_LENGTH);
+			PasswordHash.HASH_BYTES_LENGTH);
 
-		return PasswordHash.From($"{salt}{Convert.ToHexString(hash)}");
+		return PasswordHash.From($"{salt}{PasswordHash.DELIMITER}{Convert.ToHexString(hash)}");
 	}
 }
