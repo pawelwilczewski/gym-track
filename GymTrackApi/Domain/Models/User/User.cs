@@ -31,7 +31,10 @@ public class User : AggregateRoot
 	public static User Create(EmailAddress email, PasswordHash passwordHash)
 	{
 		var user = new User(email, passwordHash);
-		user.Raise(new UserCreatedEvent(user.Id));
+		user.Raise(new UserCreatedEvent
+		{
+			UserId = user.Id
+		});
 		return user;
 	}
 

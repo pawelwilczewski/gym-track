@@ -1,4 +1,3 @@
-using Domain.Common;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Tracking;
 using Domain.Models.User;
@@ -23,17 +22,11 @@ internal sealed class AppDbContext : DbContext
 
 	public DbSet<TrackedWorkout> TrackedWorkouts { get; private set; } = null!;
 
-	private readonly IPublishEndpoint publishEndpoint;
-
-	public AppDbContext(DbContextOptions<AppDbContext> options, IPublishEndpoint publishEndpoint) : base(options)
-	{
-		this.publishEndpoint = publishEndpoint;
-
+	public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) =>
 		ChangeTracker.LazyLoadingEnabled = false;
-	}
 
 	public AppDbContext() // for creating migrations
-		: this(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options, null!) { }
+		: this(new DbContextOptionsBuilder<AppDbContext>().UseNpgsql().Options) { }
 
 	protected override void OnModelCreating(ModelBuilder builder)
 	{
@@ -55,25 +48,4 @@ internal sealed class AppDbContext : DbContext
 
 	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) =>
 		configurationBuilder.ConfigureProperties();
-
-	public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-	{
-		var domainEvents = ChangeTracker.Entries<AggregateRoot>()
-			.Select(entry => entry.Entity)
-			.SelectMany(root =>
-			{
-				var events = root.DomainEvents.ToList();
-				root.ClearDomainEvents();
-				return events;
-			});
-
-		foreach (var @event in domainEvents)
-		{
-			await publishEndpoint.Publish(@event, cancellationToken).ConfigureAwait(false);
-		}
-
-		var result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		return result;
-	}
 }

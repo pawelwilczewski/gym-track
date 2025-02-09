@@ -3,6 +3,7 @@ using Application.Email;
 using Application.Persistence;
 using Infrastructure.Authentication;
 using Infrastructure.Email;
+using Infrastructure.Outbox;
 using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +19,10 @@ public static class DependencyInjection
 		services.AddMediatR(config =>
 			config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
+		services.AddScoped<PublishDomainEventsInterceptor>();
+
 		services
-			.AddDbContext<AppDbContext>(options =>
+			.AddDbContext<AppDbContext>((sp, options) =>
 			{
 				// TODO Pawel: look into IOptions - is it applicable to simplify this parsing?
 				var dbSection = configuration.GetRequiredSection("Database");
@@ -31,6 +34,8 @@ public static class DependencyInjection
 				{
 					options.EnableSensitiveDataLogging();
 				}
+
+				options.AddInterceptors(sp.GetRequiredService<PublishDomainEventsInterceptor>());
 			})
 			.AddScoped<IUsersDataContext, UsersDataContext>()
 			.AddScoped<IUserDataContextFactory, UserDataContextFactory>();
@@ -46,7 +51,11 @@ public static class DependencyInjection
 		services.AddMassTransit(configurator =>
 		{
 			configurator.UsingInMemory((context, busConfigurator) =>
-				busConfigurator.ConfigureEndpoints(context));
+			{
+				busConfigurator.ConfigureEndpoints(context);
+				busConfigurator.UseRawJsonDeserializer();
+				busConfigurator.UseRawJsonSerializer();
+			});
 
 			configurator.AddEntityFrameworkOutbox<AppDbContext>(efConfigurator =>
 			{
@@ -54,6 +63,8 @@ public static class DependencyInjection
 				efConfigurator.UsePostgres();
 				efConfigurator.UseBusOutbox();
 			});
+
+			configurator.AddConsumer<DomainEventMessageConsumer>();
 		});
 
 		return services;
