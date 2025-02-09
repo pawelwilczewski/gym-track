@@ -11,8 +11,8 @@ namespace Application.Auth.Commands;
 using ResultType = OneOf<Success<JsonWebToken>, Error>;
 
 public sealed record class LogInCommand(
-	string Email,
-	string Password) : IRequest<ResultType>;
+	EmailAddress Email,
+	Password Password) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
@@ -35,20 +35,14 @@ internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
 		LogInCommand request,
 		CancellationToken cancellationToken)
 	{
-		var emailOrError = EmailAddress.TryFrom(request.Email);
-		if (!emailOrError.IsSuccess) return new Error();
-
-		var passwordOrError = Password.TryFrom(request.Password);
-		if (!passwordOrError.IsSuccess) return new Error();
-
 		var user = await usersDataContext.Users
 			.AsNoTracking()
-			.FirstOrDefaultAsync(user => user.Email == emailOrError.ValueObject.Value, cancellationToken)
+			.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken)
 			.ConfigureAwait(false);
 
 		if (user is null) return new Error();
 
-		return passwordVerifier.Verify(passwordOrError.ValueObject, user.PasswordHash)
+		return passwordVerifier.Verify(request.Password, user.PasswordHash)
 			? new Success<JsonWebToken>(tokenProvider.Create(user))
 			: new Error();
 	}
