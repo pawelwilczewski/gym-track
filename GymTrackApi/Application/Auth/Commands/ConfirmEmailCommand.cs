@@ -32,6 +32,13 @@ internal sealed class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand,
 
 		if (user is null) return new Error();
 
-		return user.TryConfirmEmail(request.Code) ? new Success() : new Error();
+		if (user.TryConfirmEmail(request.Code))
+		{
+			user.DeleteEmailConfirmationCode();
+			await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+			return new Success();
+		}
+
+		return new Error();
 	}
 }

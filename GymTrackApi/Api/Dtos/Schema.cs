@@ -16,6 +16,13 @@ public sealed record class LoginResponse(
 public sealed record class ForgotPasswordRequest(
 	string Email);
 
+public sealed record class ResetPasswordRequest(
+	string Code,
+	string NewPassword);
+
+public sealed record class ConfirmEmailRequest(
+	string Code);
+
 public sealed record class CreateWorkoutExerciseRequest(
 	Guid ExerciseInfoId);
 

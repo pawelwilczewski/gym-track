@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using Domain.Common;
-using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.Tracking;
 using Vogen;
@@ -20,6 +18,8 @@ public class User : AggregateRoot
 	public PasswordHash PasswordHash { get; private set; }
 
 	public virtual UserEmailConfirmationCode? EmailConfirmationCode { get; private set; }
+
+	public virtual UserPasswordResetCode? PasswordResetCode { get; private set; }
 
 	public virtual List<Workout.Workout> Workouts { get; private set; } = [];
 	public virtual List<ExerciseInfo.ExerciseInfo> ExerciseInfos { get; private set; } = [];
@@ -44,18 +44,10 @@ public class User : AggregateRoot
 		return user;
 	}
 
-	public bool TryUpdateEmailConfirmationCode(
-		EmailConfirmationCodeData data,
-		[NotNullWhen(false)] out ValidationError? error)
-	{
-		if (!UserEmailConfirmationCode.TryCreate(this, data, out var confirmationCode, out error))
-		{
-			return false;
-		}
+	public void UpdateEmailConfirmationCode(EmailConfirmationCodeData data) =>
+		EmailConfirmationCode = UserEmailConfirmationCode.Create(this, data);
 
-		EmailConfirmationCode = confirmationCode;
-		return true;
-	}
+	public void DeleteEmailConfirmationCode() => EmailConfirmationCode = null;
 
 	public bool TryConfirmEmail(EmailConfirmationCode emailConfirmationCode)
 	{
@@ -71,6 +63,13 @@ public class User : AggregateRoot
 
 		return false;
 	}
+
+	public void UpdatePasswordHash(PasswordHash passwordHash) => PasswordHash = passwordHash;
+
+	public void UpdatePasswordResetCode(PasswordResetCodeData data) =>
+		PasswordResetCode = UserPasswordResetCode.Create(this, data);
+
+	public void DeletePasswordResetCode() => PasswordResetCode = null;
 }
 
 [ValueObject<Guid>]

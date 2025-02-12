@@ -24,6 +24,13 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Models
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
+			.HasOne(user => user.PasswordResetCode)
+			.WithOne(code => code.User)
+			.HasForeignKey<UserPasswordResetCode>(code => code.UserId)
+			.IsRequired(false)
+			.OnDelete(DeleteBehavior.Cascade);
+
+		builder
 			.HasMany(user => user.Workouts)
 			.WithOne()
 			.HasForeignKey(workout => workout.OwnerId)

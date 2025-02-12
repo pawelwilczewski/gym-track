@@ -3,9 +3,9 @@ using Vogen;
 namespace Domain.Common.ValueObjects;
 
 [ValueObject<DateTime>]
-public readonly partial struct EmailConfirmationCodeExpiryDateTime
+public readonly partial struct PasswordResetCodeExpiryDateTime
 {
 	private static Validation Validate(DateTime input) => input < DateTime.UtcNow
-		? Validation.Invalid("Email confirmation code must expire in the future.")
+		? Validation.Invalid("Password reset code must expire in the future.")
 		: Validation.Ok;
 }

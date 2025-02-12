@@ -1,7 +1,7 @@
-using Domain.Models.User;
+using Application.Auth.Commands;
+using Domain.Common;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Auth;
@@ -10,17 +10,20 @@ internal sealed class ResendConfirmationEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/resend-confirmation-email", async Task<Ok> (
-			[FromBody] ResendConfirmationEmailRequest resendRequest,
-			HttpContext context,
-			[FromServices] UserManager<User> userManager,
-			[FromServices] IEmailSender<User> emailSender,
-			[FromServices] LinkGenerator linkGenerator) =>
-		{
-			throw new NotImplementedException();
+		builder.MapPost("/resend-confirmation-email", async Task<NoContent> (
+				[FromBody] object _,
+				HttpContext context,
+				[FromServices] ISender sender,
+				CancellationToken cancellationToken) =>
+			{
+				var result = await sender
+					.Send(new SendConfirmationEmailCommand(context.User.GetUserId()), cancellationToken)
+					.ConfigureAwait(false);
 
-			return TypedResults.Ok();
-		});
+				// for no information leak, just indicate Ok
+				return TypedResults.NoContent();
+			})
+			.RequireAuthorization();
 
 		return builder;
 	}

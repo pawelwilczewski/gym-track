@@ -1,8 +1,8 @@
+using Api.Dtos;
 using Application.Auth.Commands;
 using Domain.Common.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Auth;

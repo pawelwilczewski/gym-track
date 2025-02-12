@@ -73,10 +73,12 @@ public static class DependencyInjection
 		services.Configure<FrontendSettings>(configuration.GetSection("Frontend"));
 
 		services.AddSingleton<IEmailConfirmationCodeGenerator, EmailConfirmationCodeGenerator>();
+		services.AddSingleton<IPasswordResetCodeGenerator, PasswordResetCodeGenerator>();
 
 		services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
 		services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 		services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
+		services.Configure<PasswordResetSettings>(configuration.GetSection("PasswordReset"));
 
 		return services;
 	}

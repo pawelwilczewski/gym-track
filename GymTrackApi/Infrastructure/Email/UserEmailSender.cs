@@ -26,17 +26,13 @@ internal sealed class UserEmailSender : IUserEmailSender
 			cancellationToken);
 	}
 
-	public Task SendPasswordResetLink(User user, string resetLink, CancellationToken cancellationToken) =>
-		emailSender.SendEmail(
+	public Task SendPasswordResetLink(User user, PasswordResetCodeData data, CancellationToken cancellationToken)
+	{
+		var resetLink = frontendSettings.BuildPasswordResetUrl(data.Code.Value);
+		return emailSender.SendEmail(
 			user.Email,
 			"Password Reset Request",
 			$"Reset your password by going to: {resetLink}",
 			cancellationToken);
-
-	public Task SendPasswordResetCode(User user, string resetCode, CancellationToken cancellationToken) =>
-		emailSender.SendEmail(
-			user.Email,
-			"Password Reset Request",
-			$"Use this code to reset your password: {resetCode}",
-			cancellationToken);
+	}
 }

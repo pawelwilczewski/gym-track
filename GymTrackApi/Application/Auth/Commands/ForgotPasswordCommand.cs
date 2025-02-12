@@ -1,6 +1,9 @@
+using Application.Auth.Abstractions;
+using Application.Email;
 using Application.Persistence;
 using Domain.Common.ValueObjects;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Auth.Commands;
 
@@ -11,11 +14,34 @@ public sealed record class ForgotPasswordCommand(
 internal sealed class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand>
 {
 	private readonly IUsersDataContext usersDataContext;
+	private readonly IUserEmailSender userEmailSender;
+	private readonly IPasswordResetCodeGenerator passwordResetCodeGenerator;
 
-	public ForgotPasswordHandler(IUsersDataContext usersDataContext) => this.usersDataContext = usersDataContext;
+	public ForgotPasswordHandler(
+		IUsersDataContext usersDataContext,
+		IUserEmailSender userEmailSender,
+		IPasswordResetCodeGenerator passwordResetCodeGenerator)
+	{
+		this.usersDataContext = usersDataContext;
+		this.userEmailSender = userEmailSender;
+		this.passwordResetCodeGenerator = passwordResetCodeGenerator;
+	}
 
 	public async Task Handle(
 		ForgotPasswordCommand request,
-		CancellationToken cancellationToken) =>
-		throw new NotImplementedException();
+		CancellationToken cancellationToken)
+	{
+		var user = await usersDataContext.Users
+			.AsNoTracking()
+			.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken)
+			.ConfigureAwait(false);
+
+		if (user == null) return;
+
+		var data = passwordResetCodeGenerator.Generate();
+		user.UpdatePasswordResetCode(data);
+		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+		await userEmailSender.SendPasswordResetLink(user, data, cancellationToken).ConfigureAwait(false);
+	}
 }

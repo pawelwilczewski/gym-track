@@ -23,4 +23,6 @@ namespace Infrastructure.Persistence.Configurations.Converters;
 [EfCoreConverter<PasswordHash>]
 [EfCoreConverter<EmailConfirmationCode>]
 [EfCoreConverter<EmailConfirmationCodeExpiryDateTime>]
+[EfCoreConverter<PasswordResetCode>]
+[EfCoreConverter<PasswordResetCodeExpiryDateTime>]
 internal static partial class VogenConverters;

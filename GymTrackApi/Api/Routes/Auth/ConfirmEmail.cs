@@ -1,3 +1,4 @@
+using Api.Dtos;
 using Application.Auth.Commands;
 using Domain.Common;
 using Domain.Common.ValueObjects;
@@ -14,26 +15,28 @@ internal sealed class ConfirmEmail : IEndpoint
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapGet("/confirm-email", async Task<ResultType> (
-			HttpContext httpContext,
-			[FromQuery] string code,
-			[FromServices] ISender sender,
-			CancellationToken cancellationToken) =>
-		{
-			var codeOrError = EmailConfirmationCode.TryFrom(code);
-			if (!codeOrError.IsSuccess)
+				HttpContext httpContext,
+				[FromBody] ConfirmEmailRequest request,
+				[FromServices] ISender sender,
+				CancellationToken cancellationToken) =>
 			{
-				return TypedResults.BadRequest();
-			}
+				var codeOrError = EmailConfirmationCode.TryFrom(request.Code);
+				if (!codeOrError.IsSuccess)
+				{
+					return TypedResults.BadRequest();
+				}
 
-			var result = await sender.Send(new ConfirmEmailCommand(
-						codeOrError.ValueObject, httpContext.User.GetUserId()),
-					cancellationToken)
-				.ConfigureAwait(false);
+				var result = await sender.Send(new ConfirmEmailCommand(
+							codeOrError.ValueObject, httpContext.User.GetUserId()),
+						cancellationToken)
+					.ConfigureAwait(false);
 
-			return result.Match<ResultType>(
-				success => TypedResults.NoContent(),
-				error => TypedResults.BadRequest());
-		});
+				return result.Match<ResultType>(
+					success => TypedResults.NoContent(),
+					error => TypedResults.BadRequest());
+			})
+			.RequireAuthorization();
+
 		return builder;
 	}
 }

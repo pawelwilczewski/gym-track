@@ -45,10 +45,9 @@ internal sealed class SendConfirmationEmailHandler : IRequestHandler<SendConfirm
 		if (user.HasConfirmedEmail) return new UserAlreadyConfirmed();
 
 		var confirmation = emailConfirmationCodeGenerator.Generate();
-		if (!user.TryUpdateEmailConfirmationCode(confirmation, out var error))
-		{
-			throw new Exception($"Error when updating confirmation code: {error.Value.ErrorMessage}");
-		}
+		user.UpdateEmailConfirmationCode(confirmation);
+
+		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		await userEmailSender
 			.SendEmailConfirmationLink(user, user.EmailConfirmationCode!.Data, cancellationToken)

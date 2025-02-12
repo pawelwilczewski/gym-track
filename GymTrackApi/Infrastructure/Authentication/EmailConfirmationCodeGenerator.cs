@@ -5,7 +5,7 @@ using Domain.Models.User;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Email;
+namespace Infrastructure.Authentication;
 
 internal sealed class EmailConfirmationCodeGenerator : IEmailConfirmationCodeGenerator
 {

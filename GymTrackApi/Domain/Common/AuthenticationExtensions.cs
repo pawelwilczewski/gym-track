@@ -3,7 +3,7 @@ using Domain.Models.User;
 
 namespace Domain.Common;
 
-public static class IdentityExtensions
+public static class AuthenticationExtensions
 {
 	public static UserId GetUserId(this ClaimsPrincipal principal)
 	{
