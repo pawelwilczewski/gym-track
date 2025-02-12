@@ -1,39 +1,35 @@
+using Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Npgsql;
 
 namespace Infrastructure.Persistence;
 
-public static class DbInitialization
+internal static class DbInitialization
 {
-	public static async Task InitializeDb(this IServiceProvider serviceProvider, IConfiguration configuration)
+	public static async Task InitializeDb(AppDbContext dbContext, IOptions<DatabaseSettings> databaseSettings)
 	{
-		var dbSection = configuration.GetRequiredSection("Database");
+		var settings = databaseSettings.Value;
 
-		using var scope = serviceProvider.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-		if (bool.TryParse(dbSection["DeleteDbIfExists"], out var delete) && delete)
+		if (settings.DeleteDbIfExists)
 		{
 			await dbContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
 		}
 
 		var created = false;
-		if (bool.TryParse(dbSection["TryCreateDbIfNotExists"], out var create) && create)
+		if (settings.TryCreateDbIfNotExists)
 		{
-			await TryCreateDb(dbSection["ConnectionString"]!, async connection =>
+			created = await TryCreateDb(settings.ConnectionString, async connection =>
 				{
-					await using var setupCommand = new NpgsqlCommand("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";", connection);
+					await using var setupCommand = new NpgsqlCommand(
+						"CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";", connection);
 					await setupCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 				})
 				.ConfigureAwait(false);
-
-			created = true;
 		}
 
 		// if just created db, we will always want to apply migrations (it's an empty db anyway)
-		if (created || (bool.TryParse(dbSection["AutoApplyMigrations"], out var applyMigrations) && applyMigrations))
+		if (created || settings.AutoApplyMigrations)
 		{
 			await dbContext.Database.MigrateAsync().ConfigureAwait(false);
 		}
@@ -68,7 +64,7 @@ public static class DbInitialization
 		{
 			await connection.OpenAsync().ConfigureAwait(false);
 
-			await createdDbSetup(connection);
+			await createdDbSetup(connection).ConfigureAwait(false);
 		}
 
 		return true;

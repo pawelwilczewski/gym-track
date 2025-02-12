@@ -1,19 +1,25 @@
+using System.Diagnostics.CodeAnalysis;
 using Domain.Common;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.Tracking;
 using Vogen;
+
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace Domain.Models.User;
 
 public class User : AggregateRoot
 {
-	public UserId Id { get; } = UserId.New();
+	public UserId Id { get; private set; } = UserId.New();
 
 	public EmailAddress Email { get; private set; }
 
 	public bool HasConfirmedEmail { get; private set; }
 
 	public PasswordHash PasswordHash { get; private set; }
+
+	public virtual UserEmailConfirmationCode? EmailConfirmationCode { get; private set; }
 
 	public virtual List<Workout.Workout> Workouts { get; private set; } = [];
 	public virtual List<ExerciseInfo.ExerciseInfo> ExerciseInfos { get; private set; } = [];
@@ -38,7 +44,33 @@ public class User : AggregateRoot
 		return user;
 	}
 
-	public void ConfirmEmail() => HasConfirmedEmail = true;
+	public bool TryUpdateEmailConfirmationCode(
+		EmailConfirmationCodeData data,
+		[NotNullWhen(false)] out ValidationError? error)
+	{
+		if (!UserEmailConfirmationCode.TryCreate(this, data, out var confirmationCode, out error))
+		{
+			return false;
+		}
+
+		EmailConfirmationCode = confirmationCode;
+		return true;
+	}
+
+	public bool TryConfirmEmail(EmailConfirmationCode emailConfirmationCode)
+	{
+		if (HasConfirmedEmail) return true;
+
+		if (EmailConfirmationCode is null) return false;
+
+		if (EmailConfirmationCode.IsCodeValid(emailConfirmationCode))
+		{
+			HasConfirmedEmail = true;
+			return true;
+		}
+
+		return false;
+	}
 }
 
 [ValueObject<Guid>]

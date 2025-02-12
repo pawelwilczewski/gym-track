@@ -5,10 +5,12 @@ using Infrastructure.Authentication;
 using Infrastructure.Email;
 using Infrastructure.Outbox;
 using Infrastructure.Persistence;
+using Infrastructure.Settings;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure;
 
@@ -24,13 +26,11 @@ public static class DependencyInjection
 		services
 			.AddDbContext<AppDbContext>((sp, options) =>
 			{
-				// TODO Pawel: look into IOptions - is it applicable to simplify this parsing?
-				var dbSection = configuration.GetRequiredSection("Database");
+				var settings = sp.GetRequiredService<IOptions<DatabaseSettings>>().Value;
 
-				options
-					.UseNpgsql(dbSection["ConnectionString"]);
+				options.UseNpgsql(settings.ConnectionString);
 
-				if (bool.TryParse(dbSection["EnableSensitiveDataLogging"], out var enable) && enable)
+				if (settings.EnableSensitiveDataLogging)
 				{
 					options.EnableSensitiveDataLogging();
 				}
@@ -69,6 +69,25 @@ public static class DependencyInjection
 			configurator.AddConsumer<DomainEventMessageConsumer>();
 		});
 
+		services.Configure<EmailConfirmationSettings>(configuration.GetSection("EmailConfirmation"));
+		services.Configure<FrontendSettings>(configuration.GetSection("Frontend"));
+
+		services.AddSingleton<IEmailConfirmationCodeGenerator, EmailConfirmationCodeGenerator>();
+
+		services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
+		services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+		services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
+
 		return services;
+	}
+
+	public static async Task ConfigureAppInfrastructure(this IServiceProvider serviceProvider)
+	{
+		using var scope = serviceProvider.CreateScope();
+
+		await DbInitialization.InitializeDb(
+				scope.ServiceProvider.GetRequiredService<AppDbContext>(),
+				serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>())
+			.ConfigureAwait(false);
 	}
 }

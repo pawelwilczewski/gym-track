@@ -21,4 +21,6 @@ namespace Infrastructure.Persistence.Configurations.Converters;
 [EfCoreConverter<UserId>]
 [EfCoreConverter<EmailAddress>]
 [EfCoreConverter<PasswordHash>]
+[EfCoreConverter<EmailConfirmationCode>]
+[EfCoreConverter<EmailConfirmationCodeExpiryDateTime>]
 internal static partial class VogenConverters;

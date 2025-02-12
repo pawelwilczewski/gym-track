@@ -6,7 +6,6 @@ using Application;
 using Application.Persistence;
 using Asp.Versioning;
 using Infrastructure;
-using Infrastructure.Persistence;
 using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
@@ -70,7 +69,7 @@ var app = builder.Build();
 
 app.UseCors();
 
-await app.Services.InitializeDb(builder.Configuration).ConfigureAwait(false);
+await app.Services.ConfigureAppInfrastructure().ConfigureAwait(false);
 
 if (app.Environment.IsDevelopment())
 {

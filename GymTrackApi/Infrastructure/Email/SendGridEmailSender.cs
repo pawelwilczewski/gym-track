@@ -1,5 +1,6 @@
 using Application.Email;
-using Microsoft.Extensions.Configuration;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
@@ -10,13 +11,14 @@ internal sealed class SendGridEmailSender : IEmailSender
 	private readonly SendGridClient client;
 	private readonly EmailAddress from;
 
-	public SendGridEmailSender(IConfiguration configuration)
+	public SendGridEmailSender(IOptions<SendGridSettings> sendGridSettings)
 	{
-		client = new SendGridClient(configuration["SendGrid:ApiKey"]);
-		from = new EmailAddress(configuration["SendGrid:From:Email"], configuration["SendGrid:From:Name"]);
+		var settings = sendGridSettings.Value;
+		client = new SendGridClient(settings.ApiKey);
+		from = new EmailAddress(settings.Sender.Email, settings.Sender.Name);
 	}
 
-	public async Task SendEmail(Domain.Common.ValueObjects.EmailAddress address, string subject, string message)
+	public async Task SendEmail(Domain.Common.ValueObjects.EmailAddress address, string subject, string message, CancellationToken cancellationToken)
 	{
 		var email = MailHelper.CreateSingleEmail(
 			from,
@@ -27,6 +29,6 @@ internal sealed class SendGridEmailSender : IEmailSender
 
 		if (email is null) throw new Exception("Couldn't create email to send.");
 
-		await client.SendEmailAsync(email).ConfigureAwait(false);
+		await client.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
 	}
 }

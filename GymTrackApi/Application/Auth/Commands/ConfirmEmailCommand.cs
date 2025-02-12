@@ -1,5 +1,5 @@
 using Application.Persistence;
-using Domain.Common.Results;
+using Domain.Common.ValueObjects;
 using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +8,10 @@ using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success, Unauthorized>;
+using ResultType = OneOf<Success, Error>;
 
 public sealed record class ConfirmEmailCommand(
-	string Code,
+	EmailConfirmationCode Code,
 	UserId UserId) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
@@ -25,33 +25,13 @@ internal sealed class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand,
 		ConfirmEmailCommand request,
 		CancellationToken cancellationToken)
 	{
-		throw new NotImplementedException();
-
 		var user = await usersDataContext.Users
+			.Include(user => user.EmailConfirmationCode)
 			.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken)
 			.ConfigureAwait(false);
 
-		if (user is null) return new Unauthorized();
+		if (user is null) return new Error();
 
-		if (user.HasConfirmedEmail) return new Success();
-
-		// string? code;
-		// try
-		// {
-		// 	code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
-		// }
-		// catch (FormatException)
-		// {
-		// 	return new Unauthorized();
-		// }
-
-		user.ConfirmEmail();
-
-		// if (!result.Succeeded)
-		// {
-		// return new Unauthorized();
-		// }
-
-		return new Success();
+		return user.TryConfirmEmail(request.Code) ? new Success() : new Error();
 	}
 }

@@ -1,29 +1,42 @@
 using Application.Email;
 using Domain.Models.User;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Email;
 
 internal sealed class UserEmailSender : IUserEmailSender
 {
 	private readonly IEmailSender emailSender;
+	private readonly FrontendSettings frontendSettings;
 
-	public UserEmailSender(IEmailSender emailSender) => this.emailSender = emailSender;
+	public UserEmailSender(IEmailSender emailSender, IOptions<FrontendSettings> frontendSettings)
+	{
+		this.emailSender = emailSender;
+		this.frontendSettings = frontendSettings.Value;
+	}
 
-	public Task SendConfirmationLink(User user, string confirmationLink) =>
-		emailSender.SendEmail(
+	public Task SendEmailConfirmationLink(User user, EmailConfirmationCodeData data, CancellationToken cancellationToken)
+	{
+		var confirmationLink = frontendSettings.BuildEmailConfirmationUrl(data.Code.Value);
+		return emailSender.SendEmail(
 			user.Email,
 			"Account Confirmation",
-			$"Confirm your email by going to: {confirmationLink}");
+			$"Confirm your email by going to: {confirmationLink}. This link will expire at: {data.ExpiresAt}.",
+			cancellationToken);
+	}
 
-	public Task SendPasswordResetLink(User user, string resetLink) =>
+	public Task SendPasswordResetLink(User user, string resetLink, CancellationToken cancellationToken) =>
 		emailSender.SendEmail(
 			user.Email,
 			"Password Reset Request",
-			$"Reset your password by going to: {resetLink}");
+			$"Reset your password by going to: {resetLink}",
+			cancellationToken);
 
-	public Task SendPasswordResetCode(User user, string resetCode) =>
+	public Task SendPasswordResetCode(User user, string resetCode, CancellationToken cancellationToken) =>
 		emailSender.SendEmail(
 			user.Email,
 			"Password Reset Request",
-			$"Use this code to reset your password: {resetCode}");
+			$"Use this code to reset your password: {resetCode}",
+			cancellationToken);
 }

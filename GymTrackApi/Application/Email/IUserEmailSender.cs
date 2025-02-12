@@ -4,7 +4,7 @@ namespace Application.Email;
 
 public interface IUserEmailSender
 {
-	public Task SendConfirmationLink(User user, string confirmationLink);
-	public Task SendPasswordResetLink(User user, string resetLink);
-	public Task SendPasswordResetCode(User user, string resetCode);
+	public Task SendEmailConfirmationLink(User user, EmailConfirmationCodeData data, CancellationToken cancellationToken);
+	public Task SendPasswordResetLink(User user, string resetLink, CancellationToken cancellationToken);
+	public Task SendPasswordResetCode(User user, string resetCode, CancellationToken cancellationToken);
 }

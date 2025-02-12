@@ -1,4 +1,5 @@
 using Application.Persistence;
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.Ownership;
 using Domain.Models.User;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Persistence;
 
-internal sealed class UserAssetRepository<TEntity> : IUserAssetRepository<TEntity> where TEntity : class, IOwned
+internal sealed class UserAssetRepository<TEntity> : IUserAssetRepository<TEntity> where TEntity : AggregateRoot, IOwned
 {
 	public IQueryable<TEntity> Readable => dbContext.Set<TEntity>()
 		.Where(entity => entity.OwnerId == null || entity.OwnerId == userId);

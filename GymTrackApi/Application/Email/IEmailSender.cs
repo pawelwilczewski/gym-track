@@ -4,5 +4,5 @@ namespace Application.Email;
 
 public interface IEmailSender
 {
-	Task SendEmail(EmailAddress address, string subject, string message);
+	Task SendEmail(EmailAddress address, string subject, string message, CancellationToken cancellationToken);
 }

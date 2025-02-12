@@ -15,6 +15,7 @@ internal static class PropertyConfigurations
 		builder.Properties<FilePath>().HaveMaxLength(FilePath.MAX_LENGTH);
 		builder.Properties<PasswordHash>().HaveMaxLength(PasswordHash.BYTES_LENGTH * 2 + 1);
 		builder.Properties<EmailAddress>().HaveMaxLength(EmailAddress.MAX_LENGTH);
+		builder.Properties<EmailConfirmationCode>().HaveMaxLength(EmailConfirmationCode.BYTES_LENGTH * 2);
 
 		builder.Properties<SomeExerciseMetricTypes>().HaveConversion<SomeExerciseMetricTypesConverter>();
 		builder.Properties<SingleExerciseMetricType>().HaveConversion<SingleExerciseMetricTypeConverter>();
