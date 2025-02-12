@@ -13,30 +13,31 @@ internal sealed class Refresh : IEndpoint
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapPost("/refresh",
-			async Task<Results<Ok<AccessTokenResponse>, UnauthorizedHttpResult, SignInHttpResult, ChallengeHttpResult>> (
-				[FromBody] RefreshRequest refreshRequest,
-				[FromServices] SignInManager<User> signInManager,
-				[FromServices] IOptionsMonitor<BearerTokenOptions> bearerTokenOptions,
-				[FromServices] TimeProvider timeProvider) =>
-			{
-				throw new NotImplementedException();
-
-				var refreshTokenProtector = bearerTokenOptions.Get(
-						IdentityConstants.BearerScheme)
-					.RefreshTokenProtector;
-				var refreshTicket = refreshTokenProtector.Unprotect(refreshRequest.RefreshToken);
-
-				// Reject the /refresh attempt with a 401 if the token expired or the security stamp validation fails
-				if (refreshTicket?.Properties.ExpiresUtc is not { } expiresUtc
-					|| timeProvider.GetUtcNow() >= expiresUtc
-					|| await signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not { } user)
+				async Task<Results<Ok<AccessTokenResponse>, UnauthorizedHttpResult, SignInHttpResult, ChallengeHttpResult>> (
+					[FromBody] RefreshRequest refreshRequest,
+					[FromServices] SignInManager<User> signInManager,
+					[FromServices] IOptionsMonitor<BearerTokenOptions> bearerTokenOptions,
+					[FromServices] TimeProvider timeProvider) =>
 				{
-					return TypedResults.Challenge();
-				}
+					throw new NotImplementedException();
 
-				var newPrincipal = await signInManager.CreateUserPrincipalAsync(user);
-				return TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
-			});
+					var refreshTokenProtector = bearerTokenOptions.Get(
+							IdentityConstants.BearerScheme)
+						.RefreshTokenProtector;
+					var refreshTicket = refreshTokenProtector.Unprotect(refreshRequest.RefreshToken);
+
+					// Reject the /refresh attempt with a 401 if the token expired or the security stamp validation fails
+					if (refreshTicket?.Properties.ExpiresUtc is not { } expiresUtc
+						|| timeProvider.GetUtcNow() >= expiresUtc
+						|| await signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not { } user)
+					{
+						return TypedResults.Challenge();
+					}
+
+					var newPrincipal = await signInManager.CreateUserPrincipalAsync(user);
+					return TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
+				})
+			.RequireAuthorization();
 
 		return builder;
 	}

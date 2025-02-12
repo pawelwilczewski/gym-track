@@ -9,12 +9,13 @@ internal sealed class GetAntiforgeryToken : IEndpoint
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapGet("antiforgery-token", Ok<GetAntiforgeryTokenResponse> (IAntiforgery antiforgery, HttpContext httpContext) =>
-		{
-			var tokens = antiforgery.GetAndStoreTokens(httpContext);
-			if (tokens.RequestToken is null) throw new Exception("Antiforgery token is not correctly configured");
+			{
+				var tokens = antiforgery.GetAndStoreTokens(httpContext);
+				if (tokens.RequestToken is null) throw new Exception("Antiforgery token is not correctly configured");
 
-			return TypedResults.Ok(new GetAntiforgeryTokenResponse(tokens.RequestToken));
-		});
+				return TypedResults.Ok(new GetAntiforgeryTokenResponse(tokens.RequestToken));
+			})
+			.RequireAuthorization();
 
 		return builder;
 	}

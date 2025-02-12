@@ -7,6 +7,7 @@ using Application.Persistence;
 using Asp.Versioning;
 using Infrastructure;
 using Infrastructure.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
 
@@ -33,11 +34,37 @@ builder.Services
 
 if (builder.Environment.IsDevelopment())
 {
-	builder.Services.AddSwaggerGen(options => options.SwaggerDoc("v1", new OpenApiInfo
+	builder.Services.AddSwaggerGen(options =>
 	{
-		Title = "Gym Track API",
-		Version = apiVersion.ToString(apiVersionGroupNameFormat)
-	}));
+		options.SwaggerDoc("v1", new OpenApiInfo
+		{
+			Title = "Gym Track API",
+			Version = apiVersion.ToString(apiVersionGroupNameFormat)
+		});
+
+		var jwtSecurityScheme = new OpenApiSecurityScheme
+		{
+			BearerFormat = "JWT",
+			Name = "JWT Authentication",
+			In = ParameterLocation.Header,
+			Type = SecuritySchemeType.Http,
+			Scheme = JwtBearerDefaults.AuthenticationScheme,
+			Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+			Reference = new OpenApiReference
+			{
+				Id = JwtBearerDefaults.AuthenticationScheme,
+				Type = ReferenceType.SecurityScheme
+			}
+		};
+
+		options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+		options.AddSecurityRequirement(new OpenApiSecurityRequirement
+		{
+			{ jwtSecurityScheme, Array.Empty<string>() }
+		});
+	});
 }
 
 builder.Services.AddAntiforgery(options =>
@@ -90,6 +117,9 @@ app.UseRouting();
 app.UseAntiforgery();
 
 app.AddPutFormSupport();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapAllRoutes();
 

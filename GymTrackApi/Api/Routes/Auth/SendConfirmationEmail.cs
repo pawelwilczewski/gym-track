@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Auth;
 
-internal sealed class ResendConfirmationEmail : IEndpoint
+internal sealed class SendConfirmationEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/resend-confirmation-email", async Task<NoContent> (
+		builder.MapPost("/send-confirmation-email", async Task<NoContent> (
 				[FromBody] object _,
 				HttpContext context,
 				[FromServices] ISender sender,

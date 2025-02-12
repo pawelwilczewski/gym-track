@@ -1,3 +1,4 @@
+using System.Text;
 using Application.Auth.Abstractions;
 using Application.Email;
 using Application.Persistence;
@@ -7,10 +8,12 @@ using Infrastructure.Outbox;
 using Infrastructure.Persistence;
 using Infrastructure.Settings;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure;
 
@@ -18,6 +21,8 @@ public static class DependencyInjection
 {
 	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
+		// TODO Pawel: clean all of this up and order + split up accordingly
+
 		services.AddMediatR(config =>
 			config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
@@ -79,6 +84,24 @@ public static class DependencyInjection
 		services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 		services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
 		services.Configure<PasswordResetSettings>(configuration.GetSection("PasswordReset"));
+
+		services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+			.AddJwtBearer(options =>
+			{
+				options.RequireHttpsMetadata = false;
+
+				var jwtSettings = configuration.GetRequiredSection("Jwt");
+				var frontendSettings = configuration.GetRequiredSection("Frontend");
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings[nameof(JwtSettings.Key)]!)),
+					ValidIssuer = jwtSettings[nameof(JwtSettings.Issuer)]!,
+					ValidAudience = frontendSettings[nameof(FrontendSettings.BaseUrl)]!,
+					ClockSkew = TimeSpan.Zero
+				};
+			});
+
+		services.AddAuthorization();
 
 		return services;
 	}
