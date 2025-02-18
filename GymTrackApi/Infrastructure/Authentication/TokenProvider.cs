@@ -18,7 +18,7 @@ internal sealed class TokenProvider : ITokenProvider
 	public TokenProvider(IOptions<JwtSettings> jwtSettings) =>
 		this.jwtSettings = jwtSettings.Value;
 
-	public JsonWebToken Create(User user, string audience)
+	public JsonWebToken Create(User user, string requestingAudience)
 	{
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
 		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -33,7 +33,7 @@ internal sealed class TokenProvider : ITokenProvider
 			Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationInMinutes),
 			SigningCredentials = credentials,
 			Issuer = jwtSettings.Issuer,
-			Audience = audience
+			Audience = requestingAudience
 		}));
 	}
 }
