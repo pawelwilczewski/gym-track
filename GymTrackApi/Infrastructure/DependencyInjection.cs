@@ -2,15 +2,15 @@ using System.Text;
 using Application.Auth.Abstractions;
 using Application.Email;
 using Application.Persistence;
+using Application.Settings;
 using Infrastructure.Authentication;
 using Infrastructure.Email;
 using Infrastructure.Outbox;
 using Infrastructure.Persistence;
-using Infrastructure.Settings;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +19,7 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
 	{
 		// TODO Pawel: clean all of this up and order + split up accordingly
 
@@ -74,45 +74,42 @@ public static class DependencyInjection
 			configurator.AddConsumer<DomainEventMessageConsumer>();
 		});
 
-		services.Configure<EmailConfirmationSettings>(configuration.GetSection("EmailConfirmation"));
-		services.Configure<FrontendSettings>(configuration.GetSection("Frontend"));
-
 		services.AddSingleton<IEmailConfirmationCodeGenerator, EmailConfirmationCodeGenerator>();
 		services.AddSingleton<IPasswordResetCodeGenerator, PasswordResetCodeGenerator>();
 
-		services.Configure<SendGridSettings>(configuration.GetSection("SendGrid"));
-		services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-		services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
-		services.Configure<PasswordResetSettings>(configuration.GetSection("PasswordReset"));
-
 		services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-			.AddJwtBearer(options =>
-			{
-				options.RequireHttpsMetadata = false;
-
-				var jwtSettings = configuration.GetRequiredSection("Jwt");
-				var frontendSettings = configuration.GetRequiredSection("Frontend");
-				options.TokenValidationParameters = new TokenValidationParameters
+			.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+		services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+			.Configure<IOptions<JwtSettings>, IOptions<FrontendSettings>, IOptions<OpenApiSettings>>(
+				(options, jwtSettings, frontendSettings, openApiSettings) =>
 				{
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings[nameof(JwtSettings.Key)]!)),
-					ValidIssuer = jwtSettings[nameof(JwtSettings.Issuer)]!,
-					ValidAudience = frontendSettings[nameof(FrontendSettings.BaseUrl)]!,
-					ClockSkew = TimeSpan.Zero
-				};
-			});
+					List<string> audiences = [frontendSettings.Value.BaseUrl];
+					if (openApiSettings.Value.Enabled)
+					{
+						audiences.Add(openApiSettings.Value.Url);
+					}
+
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Key)),
+						ValidIssuer = jwtSettings.Value.Issuer,
+						ValidAudiences = audiences,
+						ClockSkew = TimeSpan.Zero
+					};
+				});
 
 		services.AddAuthorization();
 
 		return services;
 	}
 
-	public static async Task ConfigureAppInfrastructure(this IServiceProvider serviceProvider)
+	public static async Task ConfigureAppInfrastructure(this WebApplication app)
 	{
-		using var scope = serviceProvider.CreateScope();
+		using var scope = app.Services.CreateScope();
 
 		await DbInitialization.InitializeDb(
 				scope.ServiceProvider.GetRequiredService<AppDbContext>(),
-				serviceProvider.GetRequiredService<IOptions<DatabaseSettings>>())
+				scope.ServiceProvider.GetRequiredService<IOptions<DatabaseSettings>>())
 			.ConfigureAwait(false);
 	}
 }

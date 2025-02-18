@@ -1,4 +1,4 @@
-using Infrastructure.Settings;
+using Application.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;

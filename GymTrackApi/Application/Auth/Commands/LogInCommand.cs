@@ -12,7 +12,8 @@ using ResultType = OneOf<Success<JsonWebToken>, Error>;
 
 public sealed record class LogInCommand(
 	EmailAddress Email,
-	Password Password) : IRequest<ResultType>;
+	Password Password,
+	string RequestOrigin) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
 internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
@@ -43,7 +44,7 @@ internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
 		if (user is null) return new Error();
 
 		return passwordVerifier.Verify(request.Password, user.PasswordHash)
-			? new Success<JsonWebToken>(tokenProvider.Create(user))
+			? new Success<JsonWebToken>(tokenProvider.Create(user, request.RequestOrigin))
 			: new Error();
 	}
 }

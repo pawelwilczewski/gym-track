@@ -1,5 +1,5 @@
 using Application.Email;
-using Infrastructure.Settings;
+using Application.Settings;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -11,7 +11,7 @@ internal sealed class SendGridEmailSender : IEmailSender
 	private readonly SendGridClient client;
 	private readonly EmailAddress from;
 
-	public SendGridEmailSender(IOptions<SendGridSettings> sendGridSettings)
+	public SendGridEmailSender(IOptions<EmailSenderSettings> sendGridSettings)
 	{
 		var settings = sendGridSettings.Value;
 		client = new SendGridClient(settings.ApiKey);

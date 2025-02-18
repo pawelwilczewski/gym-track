@@ -1,7 +1,6 @@
-namespace Infrastructure.Settings;
+namespace Application.Settings;
 
-// TODO Pawel: consider strongly typing all of the settings properties!
-internal sealed record class DatabaseSettings(
+public sealed record class DatabaseSettings(
 	string ConnectionString,
 	bool DeleteDbIfExists,
 	bool TryCreateDbIfNotExists,

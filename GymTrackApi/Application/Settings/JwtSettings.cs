@@ -1,6 +1,6 @@
-namespace Infrastructure.Settings;
+namespace Application.Settings;
 
-internal sealed record class JwtSettings(
+public sealed record class JwtSettings(
 	string Issuer,
 	string Key,
 	double ExpirationInMinutes)

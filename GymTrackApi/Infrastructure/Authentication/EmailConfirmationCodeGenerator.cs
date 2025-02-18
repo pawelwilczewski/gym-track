@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using Application.Auth.Abstractions;
+using Application.Settings;
 using Domain.Common.ValueObjects;
 using Domain.Models.User;
-using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Authentication;

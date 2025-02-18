@@ -4,17 +4,22 @@ using Api.Middleware;
 using Api.Routes;
 using Application;
 using Application.Persistence;
+using Application.Settings;
 using Asp.Versioning;
 using Infrastructure;
 using Infrastructure.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.OpenApi.Models;
-
-var apiVersion = new ApiVersion(1);
-const string apiVersionGroupNameFormat = "'v'V";
+using Microsoft.Extensions.Options;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var versionSettings = builder.Configuration.GetRequiredSection("Version");
+var apiVersion = new ApiVersion(
+	int.Parse(versionSettings[nameof(VersionSettings.Major)]!),
+	int.Parse(versionSettings[nameof(VersionSettings.Minor)]!));
+const string apiVersionGroupNameFormat = "'v'VVV";
 
 builder.Services.AddCors(options =>
 {
@@ -32,50 +37,22 @@ builder.Services.AddCors(options =>
 builder.Services
 	.AddEndpointsApiExplorer();
 
-if (builder.Environment.IsDevelopment())
-{
-	builder.Services.AddSwaggerGen(options =>
-	{
-		options.SwaggerDoc("v1", new OpenApiInfo
-		{
-			Title = "Gym Track API",
-			Version = apiVersion.ToString(apiVersionGroupNameFormat)
-		});
-
-		var jwtSecurityScheme = new OpenApiSecurityScheme
-		{
-			BearerFormat = "JWT",
-			Name = "JWT Authentication",
-			In = ParameterLocation.Header,
-			Type = SecuritySchemeType.Http,
-			Scheme = JwtBearerDefaults.AuthenticationScheme,
-			Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
-			Reference = new OpenApiReference
-			{
-				Id = JwtBearerDefaults.AuthenticationScheme,
-				Type = ReferenceType.SecurityScheme
-			}
-		};
-
-		options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
-		options.AddSecurityRequirement(new OpenApiSecurityRequirement
-		{
-			{ jwtSecurityScheme, Array.Empty<string>() }
-		});
-	});
-}
-
 builder.Services.AddAntiforgery(options =>
 {
 	options.FormFieldName = "__RequestVerificationToken";
 	options.HeaderName = "X-CSRF-TOKEN";
 });
 
+if (bool.TryParse(builder.Configuration.GetRequiredSection("OpenApi")[nameof(OpenApiSettings.Enabled)],
+		out var openApiEnabled)
+	&& openApiEnabled)
+{
+	builder.Services.AddOpenApi(apiVersion.ToString(apiVersionGroupNameFormat));
+}
+
 builder.Services
-	.AddApplicationDependencies()
-	.AddInfrastructureDependencies(builder.Configuration);
+	.AddApplicationDependencies(builder.Configuration)
+	.AddInfrastructureDependencies();
 
 builder.Services.AddApiVersioning(options =>
 	{
@@ -96,15 +73,24 @@ var app = builder.Build();
 
 app.UseCors();
 
-await app.Services.ConfigureAppInfrastructure().ConfigureAwait(false);
+await app.ConfigureAppInfrastructure().ConfigureAwait(false);
 
-if (app.Environment.IsDevelopment())
+var openApiSettings = app.Services.GetRequiredService<IOptions<OpenApiSettings>>();
+if (openApiSettings.Value.Enabled)
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.MapOpenApi();
+	app.MapScalarApiReference(options =>
+	{
+		options.Title = "Gym Track API";
+
+		options.Authentication = new ScalarAuthenticationOptions
+		{
+			PreferredSecurityScheme = JwtBearerDefaults.AuthenticationScheme
+		};
+	});
 }
 
-if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()?
+if (app.Environment.IsProduction()) // TODO Pawel: IsProductionOrTest()? <- instead make this configurable in appsettings
 {
 	app.Strip404Body();
 	app.Use404InsteadOf403();

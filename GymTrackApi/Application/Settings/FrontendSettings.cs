@@ -1,6 +1,6 @@
-namespace Infrastructure.Settings;
+namespace Application.Settings;
 
-internal sealed record class FrontendSettings(
+public sealed record class FrontendSettings(
 	string BaseUrl,
 	string ConfirmEmailRoute,
 	string PasswordResetRoute)

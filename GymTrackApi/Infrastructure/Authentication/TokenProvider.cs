@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using System.Text;
 using Application.Auth.Abstractions;
+using Application.Settings;
 using Domain.Models.User;
-using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -14,15 +14,11 @@ internal sealed class TokenProvider : ITokenProvider
 {
 	private static readonly JsonWebTokenHandler jwtHandler = new();
 	private readonly JwtSettings jwtSettings;
-	private readonly FrontendSettings frontendSettings;
 
-	public TokenProvider(IOptions<JwtSettings> jwtSettings, IOptions<FrontendSettings> frontendSettings)
-	{
+	public TokenProvider(IOptions<JwtSettings> jwtSettings) =>
 		this.jwtSettings = jwtSettings.Value;
-		this.frontendSettings = frontendSettings.Value;
-	}
 
-	public JsonWebToken Create(User user)
+	public JsonWebToken Create(User user, string audience)
 	{
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
 		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -37,7 +33,7 @@ internal sealed class TokenProvider : ITokenProvider
 			Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationInMinutes),
 			SigningCredentials = credentials,
 			Issuer = jwtSettings.Issuer,
-			Audience = frontendSettings.BaseUrl
+			Audience = audience
 		}));
 	}
 }

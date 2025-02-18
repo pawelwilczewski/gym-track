@@ -1,6 +1,6 @@
 using Application.Email;
+using Application.Settings;
 using Domain.Models.User;
-using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Email;

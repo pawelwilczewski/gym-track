@@ -14,6 +14,7 @@ internal sealed class Login : IEndpoint
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
 		builder.MapPost("/login", async Task<ResultType> (
+			HttpContext httpContext,
 			[FromBody] LoginRequest request,
 			[FromServices] ISender sender,
 			CancellationToken cancellationToken) =>
@@ -26,7 +27,8 @@ internal sealed class Login : IEndpoint
 
 			var result = await sender.Send(new LogInCommand(
 					emailOrError.ValueObject,
-					passwordOrError.ValueObject), cancellationToken)
+					passwordOrError.ValueObject,
+					httpContext.Request.Headers.Origin!), cancellationToken)
 				.ConfigureAwait(false);
 
 			return result.Match<ResultType>(

@@ -5,5 +5,5 @@ namespace Application.Auth.Abstractions;
 
 public interface ITokenProvider
 {
-	JsonWebToken Create(User user);
+	JsonWebToken Create(User user, string audience);
 }
