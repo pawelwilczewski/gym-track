@@ -8,9 +8,11 @@ using Application.Settings;
 using Asp.Versioning;
 using Infrastructure;
 using Infrastructure.Serialization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +49,45 @@ if (bool.TryParse(builder.Configuration.GetRequiredSection("OpenApi")[nameof(Ope
 		out var openApiEnabled)
 	&& openApiEnabled)
 {
-	builder.Services.AddOpenApi(apiVersion.ToString(apiVersionGroupNameFormat));
+	builder.Services.AddOpenApi(apiVersion.ToString(apiVersionGroupNameFormat), options =>
+	{
+		options.AddDocumentTransformer(async (document, context, cancellationToken) =>
+		{
+			var authenticationSchemeProvider = context.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
+			var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false);
+
+			if (authenticationSchemes.All(authScheme => authScheme.Name != JwtBearerDefaults.AuthenticationScheme)) return;
+
+			var requirements = new Dictionary<string, OpenApiSecurityScheme>
+			{
+				[JwtBearerDefaults.AuthenticationScheme] = new()
+				{
+					Type = SecuritySchemeType.Http,
+					Scheme = JwtBearerDefaults.AuthenticationScheme,
+					In = ParameterLocation.Header,
+					BearerFormat = "JWT"
+				}
+			};
+
+			document.Components ??= new OpenApiComponents();
+			document.Components.SecuritySchemes = requirements;
+
+			foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
+			{
+				operation.Value.Security.Add(new OpenApiSecurityRequirement
+				{
+					[new OpenApiSecurityScheme
+					{
+						Reference = new OpenApiReference
+						{
+							Id = JwtBearerDefaults.AuthenticationScheme,
+							Type = ReferenceType.SecurityScheme
+						}
+					}] = Array.Empty<string>()
+				});
+			}
+		});
+	});
 }
 
 builder.Services
@@ -81,12 +121,16 @@ if (openApiSettings.Value.Enabled)
 	app.MapOpenApi();
 	app.MapScalarApiReference(options =>
 	{
-		options.Title = "Gym Track API";
+		options.Title = "Gym Track API"; // TODO Pawel: this should come from settings
 
 		options.Authentication = new ScalarAuthenticationOptions
 		{
 			PreferredSecurityScheme = JwtBearerDefaults.AuthenticationScheme
 		};
+
+		options.DefaultHttpClient = new KeyValuePair<ScalarTarget, ScalarClient>(
+			ScalarTarget.JavaScript,
+			ScalarClient.Axios);
 	});
 }
 
