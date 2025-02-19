@@ -24,6 +24,10 @@ public sealed record class ResetPasswordRequest(
 	string Code,
 	string NewPassword);
 
+public sealed record class UpdatePasswordRequest(
+	string OldPassword,
+	string NewPassword);
+
 public sealed record class ConfirmEmailRequest(
 	string Code);
 
