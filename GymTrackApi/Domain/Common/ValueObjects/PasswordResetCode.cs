@@ -6,4 +6,9 @@ namespace Domain.Common.ValueObjects;
 public readonly partial struct PasswordResetCode
 {
 	public const int BYTES_LENGTH = 16;
+
+	private static Validation Validate(string input) =>
+		input.Length >= BYTES_LENGTH
+			? Validation.Ok
+			: Validation.Invalid("Invalid password reset code length.");
 }
