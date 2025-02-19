@@ -15,7 +15,7 @@ internal sealed class ExerciseInfoStepTests
 	public static IEnumerable<(IUserInfo user, Description description, Type responseType)>
 		CreateExerciseInfoStepData() =>
 	[
-		(Users.Admin1, Description.From("ValidDescription"), typeof(Success<GetExerciseInfoStepResponse>)),
+		(Users.User0, Description.From("ValidDescription"), typeof(Success<GetExerciseInfoStepResponse>)),
 		(Users.User1, Description.From("ValidDescription"), typeof(Success<GetExerciseInfoStepResponse>))
 	];
 
@@ -49,9 +49,9 @@ internal sealed class ExerciseInfoStepTests
 	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, ExerciseInfoStepIndex accessedIndex, Type responseType)>
 		GetExerciseInfoStepData() =>
 	[
-		(Users.Admin1, Users.User1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, ExerciseInfoStepIndex.From(0), typeof(Success<GetExerciseInfoStepResponse>)),
-		(Users.User1, Users.Admin1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
+		(Users.User0, Users.User1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
+		(Users.User0, Users.User0, ExerciseInfoStepIndex.From(0), typeof(Success<GetExerciseInfoStepResponse>)),
+		(Users.User1, Users.User0, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
 		(Users.User2, Users.User1, ExerciseInfoStepIndex.From(0), typeof(NotFound)),
 		(Users.User1, Users.User1, ExerciseInfoStepIndex.From(1), typeof(NotFound))
 	];
@@ -105,10 +105,10 @@ internal sealed class ExerciseInfoStepTests
 			Description description, bool replaceImage, Type responseType)>
 		UpdateExerciseInfoStepData() =>
 	[
-		(Users.Admin1, Users.Admin1, Description.From("NewDesc"), false, typeof(Success)),
+		(Users.User0, Users.User0, Description.From("NewDesc"), false, typeof(Success)),
 		(Users.User1, Users.User1, Description.From("Updated"), true, typeof(Success)),
-		(Users.Admin1, Users.User1, Description.From("Invalid"), false, typeof(NotFound)),
-		(Users.User1, Users.Admin1, Description.From("NoAccess"), false, typeof(NotFound))
+		(Users.User0, Users.User1, Description.From("Invalid"), false, typeof(NotFound)),
+		(Users.User1, Users.User0, Description.From("NoAccess"), false, typeof(NotFound))
 	];
 
 	[Test]
@@ -154,9 +154,9 @@ internal sealed class ExerciseInfoStepTests
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor,
 		int displayOrder, Type responseType)> UpdateExerciseInfoStepDisplayOrderData() =>
 	[
-		(Users.Admin1, Users.Admin1, 4, typeof(Success)),
+		(Users.User0, Users.User0, 4, typeof(Success)),
 		(Users.User1, Users.User1, 2, typeof(Success)),
-		(Users.Admin1, Users.User1, 6, typeof(NotFound))
+		(Users.User0, Users.User1, 6, typeof(NotFound))
 	];
 
 	[Test]
@@ -197,10 +197,10 @@ internal sealed class ExerciseInfoStepTests
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter,
 		int deletedIndex, Type responseType)> DeleteExerciseInfoData() =>
 	[
-		(Users.Admin1, Users.Admin1, 0, typeof(Success)),
+		(Users.User0, Users.User0, 0, typeof(Success)),
 		(Users.User1, Users.User1, 0, typeof(Success)),
-		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
-		(Users.User1, Users.Admin1, 0, typeof(NotFound)),
+		(Users.User0, Users.User1, 0, typeof(NotFound)),
+		(Users.User1, Users.User0, 0, typeof(NotFound)),
 		(Users.User1, Users.User1, 1, typeof(NotFound))
 	];
 

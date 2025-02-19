@@ -26,7 +26,7 @@ internal static class MockDataContextBuilderExtensions
 	}
 
 	public static MockDataContextBuilder WithAllUsers(this MockDataContextBuilder builder) => builder
-		.WithUser(Users.Admin1)
+		.WithUser(Users.User0)
 		.WithUser(Users.User1)
 		.WithUser(Users.User2);
 }

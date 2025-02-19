@@ -13,7 +13,7 @@ internal sealed class WorkoutTests
 {
 	public static IEnumerable<(IUserInfo creator, Name workoutName, Type responseType)> CreateWorkoutData()
 	{
-		List<IUserInfo> users = [Users.Admin1, Users.User1];
+		List<IUserInfo> users = [Users.User0, Users.User1];
 		List<(string name, Type responseType)> workoutNames =
 		[
 			new("ABC Workout", typeof(Success<GetWorkoutResponse>)),
@@ -43,14 +43,15 @@ internal sealed class WorkoutTests
 				new CreateWorkoutCommand(workoutName, user.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result).IsTypeOf(responseType);
+		await Assert.That(result.Value.Name).IsEqualTo(workoutName.Value);
+		await Assert.That(result.Value.Exercises.Count).IsEqualTo(0);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, Type responseType)> GetWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, typeof(NotFound)),
-		new(Users.User1, Users.Admin1, typeof(NotFound)),
-		new(Users.User2, Users.Admin1, typeof(NotFound)),
+		new(Users.User0, Users.User1, typeof(NotFound)),
+		new(Users.User1, Users.User0, typeof(NotFound)),
+		new(Users.User2, Users.User0, typeof(NotFound)),
 		new(Users.User1, Users.User1, typeof(Success<GetWorkoutResponse>)),
 		new(Users.User2, Users.User1, typeof(NotFound))
 	];
@@ -75,11 +76,11 @@ internal sealed class WorkoutTests
 
 	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutsOwners, IUserInfo accessor, int returnedCount)> GetWorkoutsData() =>
 	[
-		new([Users.Admin1, Users.User1], Users.User1, 1),
-		new([Users.User1, Users.User2, Users.Admin1], Users.User1, 1),
+		new([Users.User0, Users.User1], Users.User1, 1),
+		new([Users.User1, Users.User2, Users.User0], Users.User1, 1),
 		new([Users.User2, Users.User2, Users.User2], Users.User1, 0),
 		new([], Users.User1, 0),
-		new([Users.Admin1, Users.Admin1, Users.User2], Users.User2, 1)
+		new([Users.User0, Users.User0, Users.User2], Users.User2, 1)
 	];
 
 	[Test]
@@ -125,9 +126,9 @@ internal sealed class WorkoutTests
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor, Name workoutName, Type responseType)> UpdateWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, Name.From("ValidName"), typeof(NotFound)),
-		new(Users.Admin1, Users.Admin1, Name.From("ValidName"), typeof(Success)),
-		new(Users.Admin1, Users.Admin1, Name.From("ValidName"), typeof(Success)),
+		new(Users.User0, Users.User1, Name.From("ValidName"), typeof(NotFound)),
+		new(Users.User0, Users.User0, Name.From("ValidName"), typeof(Success)),
+		new(Users.User0, Users.User0, Name.From("ValidName"), typeof(Success)),
 		new(Users.User1, Users.User1, Name.From("ValidName"), typeof(Success)),
 		new(Users.User2, Users.User1, Name.From("ValidName"), typeof(NotFound)),
 		new(Users.User2, Users.User1, Name.From("ValidName"), typeof(NotFound)),
@@ -154,8 +155,8 @@ internal sealed class WorkoutTests
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
 	[
-		new(Users.Admin1, Users.User1, typeof(NotFound)),
-		new(Users.Admin1, Users.Admin1, typeof(Success)),
+		new(Users.User0, Users.User1, typeof(NotFound)),
+		new(Users.User0, Users.User0, typeof(Success)),
 		new(Users.User1, Users.User1, typeof(Success)),
 		new(Users.User2, Users.User1, typeof(NotFound)),
 		new(Users.User2, Users.User1, typeof(NotFound))

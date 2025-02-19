@@ -14,7 +14,7 @@ internal sealed class ExerciseInfoTests
 	public static IEnumerable<(IUserInfo user, Name name, Description description,
 		SomeExerciseMetricTypes allowedMetricTypes, Type responseType)> CreateExerciseInfoData() =>
 	[
-		(Users.Admin1, Name.From("ValidName"), Description.From("ValidDesc"),
+		(Users.User0, Name.From("ValidName"), Description.From("ValidDesc"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.User1, Name.From("ValidName"), Description.From("ValidDesc"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
@@ -22,7 +22,7 @@ internal sealed class ExerciseInfoTests
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
 		(Users.User1, Name.From("LongName1234567890123456789012345678901234"),
 			Description.From("ValidDesc"), SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>)),
-		(Users.Admin1, Name.From("ValidName"), Description.From("Valid"),
+		(Users.User0, Name.From("ValidName"), Description.From("Valid"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(Success<GetExerciseInfoResponse>))
 	];
 
@@ -52,15 +52,18 @@ internal sealed class ExerciseInfoTests
 				user.Id),
 			CancellationToken.None);
 
-		await Assert.That(result).IsTypeOf(responseType);
+		await Assert.That(result.Value.ThumbnailUrl).IsNull();
+		await Assert.That(result.Value.Name).IsEqualTo(name.Value);
+		await Assert.That(result.Value.Description).IsEqualTo(description.Value);
+		await Assert.That(result.Value.Steps.Count).IsEqualTo(0);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, Type responseType)>
 		GetExerciseInfoData() =>
 	[
-		(Users.Admin1, Users.User1, typeof(NotFound)),
+		(Users.User0, Users.User1, typeof(NotFound)),
 		(Users.User1, Users.User1, typeof(Success<GetExerciseInfoResponse>)),
-		(Users.User1, Users.Admin1, typeof(NotFound)),
+		(Users.User1, Users.User0, typeof(NotFound)),
 		(Users.User2, Users.User1, typeof(NotFound))
 	];
 
@@ -103,13 +106,13 @@ internal sealed class ExerciseInfoTests
 			Name name, Description description, SomeExerciseMetricTypes metricTypes, Type responseType)>
 		UpdateExerciseInfoData() =>
 	[
-		(Users.Admin1, Users.Admin1, Name.From("NewName"), Description.From("NewDesc"),
+		(Users.User0, Users.User0, Name.From("NewName"), Description.From("NewDesc"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Duration), typeof(Success)),
 		(Users.User1, Users.User1, Name.From("Valid"), Description.From(""),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Weight), typeof(Success)),
-		(Users.Admin1, Users.User1, Name.From("Valid"), Description.From("Desc"),
+		(Users.User0, Users.User1, Name.From("Valid"), Description.From("Desc"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(NotFound)),
-		(Users.User1, Users.Admin1, Name.From("Invalid"), Description.From("Desc"),
+		(Users.User1, Users.User0, Name.From("Invalid"), Description.From("Desc"),
 			SomeExerciseMetricTypes.From(ExerciseMetricType.Distance), typeof(NotFound))
 	];
 
@@ -149,10 +152,10 @@ internal sealed class ExerciseInfoTests
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType)>
 		DeleteExerciseInfoData() =>
 	[
-		(Users.Admin1, Users.Admin1, typeof(Success)),
+		(Users.User0, Users.User0, typeof(Success)),
 		(Users.User1, Users.User1, typeof(Success)),
-		(Users.Admin1, Users.User1, typeof(NotFound)),
-		(Users.User1, Users.Admin1, typeof(NotFound))
+		(Users.User0, Users.User1, typeof(NotFound)),
+		(Users.User1, Users.User0, typeof(NotFound))
 	];
 
 	[Test]

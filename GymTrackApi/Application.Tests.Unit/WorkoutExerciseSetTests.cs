@@ -20,7 +20,7 @@ internal sealed class WorkoutExerciseSetTests
 	[
 		(Users.User2, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance),
 			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance),
+		(Users.User0, Users.User0, SomeExerciseMetricTypes.From(ExerciseMetricType.Distance),
 			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(3), typeof(Success<GetWorkoutExerciseSetResponse>)),
 		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Weight),
 			new Distance(WeightValue.From(120.0), Distance.Unit.Metre), Reps.From(1), typeof(ValidationError)),
@@ -48,7 +48,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		workout.AddExercise(
-			new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0),
+			new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0, workout),
 			workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -68,12 +68,12 @@ internal sealed class WorkoutExerciseSetTests
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo accessor,
 		int accessedSetIndex, Type responseType)> GetWorkoutExerciseSetData() =>
 	[
-		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, 0, typeof(Success<GetWorkoutExerciseSetResponse>)),
+		(Users.User0, Users.User1, 0, typeof(NotFound)),
+		(Users.User0, Users.User0, 0, typeof(Success<GetWorkoutExerciseSetResponse>)),
 		(Users.User1, Users.User1, 1, typeof(NotFound)),
 		(Users.User2, Users.User1, 0, typeof(NotFound)),
-		(Users.User1, Users.Admin1, -1, typeof(NotFound)),
-		(Users.User1, Users.Admin1, 0, typeof(NotFound))
+		(Users.User1, Users.User0, -1, typeof(NotFound)),
+		(Users.User1, Users.User0, 0, typeof(NotFound))
 	];
 
 	[Test]
@@ -92,7 +92,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0, workout);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -127,7 +127,7 @@ internal sealed class WorkoutExerciseSetTests
 			SomeExerciseMetricTypes allowedMetricTypes, ExerciseMetric metric, int reps, Type responseType)>
 		UpdateWorkoutExerciseSetData() =>
 	[
-		(Users.Admin1, Users.Admin1, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration),
+		(Users.User0, Users.User0, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration),
 			new Duration(TimeSpan.FromSeconds(1000.0)), 4, typeof(Success)),
 		(Users.User1, Users.User1, SomeExerciseMetricTypes.From(ExerciseMetricType.Duration | ExerciseMetricType.Weight),
 			new Weight(WeightValue.From(120.0), Weight.Unit.Pound), 4, typeof(Success))
@@ -151,7 +151,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0, workout);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -187,7 +187,7 @@ internal sealed class WorkoutExerciseSetTests
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
 		int displayOrder, Type responseType)> UpdateWorkoutExerciseSetDisplayOrderData() =>
 	[
-		(Users.Admin1, Users.Admin1, 4, typeof(Success)),
+		(Users.User0, Users.User0, 4, typeof(Success)),
 		(Users.User1, Users.User1, 2, typeof(Success)),
 		(Users.User1, Users.User1, 7, typeof(Success))
 	];
@@ -208,7 +208,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0, workout);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 
@@ -244,8 +244,8 @@ internal sealed class WorkoutExerciseSetTests
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo deleter,
 		int deletedSetIndex, Type responseType)> DeleteWorkoutExerciseSetData() =>
 	[
-		(Users.Admin1, Users.User1, 0, typeof(NotFound)),
-		(Users.Admin1, Users.Admin1, 0, typeof(Success)),
+		(Users.User0, Users.User1, 0, typeof(NotFound)),
+		(Users.User0, Users.User0, 0, typeof(Success)),
 		(Users.User1, Users.User1, 0, typeof(Success))
 	];
 
@@ -265,7 +265,7 @@ internal sealed class WorkoutExerciseSetTests
 
 		var exerciseIndex = WorkoutExerciseIndex.From(0);
 		var setIndex = WorkoutExerciseSetIndex.From(0);
-		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0);
+		var exercise = new WorkoutExercise(workout.Id, exerciseIndex, exerciseInfo.Id, 0, workout);
 		workout.AddExercise(exercise, workoutOwner.Id);
 		await dataContext.SaveChangesAsync();
 

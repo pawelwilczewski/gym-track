@@ -1,18 +1,16 @@
+using Domain.Common.ValueObjects;
+using Domain.Models.User;
+
 namespace Application.Tests.Unit.Mocks;
 
 internal interface IUserInfo
 {
-	Guid Id { get; }
-	string Email { get; }
-	string Password { get; }
+	UserId Id { get; }
+	EmailAddress Email { get; }
+	Password Password { get; }
 }
 
 internal readonly record struct UserInfo(
-	Guid Id,
-	string Email,
-	string Password) : IUserInfo;
-
-internal readonly record struct AdminInfo(
-	Guid Id,
-	string Email,
-	string Password) : IUserInfo;
+	UserId Id,
+	EmailAddress Email,
+	Password Password) : IUserInfo;
