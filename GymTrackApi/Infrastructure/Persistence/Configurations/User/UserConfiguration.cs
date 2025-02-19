@@ -31,10 +31,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Models
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
-			.HasOne(user => user.RefreshToken)
+			.HasMany(user => user.RefreshTokens)
 			.WithOne(token => token.User)
-			.HasForeignKey<UserRefreshToken>(token => token.UserId)
-			.IsRequired(false)
+			.HasForeignKey(token => token.UserId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder

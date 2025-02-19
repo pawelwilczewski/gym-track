@@ -41,7 +41,6 @@ internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
-			.AsNoTracking()
 			.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken)
 			.ConfigureAwait(false);
 
@@ -49,12 +48,12 @@ internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
 
 		if (!passwordVerifier.Verify(request.Password, user.PasswordHash)) return new Error();
 
-		var refreshToken = refreshTokenProvider.Create();
-		user.UpdateRefreshToken(refreshToken);
+		var newRefreshToken = refreshTokenProvider.Create();
+		user.AddRefreshTokenAndCleanUp(newRefreshToken);
 		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<LogInResponse>(new LogInResponse(
 			accessTokenProvider.Create(user, request.RequestOrigin).Value,
-			refreshToken.Token.Value));
+			newRefreshToken.Token.Value));
 	}
 }

@@ -24,7 +24,6 @@ internal sealed class RefreshAccessHandler : IRequestHandler<RefreshAccessComman
 
 	public RefreshAccessHandler(
 		IUsersDataContext usersDataContext,
-		IPasswordVerifier passwordVerifier,
 		IAccessTokenProvider accessTokenProvider,
 		IRefreshTokenProvider refreshTokenProvider)
 	{
@@ -38,21 +37,21 @@ internal sealed class RefreshAccessHandler : IRequestHandler<RefreshAccessComman
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
-			.Include(user => user.RefreshToken)
-			.AsNoTracking()
+			.Include(user => user.RefreshTokens.Where(token => token.RefreshToken == request.Token))
 			.FirstOrDefaultAsync(
-				user => user.RefreshToken != null && user.RefreshToken.IsTokenValid(request.Token),
+				user => user.RefreshTokens.Count > 0,
 				cancellationToken)
 			.ConfigureAwait(false);
 
-		if (user is null) return new Error();
+		if (user is null || !user.RefreshTokens.Single().IsTokenValid(request.Token)) return new Error();
 
-		var refreshToken = refreshTokenProvider.Create();
-		user.UpdateRefreshToken(refreshToken);
+		user.RemoveRefreshToken(request.Token);
+		var newRefreshToken = refreshTokenProvider.Create();
+		user.AddRefreshTokenAndCleanUp(newRefreshToken);
 		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success<LogInResponse>(new LogInResponse(
 			accessTokenProvider.Create(user, request.RequestOrigin).Value,
-			refreshToken.Token.Value));
+			newRefreshToken.Token.Value));
 	}
 }

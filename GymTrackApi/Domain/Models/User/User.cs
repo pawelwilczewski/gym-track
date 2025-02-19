@@ -21,11 +21,12 @@ public class User : AggregateRoot
 
 	public virtual UserPasswordResetCode? PasswordResetCode { get; private set; }
 
-	public virtual UserRefreshToken? RefreshToken { get; private set; }
+	public IReadOnlyList<UserRefreshToken> RefreshTokens => refreshTokens.AsReadOnly();
 
 	public virtual List<Workout.Workout> Workouts { get; private set; } = [];
 	public virtual List<ExerciseInfo.ExerciseInfo> ExerciseInfos { get; private set; } = [];
 	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
+	private readonly List<UserRefreshToken> refreshTokens = [];
 
 	private User() { }
 
@@ -73,8 +74,16 @@ public class User : AggregateRoot
 
 	public void DeletePasswordResetCode() => PasswordResetCode = null;
 
-	public void UpdateRefreshToken(RefreshTokenData refreshTokenData) =>
-		RefreshToken = UserRefreshToken.Create(this, refreshTokenData);
+	public void AddRefreshTokenAndCleanUp(RefreshTokenData refreshTokenData)
+	{
+		refreshTokens.Add(UserRefreshToken.Create(this, refreshTokenData));
+		refreshTokens.RemoveAll(refreshToken => refreshToken.ExpiresAt.Value < DateTime.Now);
+	}
+
+	public void RemoveRefreshToken(RefreshToken refreshToken) =>
+		refreshTokens.RemoveAll(token => token.RefreshToken == refreshToken);
+
+	public void InvalidateRefreshTokens() => refreshTokens.Clear();
 }
 
 [ValueObject<Guid>]
