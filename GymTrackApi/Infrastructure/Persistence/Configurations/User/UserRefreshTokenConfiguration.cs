@@ -10,6 +10,6 @@ internal sealed class UserRefreshTokenConfiguration : IEntityTypeConfiguration<U
 	{
 		builder
 			.ToTable("UserRefreshTokens", Schemas.AUTHENTICATION)
-			.HasKey(token => token.Id);
+			.HasKey(token => token.RefreshToken);
 	}
 }

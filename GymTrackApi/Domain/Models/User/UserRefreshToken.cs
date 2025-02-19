@@ -1,7 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
 using Domain.Common.ValueObjects;
-using Vogen;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
@@ -9,8 +8,6 @@ namespace Domain.Models.User;
 
 public class UserRefreshToken
 {
-	public UserRefreshTokenId Id { get; private set; } = UserRefreshTokenId.New();
-
 	public UserId UserId { get; private set; }
 
 	public User User { get; private set; }
@@ -38,9 +35,3 @@ public class UserRefreshToken
 }
 
 public sealed record class RefreshTokenData(RefreshToken Token, RefreshTokenExpiryDateTime ExpiresAt);
-
-[ValueObject<Guid>]
-public readonly partial struct UserRefreshTokenId
-{
-	public static UserRefreshTokenId New() => From(Ulid.NewUlid().ToGuid());
-}
