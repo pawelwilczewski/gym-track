@@ -1,13 +1,10 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using Domain.Models.User;
+using Api.Dtos;
+using Domain.Common.ValueObjects;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,47 +22,47 @@ internal static class FunctionalTestWebApplicationFactoryExtensions
 {
 	internal static async Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory)
 	{
-		var email = $"{Guid.NewGuid()}@user.com";
-		const string password = "User!123";
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var password = Password.From("User!123");
+
+		// REGISTER
 
 		var httpClient = factory.CreateClient();
-		var response = await httpClient.PostAsJsonAsync("auth/register", new RegisterRequest
-			{
-				Email = email,
-				Password = password
-			})
+		var response = await httpClient.PostAsJsonAsync("auth/register", new RegisterRequest(
+				email.Value,
+				password.Value))
 			.ConfigureAwait(false);
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
+		// LOG IN
+
+		response = await httpClient.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password.Value));
+
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		var tokens = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
+		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+			JwtBearerDefaults.AuthenticationScheme,
+			tokens!.AccessToken);
+
+		// CONFIRM EMAIL
+
 		using var scope = factory.Services.CreateScope();
 
+		// TODO Pawel: possibly make this 
 		var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-		var user = await dataContext.Users.FirstAsync(user => user.Email == email).ConfigureAwait(false);
+		var user = await dataContext.Users
+			.Include(user => user.EmailConfirmationCode)
+			.FirstAsync(user => user.Email == email)
+			.ConfigureAwait(false);
 
-		var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-		var code = await userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
-		var encodedCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+		response = await httpClient.PostAsJsonAsync(
+				"auth/confirm-email",
+				new ConfirmEmailRequest(user.EmailConfirmationCode!.EmailConfirmationCode.Value))
+			.ConfigureAwait(false);
 
-		var query = QueryHelpers.AddQueryString("auth/confirm-email", new Dictionary<string, string?>
-		{
-			{ "userId", user.Id.ToString() },
-			{ "code", encodedCode }
-		});
-
-		response = await httpClient.GetAsync(query).ConfigureAwait(false);
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-
-		response = await httpClient.PostAsJsonAsync("auth/login", new LoginRequest
-		{
-			Email = email,
-			Password = password
-		});
-
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-
-		var token = await response.Content.ReadFromJsonAsync<AccessTokenResponse>().ConfigureAwait(false);
-		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token!.TokenType, token.AccessToken);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
 		return httpClient;
 	}

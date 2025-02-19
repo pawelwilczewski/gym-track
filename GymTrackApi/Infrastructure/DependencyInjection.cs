@@ -95,6 +95,7 @@ public static class DependencyInjection
 						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Key)),
 						ValidIssuer = jwtSettings.Value.Issuer,
 						ValidAudiences = audiences,
+						ValidateAudience = jwtSettings.Value.ValidateAudience,
 						ClockSkew = TimeSpan.Zero
 					};
 				});

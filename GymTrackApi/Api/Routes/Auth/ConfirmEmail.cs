@@ -14,17 +14,14 @@ internal sealed class ConfirmEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapGet("/confirm-email", async Task<ResultType> (
+		builder.MapPost("/confirm-email", async Task<ResultType> (
 				HttpContext httpContext,
 				[FromBody] ConfirmEmailRequest request,
 				[FromServices] ISender sender,
 				CancellationToken cancellationToken) =>
 			{
 				var codeOrError = EmailConfirmationCode.TryFrom(request.Code);
-				if (!codeOrError.IsSuccess)
-				{
-					return TypedResults.BadRequest();
-				}
+				if (!codeOrError.IsSuccess) return TypedResults.BadRequest();
 
 				var result = await sender.Send(new ConfirmEmailCommand(
 							codeOrError.ValueObject, httpContext.User.GetUserId()),

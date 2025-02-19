@@ -7,7 +7,7 @@ namespace Api.Tests.Functional;
 
 public sealed class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyncInitializer
 {
-	internal HttpClient Client { get; private set; } = default!;
+	internal HttpClient Client { get; private set; } = null!;
 
 	protected override void ConfigureWebHost(IWebHostBuilder builder)
 	{
@@ -26,7 +26,7 @@ public sealed class FunctionalTestWebAppFactory : WebApplicationFactory<Program>
 	public Task InitializeAsync()
 	{
 		// don't remove - this makes sure we can create multiple clients later
-		// (seems like because of concurrency we otherwise get an error that db doesn't exist in some tests!)
+		// (seems like, because of concurrency, we otherwise get an error that db doesn't exist in some tests!)
 		Client = CreateClient();
 		return Task.CompletedTask;
 	}
