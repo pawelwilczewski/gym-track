@@ -11,18 +11,18 @@ namespace Application.Auth.Commands;
 
 using ResultType = OneOf<Success<LogInResponse>, Error>;
 
-public sealed record class RefreshAccessCommand(
+public sealed record class RefreshLoginCommand(
 	RefreshToken Token,
 	string RequestOrigin) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
-internal sealed class RefreshAccessHandler : IRequestHandler<RefreshAccessCommand, ResultType>
+internal sealed class RefreshLoginHandler : IRequestHandler<RefreshLoginCommand, ResultType>
 {
 	private readonly IUsersDataContext usersDataContext;
 	private readonly IAccessTokenProvider accessTokenProvider;
 	private readonly IRefreshTokenProvider refreshTokenProvider;
 
-	public RefreshAccessHandler(
+	public RefreshLoginHandler(
 		IUsersDataContext usersDataContext,
 		IAccessTokenProvider accessTokenProvider,
 		IRefreshTokenProvider refreshTokenProvider)
@@ -33,7 +33,7 @@ internal sealed class RefreshAccessHandler : IRequestHandler<RefreshAccessComman
 	}
 
 	public async Task<ResultType> Handle(
-		RefreshAccessCommand request,
+		RefreshLoginCommand request,
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users

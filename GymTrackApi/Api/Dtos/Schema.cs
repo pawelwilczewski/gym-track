@@ -14,7 +14,7 @@ public sealed record class LoginResponse(
 	string AccessToken,
 	string RefreshToken);
 
-public sealed record class RefreshAccessRequest(
+public sealed record class RefreshLoginRequest(
 	string RefreshToken);
 
 public sealed record class ForgotPasswordRequest(

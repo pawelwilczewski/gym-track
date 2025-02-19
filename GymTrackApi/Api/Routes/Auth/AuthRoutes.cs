@@ -14,7 +14,7 @@ internal static class AuthRoutes
 			.WithTags("Auth")
 			.Map(new Login())
 			.Map(new Register())
-			.Map(new RefreshAccess())
+			.Map(new RefreshLogin())
 			.Map(new InvalidateRefreshTokens())
 			.Map(new ConfirmEmail())
 			.Map(new SendConfirmationEmail())
