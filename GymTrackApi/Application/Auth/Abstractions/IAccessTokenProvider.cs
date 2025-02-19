@@ -3,7 +3,7 @@ using Domain.Models.User;
 
 namespace Application.Auth.Abstractions;
 
-public interface ITokenProvider
+public interface IAccessTokenProvider
 {
 	JsonWebToken Create(User user, string requestingAudience);
 }

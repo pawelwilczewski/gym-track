@@ -19,6 +19,7 @@ public static class DependencyInjection
 		services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 		services.Configure<DatabaseSettings>(configuration.GetSection("Database"));
 		services.Configure<PasswordResetSettings>(configuration.GetSection("PasswordReset"));
+		services.Configure<RefreshTokenSettings>(configuration.GetSection("RefreshToken"));
 
 		return services;
 	}

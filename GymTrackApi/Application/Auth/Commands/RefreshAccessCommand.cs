@@ -11,43 +11,41 @@ namespace Application.Auth.Commands;
 
 using ResultType = OneOf<Success<LogInResponse>, Error>;
 
-public sealed record class LogInCommand(
-	EmailAddress Email,
-	Password Password,
+public sealed record class RefreshAccessCommand(
+	RefreshToken Token,
 	string RequestOrigin) : IRequest<ResultType>;
 
 // ReSharper disable once UnusedType.Global
-internal sealed class LogInHandler : IRequestHandler<LogInCommand, ResultType>
+internal sealed class RefreshAccessHandler : IRequestHandler<RefreshAccessCommand, ResultType>
 {
 	private readonly IUsersDataContext usersDataContext;
-	private readonly IPasswordVerifier passwordVerifier;
 	private readonly IAccessTokenProvider accessTokenProvider;
 	private readonly IRefreshTokenProvider refreshTokenProvider;
 
-	public LogInHandler(
+	public RefreshAccessHandler(
 		IUsersDataContext usersDataContext,
 		IPasswordVerifier passwordVerifier,
 		IAccessTokenProvider accessTokenProvider,
 		IRefreshTokenProvider refreshTokenProvider)
 	{
 		this.usersDataContext = usersDataContext;
-		this.passwordVerifier = passwordVerifier;
 		this.accessTokenProvider = accessTokenProvider;
 		this.refreshTokenProvider = refreshTokenProvider;
 	}
 
 	public async Task<ResultType> Handle(
-		LogInCommand request,
+		RefreshAccessCommand request,
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
+			.Include(user => user.RefreshToken)
 			.AsNoTracking()
-			.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken)
+			.FirstOrDefaultAsync(
+				user => user.RefreshToken != null && user.RefreshToken.IsTokenValid(request.Token),
+				cancellationToken)
 			.ConfigureAwait(false);
 
 		if (user is null) return new Error();
-
-		if (!passwordVerifier.Verify(request.Password, user.PasswordHash)) return new Error();
 
 		var refreshToken = refreshTokenProvider.Create();
 		user.UpdateRefreshToken(refreshToken);

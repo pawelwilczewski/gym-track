@@ -10,12 +10,12 @@ using JsonWebToken = Domain.Common.ValueObjects.JsonWebToken;
 
 namespace Infrastructure.Authentication;
 
-internal sealed class TokenProvider : ITokenProvider
+internal sealed class AccessTokenProvider : IAccessTokenProvider
 {
 	private static readonly JsonWebTokenHandler jwtHandler = new();
 	private readonly JwtSettings jwtSettings;
 
-	public TokenProvider(IOptions<JwtSettings> jwtSettings) =>
+	public AccessTokenProvider(IOptions<JwtSettings> jwtSettings) =>
 		this.jwtSettings = jwtSettings.Value;
 
 	public JsonWebToken Create(User user, string requestingAudience)

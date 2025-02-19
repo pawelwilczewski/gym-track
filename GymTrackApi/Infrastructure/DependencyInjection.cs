@@ -51,7 +51,7 @@ public static class DependencyInjection
 		services.AddSingleton<IEmailSender, SendGridEmailSender>();
 		services.AddSingleton<IUserEmailSender, UserEmailSender>();
 
-		services.AddSingleton<ITokenProvider, TokenProvider>();
+		services.AddSingleton<IAccessTokenProvider, AccessTokenProvider>();
 
 		services.AddMassTransit(configurator =>
 		{
@@ -76,6 +76,7 @@ public static class DependencyInjection
 
 		services.AddSingleton<IEmailConfirmationCodeGenerator, EmailConfirmationCodeGenerator>();
 		services.AddSingleton<IPasswordResetCodeGenerator, PasswordResetCodeGenerator>();
+		services.AddSingleton<IRefreshTokenProvider, RefreshTokenProvider>();
 
 		services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);

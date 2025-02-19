@@ -11,7 +11,11 @@ public sealed record class LoginRequest(
 	string Password);
 
 public sealed record class LoginResponse(
-	string Token);
+	string AccessToken,
+	string RefreshToken);
+
+public sealed record class RefreshAccessRequest(
+	string RefreshToken);
 
 public sealed record class ForgotPasswordRequest(
 	string Email);

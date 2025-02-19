@@ -21,6 +21,8 @@ public class User : AggregateRoot
 
 	public virtual UserPasswordResetCode? PasswordResetCode { get; private set; }
 
+	public virtual UserRefreshToken? RefreshToken { get; private set; }
+
 	public virtual List<Workout.Workout> Workouts { get; private set; } = [];
 	public virtual List<ExerciseInfo.ExerciseInfo> ExerciseInfos { get; private set; } = [];
 	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
@@ -70,6 +72,9 @@ public class User : AggregateRoot
 		PasswordResetCode = UserPasswordResetCode.Create(this, data);
 
 	public void DeletePasswordResetCode() => PasswordResetCode = null;
+
+	public void UpdateRefreshToken(RefreshTokenData refreshTokenData) =>
+		RefreshToken = UserRefreshToken.Create(this, refreshTokenData);
 }
 
 [ValueObject<Guid>]
