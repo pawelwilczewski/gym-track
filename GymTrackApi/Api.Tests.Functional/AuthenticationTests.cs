@@ -50,7 +50,7 @@ internal static class FunctionalTestWebApplicationFactoryExtensions
 
 		using var scope = factory.Services.CreateScope();
 
-		// TODO Pawel: possibly make this 
+		// TODO Pawel: possibly simulate this better (override email service and access "emailed" code)
 		var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 		var user = await dataContext.Users
 			.Include(user => user.EmailConfirmationCode)
@@ -63,6 +63,13 @@ internal static class FunctionalTestWebApplicationFactoryExtensions
 			.ConfigureAwait(false);
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		// SET ANTIFORGERY TOKEN HEADER
+
+		response = await httpClient.GetAsync("auth/antiforgery-token");
+		var antiforgeryToken = await response.Content.ReadFromJsonAsync<GetAntiforgeryTokenResponse>();
+		httpClient.DefaultRequestHeaders.Add(antiforgeryToken!.HeaderName, antiforgeryToken.RequestToken);
+		await Assert.That(response.Headers.GetValues("Set-Cookie").First()).IsNotNull();
 
 		return httpClient;
 	}

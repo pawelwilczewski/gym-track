@@ -44,10 +44,9 @@ internal sealed class UseCaseTests
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
 	}
 
-	private async Task<Guid> CreateExerciseInfo(HttpClient httpClient, GetAntiforgeryTokenResponse antiforgeryToken)
+	private async Task<Guid> CreateExerciseInfo(HttpClient httpClient)
 	{
 		var content = new MultipartFormDataContent();
-		content.Add(new StringContent(antiforgeryToken.Token), "__RequestVerificationToken");
 		content.Add(new StringContent("Nice Exercise"), "name");
 		content.Add(new StringContent("Some exercise description."), "description");
 		content.Add(new StringContent(((int)(ExerciseMetricType.Distance | ExerciseMetricType.Weight)).ToString()), "allowedMetricTypes");
@@ -75,8 +74,7 @@ internal sealed class UseCaseTests
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
-		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
-		var exerciseId = await CreateExerciseInfo(httpClient, antiforgeryToken!).ConfigureAwait(false);
+		var exerciseId = await CreateExerciseInfo(httpClient).ConfigureAwait(false);
 
 		const string workoutName = "Nice Workout";
 		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest(workoutName)).ConfigureAwait(false);
@@ -128,8 +126,7 @@ internal sealed class UseCaseTests
 	{
 		var httpClient = await factory.CreateLoggedInUserClient().ConfigureAwait(false);
 
-		var antiforgeryToken = await httpClient.GetFromJsonAsync<GetAntiforgeryTokenResponse>("auth/antiforgery-token");
-		var exerciseId = await CreateExerciseInfo(httpClient, antiforgeryToken!);
+		var exerciseId = await CreateExerciseInfo(httpClient);
 
 		var response = await httpClient.PostAsJsonAsync("api/v1/workouts", new CreateWorkoutRequest("Test workout")).ConfigureAwait(false);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Created);

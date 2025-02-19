@@ -52,7 +52,9 @@ public sealed record class UpdateWorkoutRequest(
 	string Name);
 
 public sealed record class GetAntiforgeryTokenResponse(
-	string Token);
+	string HeaderName,
+	string FormFieldName,
+	string RequestToken);
 
 public sealed record class CreateTrackedWorkoutRequest(
 	Guid WorkoutId,

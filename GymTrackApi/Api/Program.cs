@@ -144,12 +144,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseAntiforgery();
 
 app.AddPutFormSupport();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapAllRoutes();
 
