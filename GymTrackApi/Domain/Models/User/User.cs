@@ -3,6 +3,7 @@ using Domain.Common.Collections;
 using Domain.Common.ValueObjects;
 using Domain.Models.Tracking;
 using Vogen;
+using static Domain.Common.Collections.RemoveItemStrategies;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
@@ -19,10 +20,10 @@ public class User : AggregateRoot
 	public PasswordHash PasswordHash { get; private set; }
 
 	public IReadOnlyList<UserEmailConfirmationCode> EmailConfirmationCodes => emailConfirmationCodes.AsReadOnly();
-	private readonly ListWithMaxCapacity<UserEmailConfirmationCode> emailConfirmationCodes = new(3, RemoveItemStrategies.RemoveSoonestExpiring);
+	private readonly ListWithMaxCapacity<UserEmailConfirmationCode> emailConfirmationCodes = new(3, RemoveSoonestExpiring);
 
 	public virtual IReadOnlyList<UserPasswordResetCode> PasswordResetCodes => passwordResetCodes.AsReadOnly();
-	private readonly ListWithMaxCapacity<UserPasswordResetCode> passwordResetCodes = new(3, RemoveItemStrategies.RemoveSoonestExpiring);
+	private readonly ListWithMaxCapacity<UserPasswordResetCode> passwordResetCodes = new(3, RemoveSoonestExpiring);
 
 	public IReadOnlyList<UserRefreshToken> RefreshTokens => refreshTokens.AsReadOnly();
 	private readonly List<UserRefreshToken> refreshTokens = [];
