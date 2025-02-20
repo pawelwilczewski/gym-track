@@ -38,7 +38,7 @@ internal sealed class ForgotPasswordHandler : IRequestHandler<ForgotPasswordComm
 		if (user == null) return;
 
 		var data = passwordResetCodeGenerator.Generate();
-		user.UpdatePasswordResetCode(data);
+		user.AddPasswordResetCode(data);
 		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		await userEmailSender.SendPasswordResetLink(user, data, cancellationToken).ConfigureAwait(false);

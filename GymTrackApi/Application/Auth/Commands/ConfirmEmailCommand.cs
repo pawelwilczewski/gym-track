@@ -26,7 +26,7 @@ internal sealed class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand,
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
-			.Include(user => user.EmailConfirmationCode)
+			.Include(user => user.EmailConfirmationCodes)
 			.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken)
 			.ConfigureAwait(false);
 
@@ -34,7 +34,6 @@ internal sealed class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand,
 
 		if (user.TryConfirmEmail(request.Code))
 		{
-			user.DeleteEmailConfirmationCode();
 			await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 			return new Success();
 		}

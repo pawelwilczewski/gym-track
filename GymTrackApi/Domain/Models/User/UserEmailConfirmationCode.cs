@@ -1,5 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 
@@ -7,7 +8,7 @@ using Domain.Common.ValueObjects;
 
 namespace Domain.Models.User;
 
-public class UserEmailConfirmationCode
+public class UserEmailConfirmationCode : IExpiring
 {
 	public UserId UserId { get; private set; }
 
@@ -16,6 +17,7 @@ public class UserEmailConfirmationCode
 	public EmailConfirmationCode EmailConfirmationCode { get; private set; }
 
 	public EmailConfirmationCodeExpiryDateTime ExpiresAt { get; private set; }
+	DateTime IExpiring.ExpiresAt => ExpiresAt.Value;
 
 	public EmailConfirmationCodeData Data => new(EmailConfirmationCode, ExpiresAt);
 

@@ -1,4 +1,3 @@
-using Domain.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,17 +16,15 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<Domain.Models
 			.IsUnique();
 
 		builder
-			.HasOne(user => user.EmailConfirmationCode)
+			.HasMany(user => user.EmailConfirmationCodes)
 			.WithOne(code => code.User)
-			.HasForeignKey<UserEmailConfirmationCode>(code => code.UserId)
-			.IsRequired(false)
+			.HasForeignKey(code => code.UserId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
-			.HasOne(user => user.PasswordResetCode)
+			.HasMany(user => user.PasswordResetCodes)
 			.WithOne(code => code.User)
-			.HasForeignKey<UserPasswordResetCode>(code => code.UserId)
-			.IsRequired(false)
+			.HasForeignKey(code => code.UserId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		builder

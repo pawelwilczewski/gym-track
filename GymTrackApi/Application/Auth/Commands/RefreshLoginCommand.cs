@@ -37,13 +37,17 @@ internal sealed class RefreshLoginHandler : IRequestHandler<RefreshLoginCommand,
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
-			.Include(user => user.RefreshTokens.Where(token => token.RefreshToken == request.Token))
+			.Include(user => user.RefreshTokens)
 			.FirstOrDefaultAsync(
-				user => user.RefreshTokens.Count > 0,
+				user => user.RefreshTokens.Any(token => token.RefreshToken == request.Token),
 				cancellationToken)
 			.ConfigureAwait(false);
 
-		if (user is null || !user.RefreshTokens.Single().IsTokenValid(request.Token)) return new Error();
+		if (user is null
+			|| !user.RefreshTokens.First(token => token.RefreshToken == request.Token).IsTokenValid(request.Token))
+		{
+			return new Error();
+		}
 
 		user.RemoveRefreshToken(request.Token);
 		var newRefreshToken = refreshTokenProvider.Create();

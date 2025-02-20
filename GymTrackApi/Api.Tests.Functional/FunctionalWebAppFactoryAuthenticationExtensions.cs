@@ -3,18 +3,20 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Api.Dtos;
 using Domain.Common.ValueObjects;
-using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Tests.Functional;
 
 internal static class FunctionalWebAppFactoryAuthenticationExtensions
 {
-	internal static async Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory)
+	public static Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory)
 	{
 		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		return factory.CreateLoggedInUserClient(email);
+	}
+
+	public static async Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory, EmailAddress email)
+	{
 		var password = Password.From("User!123");
 
 		// REGISTER
@@ -40,17 +42,11 @@ internal static class FunctionalWebAppFactoryAuthenticationExtensions
 
 		// CONFIRM EMAIL
 
-		// TODO Pawel: possibly simulate this better (override email service and access "emailed" code)
-		using var scope = factory.Services.CreateScope();
-		var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-		var user = await dataContext.Users
-			.Include(user => user.EmailConfirmationCode)
-			.FirstAsync(user => user.Email == email)
-			.ConfigureAwait(false);
+		var confirmationCode = await FakeUserEmailSenderCache.GetEmailConfirmationCode(email);
 
 		response = await httpClient.PostAsJsonAsync(
 				"auth/confirm-email",
-				new ConfirmEmailRequest(user.EmailConfirmationCode!.EmailConfirmationCode.Value))
+				new ConfirmEmailRequest(confirmationCode.Value))
 			.ConfigureAwait(false);
 
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);

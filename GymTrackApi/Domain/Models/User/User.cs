@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Common.Collections;
 using Domain.Common.ValueObjects;
 using Domain.Models.Tracking;
 using Vogen;
@@ -17,16 +18,18 @@ public class User : AggregateRoot
 
 	public PasswordHash PasswordHash { get; private set; }
 
-	public virtual UserEmailConfirmationCode? EmailConfirmationCode { get; private set; }
+	public IReadOnlyList<UserEmailConfirmationCode> EmailConfirmationCodes => emailConfirmationCodes.AsReadOnly();
+	private readonly ListWithMaxCapacity<UserEmailConfirmationCode> emailConfirmationCodes = new(3, RemoveItemStrategies.RemoveSoonestExpiring);
 
-	public virtual UserPasswordResetCode? PasswordResetCode { get; private set; }
+	public virtual IReadOnlyList<UserPasswordResetCode> PasswordResetCodes => passwordResetCodes.AsReadOnly();
+	private readonly ListWithMaxCapacity<UserPasswordResetCode> passwordResetCodes = new(3, RemoveItemStrategies.RemoveSoonestExpiring);
 
 	public IReadOnlyList<UserRefreshToken> RefreshTokens => refreshTokens.AsReadOnly();
+	private readonly List<UserRefreshToken> refreshTokens = [];
 
 	public virtual List<Workout.Workout> Workouts { get; private set; } = [];
 	public virtual List<ExerciseInfo.ExerciseInfo> ExerciseInfos { get; private set; } = [];
 	public virtual List<TrackedWorkout> TrackedWorkouts { get; private set; } = [];
-	private readonly List<UserRefreshToken> refreshTokens = [];
 
 	private User() { }
 
@@ -47,49 +50,33 @@ public class User : AggregateRoot
 		return user;
 	}
 
-	public void UpdateEmailConfirmationCode(EmailConfirmationCodeData data)
-	{
-		if (EmailConfirmationCode is null)
-		{
-			EmailConfirmationCode = UserEmailConfirmationCode.Create(this, data);
-		}
-		else
-		{
-			EmailConfirmationCode.Update(data, Id);
-		}
-	}
+	public void AddEmailConfirmationCode(EmailConfirmationCodeData data) =>
+		emailConfirmationCodes.Add(UserEmailConfirmationCode.Create(this, data));
 
-	public void DeleteEmailConfirmationCode() => EmailConfirmationCode = null;
+	public void InvalidateEmailConfirmationCodes() => emailConfirmationCodes.Clear();
 
 	public bool TryConfirmEmail(EmailConfirmationCode emailConfirmationCode)
 	{
-		if (HasConfirmedEmail) return true;
-		if (EmailConfirmationCode is null) return false;
-
-		if (EmailConfirmationCode.IsCodeValid(emailConfirmationCode))
+		if (HasConfirmedEmail || EmailConfirmationCodes.Any(code => code.IsCodeValid(emailConfirmationCode)))
 		{
 			HasConfirmedEmail = true;
+			InvalidateEmailConfirmationCodes();
 			return true;
 		}
 
 		return false;
 	}
 
-	public void UpdatePasswordHash(PasswordHash passwordHash) => PasswordHash = passwordHash;
+	public void AddPasswordResetCode(PasswordResetCodeData data) =>
+		passwordResetCodes.Add(UserPasswordResetCode.Create(this, data));
 
-	public void UpdatePasswordResetCode(PasswordResetCodeData data)
+	public void InvalidatePasswordResetCodes() => passwordResetCodes.Clear();
+
+	public void UpdatePasswordHash(PasswordHash passwordHash)
 	{
-		if (PasswordResetCode is null)
-		{
-			PasswordResetCode = UserPasswordResetCode.Create(this, data);
-		}
-		else
-		{
-			PasswordResetCode.Update(data, Id);
-		}
+		PasswordHash = passwordHash;
+		InvalidatePasswordResetCodes();
 	}
-
-	public void DeletePasswordResetCode() => PasswordResetCode = null;
 
 	public void AddRefreshTokenAndCleanUp(RefreshTokenData refreshTokenData)
 	{

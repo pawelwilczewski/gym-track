@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Application.Email;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TUnit.Core.Interfaces;
 
 namespace Api.Tests.Functional;
@@ -21,6 +24,9 @@ public sealed class FunctionalTestWebAppFactory : WebApplicationFactory<Program>
 		});
 
 		builder.UseEnvironment("Test");
+
+		builder.ConfigureServices(services =>
+			services.Replace(ServiceDescriptor.Singleton<IUserEmailSender, FakeUserEmailSenderCache>()));
 	}
 
 	public Task InitializeAsync()

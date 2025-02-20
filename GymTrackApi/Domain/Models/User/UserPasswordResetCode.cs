@@ -1,5 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
+using Domain.Common;
 using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 
@@ -7,7 +8,7 @@ using Domain.Common.ValueObjects;
 
 namespace Domain.Models.User;
 
-public class UserPasswordResetCode
+public class UserPasswordResetCode : IExpiring
 {
 	public UserId UserId { get; private set; }
 
@@ -16,6 +17,7 @@ public class UserPasswordResetCode
 	public PasswordResetCode PasswordResetCode { get; private set; }
 
 	public PasswordResetCodeExpiryDateTime ExpiresAt { get; private set; }
+	DateTime IExpiring.ExpiresAt => ExpiresAt.Value;
 
 	public PasswordResetCodeData Data => new(PasswordResetCode, ExpiresAt);
 

@@ -37,7 +37,7 @@ internal sealed class SendConfirmationEmailHandler : IRequestHandler<SendConfirm
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
-			.Include(user => user.EmailConfirmationCode)
+			.Include(user => user.EmailConfirmationCodes)
 			.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken)
 			.ConfigureAwait(false);
 
@@ -45,12 +45,11 @@ internal sealed class SendConfirmationEmailHandler : IRequestHandler<SendConfirm
 		if (user.HasConfirmedEmail) return new UserAlreadyConfirmed();
 
 		var confirmation = emailConfirmationCodeGenerator.Generate();
-		user.UpdateEmailConfirmationCode(confirmation);
-
+		user.AddEmailConfirmationCode(confirmation);
 		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		await userEmailSender
-			.SendEmailConfirmationLink(user, user.EmailConfirmationCode!.Data, cancellationToken)
+			.SendEmailConfirmationLink(user, confirmation, cancellationToken)
 			.ConfigureAwait(false);
 
 		return new Success();
