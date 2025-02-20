@@ -1,5 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
+using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -32,6 +33,14 @@ public class UserEmailConfirmationCode
 
 	public bool IsCodeValid(EmailConfirmationCode code) =>
 		DateTime.UtcNow < ExpiresAt.Value && code == EmailConfirmationCode;
+
+	public void Update(EmailConfirmationCodeData data, UserId userId)
+	{
+		if (userId != UserId) throw new PermissionError();
+
+		EmailConfirmationCode = data.Code;
+		ExpiresAt = data.ExpiresAt;
+	}
 }
 
 public sealed record class EmailConfirmationCodeData(EmailConfirmationCode Code, EmailConfirmationCodeExpiryDateTime ExpiresAt);

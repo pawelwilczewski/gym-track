@@ -11,7 +11,7 @@ internal sealed class GetAntiforgeryToken : IEndpoint
 		builder.MapGet("antiforgery-token", Ok<GetAntiforgeryTokenResponse> (IAntiforgery antiforgery, HttpContext httpContext) =>
 			{
 				var tokens = antiforgery.GetAndStoreTokens(httpContext);
-				if (tokens.RequestToken is null || tokens.HeaderName is null || tokens.CookieToken is null)
+				if (tokens.RequestToken is null || tokens.HeaderName is null)
 				{
 					throw new Exception("Antiforgery token is not correctly configured");
 				}

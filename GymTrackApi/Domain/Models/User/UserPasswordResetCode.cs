@@ -1,5 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Local
 
+using Domain.Common.Exceptions;
 using Domain.Common.ValueObjects;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
@@ -32,6 +33,14 @@ public class UserPasswordResetCode
 
 	public bool IsCodeValid(PasswordResetCode code) =>
 		DateTime.UtcNow < ExpiresAt.Value && code == PasswordResetCode;
+
+	public void Update(PasswordResetCodeData data, UserId userId)
+	{
+		if (userId != UserId) throw new PermissionError();
+
+		PasswordResetCode = data.Code;
+		ExpiresAt = data.ExpiresAt;
+	}
 }
 
 public sealed record class PasswordResetCodeData(PasswordResetCode Code, PasswordResetCodeExpiryDateTime ExpiresAt);

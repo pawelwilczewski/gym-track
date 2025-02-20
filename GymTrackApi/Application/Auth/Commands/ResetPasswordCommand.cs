@@ -33,11 +33,11 @@ internal sealed class ResetPasswordHandler : IRequestHandler<ResetPasswordComman
 		var user = await usersDataContext.Users
 			.Include(user => user.PasswordResetCode)
 			.FirstOrDefaultAsync(
-				user => user.PasswordResetCode != null && user.PasswordResetCode.IsCodeValid(request.Code),
+				user => user.PasswordResetCode != null && user.PasswordResetCode.PasswordResetCode == request.Code,
 				cancellationToken)
 			.ConfigureAwait(false);
 
-		if (user is null) return new Error();
+		if (user is null || !user.PasswordResetCode!.IsCodeValid(request.Code)) return new Error();
 
 		user.UpdatePasswordHash(passwordHasher.Hash(request.NewPassword));
 		user.DeletePasswordResetCode();

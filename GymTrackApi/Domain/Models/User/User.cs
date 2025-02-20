@@ -47,15 +47,23 @@ public class User : AggregateRoot
 		return user;
 	}
 
-	public void UpdateEmailConfirmationCode(EmailConfirmationCodeData data) =>
-		EmailConfirmationCode = UserEmailConfirmationCode.Create(this, data);
+	public void UpdateEmailConfirmationCode(EmailConfirmationCodeData data)
+	{
+		if (EmailConfirmationCode is null)
+		{
+			EmailConfirmationCode = UserEmailConfirmationCode.Create(this, data);
+		}
+		else
+		{
+			EmailConfirmationCode.Update(data, Id);
+		}
+	}
 
 	public void DeleteEmailConfirmationCode() => EmailConfirmationCode = null;
 
 	public bool TryConfirmEmail(EmailConfirmationCode emailConfirmationCode)
 	{
 		if (HasConfirmedEmail) return true;
-
 		if (EmailConfirmationCode is null) return false;
 
 		if (EmailConfirmationCode.IsCodeValid(emailConfirmationCode))
@@ -69,8 +77,17 @@ public class User : AggregateRoot
 
 	public void UpdatePasswordHash(PasswordHash passwordHash) => PasswordHash = passwordHash;
 
-	public void UpdatePasswordResetCode(PasswordResetCodeData data) =>
-		PasswordResetCode = UserPasswordResetCode.Create(this, data);
+	public void UpdatePasswordResetCode(PasswordResetCodeData data)
+	{
+		if (PasswordResetCode is null)
+		{
+			PasswordResetCode = UserPasswordResetCode.Create(this, data);
+		}
+		else
+		{
+			PasswordResetCode.Update(data, Id);
+		}
+	}
 
 	public void DeletePasswordResetCode() => PasswordResetCode = null;
 

@@ -1,10 +1,8 @@
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Api.Dtos;
 using Domain.Common.ValueObjects;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,61 +14,130 @@ internal sealed class AuthenticationTests
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
 	public Task RegisterAndLogin_ValidUser_ReturnsCorrectResponse(FunctionalTestWebAppFactory factory) =>
 		factory.CreateLoggedInUserClient();
-}
 
-internal static class FunctionalTestWebApplicationFactoryExtensions
-{
-	internal static async Task<HttpClient> CreateLoggedInUserClient(this FunctionalTestWebAppFactory factory)
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task Register_ValidRequest_ReturnsNoContent(FunctionalTestWebAppFactory factory)
 	{
-		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
-		var password = Password.From("User!123");
-
-		// REGISTER
-
-		var httpClient = factory.CreateClient();
-		var response = await httpClient.PostAsJsonAsync("auth/register", new RegisterRequest(
-				email.Value,
-				password.Value))
-			.ConfigureAwait(false);
-
+		var client = factory.CreateClient();
+		var request = new RegisterRequest($"{Guid.NewGuid()}@user.com", "ValidPassword123!");
+		var response = await client.PostAsJsonAsync("auth/register", request);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
 
-		// LOG IN
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task Register_DuplicateEmail_ReturnsConflict(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = $"{Guid.NewGuid()}@user.com";
+		await client.PostAsJsonAsync("auth/register", new RegisterRequest(email, "Password1!"));
+		var response = await client.PostAsJsonAsync("auth/register", new RegisterRequest(email, "Password2!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
+	}
 
-		response = await httpClient.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password.Value));
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task Register_InvalidRequest_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var response = await client.PostAsJsonAsync("auth/register", new
+			{ });
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+	}
 
-		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task RefreshLogin_ValidToken_ReturnsNewTokens(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var password = "ValidPassword123!";
 
-		var tokens = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
-		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-			JwtBearerDefaults.AuthenticationScheme,
-			tokens!.AccessToken);
-
-		// CONFIRM EMAIL
+		await client.PostAsJsonAsync("auth/register", new RegisterRequest(email.Value, password));
+		var loginResponse = await client.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password));
+		var loginTokens = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
 
 		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+		var user = await dbContext.Users.Include(u => u.EmailConfirmationCode).FirstAsync(u => u.Email == email);
+		await client.PostAsJsonAsync("auth/confirm-email", new ConfirmEmailRequest(user.EmailConfirmationCode!.EmailConfirmationCode.Value));
 
-		// TODO Pawel: possibly simulate this better (override email service and access "emailed" code)
-		var dataContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-		var user = await dataContext.Users
-			.Include(user => user.EmailConfirmationCode)
-			.FirstAsync(user => user.Email == email)
-			.ConfigureAwait(false);
+		var refreshResponse = await client.PostAsJsonAsync("auth/refresh-login", new RefreshLoginRequest(loginTokens!.RefreshToken));
+		await Assert.That(refreshResponse.StatusCode).IsEqualTo(HttpStatusCode.OK);
+		var newTokens = await refreshResponse.Content.ReadFromJsonAsync<LoginResponse>();
+		await Assert.That(newTokens?.AccessToken).IsNotNull();
+	}
 
-		response = await httpClient.PostAsJsonAsync(
-				"auth/confirm-email",
-				new ConfirmEmailRequest(user.EmailConfirmationCode!.EmailConfirmationCode.Value))
-			.ConfigureAwait(false);
-
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task InvalidateRefreshTokens_ValidRequest_ReturnsNoContent(FunctionalTestWebAppFactory factory)
+	{
+		var client = await factory.CreateLoggedInUserClient();
+		var response = await client.PostAsync("auth/invalidate-refresh-tokens", null);
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
 
-		// SET ANTIFORGERY TOKEN HEADER
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ConfirmEmail_InvalidCode_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var client = await factory.CreateLoggedInUserClient();
+		var response = await client.PostAsJsonAsync("auth/confirm-email", new ConfirmEmailRequest("INVALID_CODE"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+	}
 
-		response = await httpClient.GetAsync("auth/antiforgery-token");
-		var antiforgeryToken = await response.Content.ReadFromJsonAsync<GetAntiforgeryTokenResponse>();
-		httpClient.DefaultRequestHeaders.Add(antiforgeryToken!.HeaderName, antiforgeryToken.RequestToken);
-		await Assert.That(response.Headers.GetValues("Set-Cookie").First()).IsNotNull();
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task SendConfirmationEmail_ValidRequest_ReturnsNoContent(FunctionalTestWebAppFactory factory)
+	{
+		var client = await factory.CreateLoggedInUserClient();
+		var response = await client.PostAsJsonAsync("auth/send-confirmation-email", new
+			{ });
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
 
-		return httpClient;
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ForgotPassword_ValidEmail_ReturnsNoContent(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = $"{Guid.NewGuid()}@user.com";
+		await client.PostAsJsonAsync("auth/register", new RegisterRequest(email, "Password1!"));
+		var response = await client.PostAsJsonAsync("auth/forgot-password", new ForgotPasswordRequest(email));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ResetPassword_ValidRequest_ReturnsNoContent(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		await client.PostAsJsonAsync("auth/register", new RegisterRequest(email.Value, "Password1!"));
+
+		await client.PostAsJsonAsync("auth/forgot-password", new ForgotPasswordRequest(email.Value));
+
+		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+		var user = await dbContext.Users
+			.Include(u => u.PasswordResetCode)
+			.FirstAsync(u => u.Email == email);
+
+		var response = await client.PostAsJsonAsync("auth/reset-password",
+			new ResetPasswordRequest(user.PasswordResetCode!.PasswordResetCode.Value, "NewPassword123!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task GetAntiforgeryToken_ValidRequest_ReturnsToken(FunctionalTestWebAppFactory factory)
+	{
+		var client = await factory.CreateLoggedInUserClient();
+		var response = await client.GetAsync("auth/antiforgery-token");
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		var tokenResponse = await response.Content.ReadFromJsonAsync<GetAntiforgeryTokenResponse>();
+		await Assert.That(tokenResponse?.RequestToken).IsNotNull();
 	}
 }
