@@ -32,6 +32,7 @@ internal sealed class ResetPasswordHandler : IRequestHandler<ResetPasswordComman
 	{
 		var user = await usersDataContext.Users
 			.Include(user => user.PasswordResetCodes)
+			.Include(user => user.RefreshTokens) // for tokens invalidation
 			.FirstOrDefaultAsync(
 				user => user.PasswordResetCodes.Any(code => code.PasswordResetCode == request.Code),
 				cancellationToken)

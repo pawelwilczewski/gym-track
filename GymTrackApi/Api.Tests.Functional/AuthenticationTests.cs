@@ -1,17 +1,25 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Api.Dtos;
+using Application.Settings;
 using Domain.Common.ValueObjects;
+using Domain.Models.User;
+using Infrastructure.Authentication;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Api.Tests.Functional;
 
 internal sealed class AuthenticationTests
 {
+	private static readonly string dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat.FullDateTimePattern;
+
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
 	public async Task RegisterAndLogin_ValidUser_ReturnsCorrectResponse(FunctionalTestWebAppFactory factory)
@@ -232,5 +240,183 @@ internal sealed class AuthenticationTests
 		await Assert.That(response.Headers.Contains("Set-Cookie")).IsTrue();
 		var cookie = response.Headers.GetValues("Set-Cookie").First();
 		await Assert.That(cookie).Contains("Antiforgery");
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task UpdatePassword_ValidRequest_UpdatesCredentials(FunctionalTestWebAppFactory factory)
+	{
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var client = await factory.CreateLoggedInUserClient(email);
+		var newPassword = "NewSecurePassword123!";
+
+		// Update password
+		var updateResponse = await client.PatchAsJsonAsync("auth/update-password",
+			new UpdatePasswordRequest("User!123", newPassword));
+		await Assert.That(updateResponse.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		// Verify old password invalid
+		var loginResponseOld = await client.PostAsJsonAsync("auth/login",
+			new LoginRequest(email.Value, "User!123"));
+		await Assert.That(loginResponseOld.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+
+		// Verify new password works
+		var loginResponseNew = await client.PostAsJsonAsync("auth/login",
+			new LoginRequest(email.Value, newPassword));
+		await Assert.That(loginResponseNew.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		// Verify refresh tokens invalidated
+		var refreshResponse = await client.PostAsJsonAsync("auth/refresh-login",
+			new RefreshLoginRequest(client.DefaultRequestHeaders.Authorization!.Parameter!));
+		await Assert.That(refreshResponse.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task UpdatePassword_InvalidCurrentPassword_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var client = await factory.CreateLoggedInUserClient();
+		var response = await client.PatchAsJsonAsync("auth/update-password",
+			new UpdatePasswordRequest("WrongPassword!", "NewPassword123!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task RefreshToken_InvalidatedAfterPasswordUpdate(FunctionalTestWebAppFactory factory)
+	{
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var oldPassword = Password.From("OldPassword!123");
+
+		var client = factory.CreateClient();
+		var response = await client.PostAsJsonAsync("auth/register", new RegisterRequest(
+				email.Value,
+				oldPassword.Value))
+			.ConfigureAwait(false);
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		response = await client.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, oldPassword.Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		var tokens = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+			JwtBearerDefaults.AuthenticationScheme,
+			tokens!.AccessToken);
+
+		response = await client.PatchAsJsonAsync("auth/update-password",
+			new UpdatePasswordRequest(oldPassword.Value, "NewPassword123!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		response = await client.PostAsJsonAsync("auth/refresh-login",
+			new RefreshLoginRequest(tokens.RefreshToken));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ConfirmEmail_AlreadyConfirmed_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var client = await factory.CreateLoggedInUserClient(email);
+		var code = await FakeUserEmailSenderCache.GetEmailConfirmationCode(email);
+
+		var response = await client.PostAsJsonAsync("auth/confirm-email",
+			new ConfirmEmailRequest(code.Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task PasswordComplexity_WeakPassword_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = $"{Guid.NewGuid()}@user.com";
+
+		var response = await client.PostAsJsonAsync("auth/register",
+			new RegisterRequest(email, "weak"));
+
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+		var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+		await Assert.That(problem!.Errors["Password"]).IsNotNull();
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task RefreshToken_ExpiredOrInvalidToken_ReturnsUnauthorized(FunctionalTestWebAppFactory factory)
+	{
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var client = await factory.CreateLoggedInUserClient(email);
+
+		// Manually expire token
+		using var scope = factory.Services.CreateScope();
+		var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+		var refreshToken = await dbContext.Set<UserRefreshToken>()
+			.Include(token => token.User)
+			.FirstAsync(token => token.User.Email == email);
+		var expiredToken = RefreshTokenExpiryDateTime.CreateExpired();
+		typeof(UserRefreshToken).GetProperty(nameof(UserRefreshToken.ExpiresAt))!
+			.SetValue(refreshToken, expiredToken);
+		await dbContext.SaveChangesAsync();
+
+		var response = await client.PostAsJsonAsync("auth/refresh-login",
+			new RefreshLoginRequest(refreshToken.RefreshToken.Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+
+		var randomToken = new RefreshTokenProvider(Options.Create(new RefreshTokenSettings(1000))).Create().Token;
+		response = await client.PostAsJsonAsync("auth/refresh-login",
+			new RefreshLoginRequest(randomToken.Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ResetPassword_ExpiredCode_ReturnsBadRequest(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var response = await client.PostAsJsonAsync("auth/register", new RegisterRequest(email.Value, "Password1!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		response = await client.PostAsJsonAsync("auth/forgot-password", new ForgotPasswordRequest(email.Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+		// Get and expire code
+		var code = await FakeUserEmailSenderCache.GetPasswordResetCode(email);
+		using (var scope = factory.Services.CreateScope())
+		{
+			var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+			var user = await dbContext.Users
+				.Include(user => user.PasswordResetCodes)
+				.FirstAsync(user => user.Email == email);
+			typeof(UserPasswordResetCode).GetProperty(nameof(UserPasswordResetCode.ExpiresAt))!
+				.SetValue(user.PasswordResetCodes[0], PasswordResetCodeExpiryDateTime.CreateExpired());
+			await dbContext.SaveChangesAsync();
+		}
+
+		response = await client.PostAsJsonAsync("auth/reset-password",
+			new ResetPasswordRequest(code.Value, "NewPassword123!"));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ConcurrentSessions_MultipleLogins_AllValid(FunctionalTestWebAppFactory factory)
+	{
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		var password = "Password123!";
+
+		// Create user
+		var client = factory.CreateClient();
+		await client.PostAsJsonAsync("auth/register", new RegisterRequest(email.Value, password));
+
+		// Login from multiple clients
+		var client1 = factory.CreateClient();
+		var login1 = await client1.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password));
+
+		var client2 = factory.CreateClient();
+		var login2 = await client2.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password));
+
+		await Assert.That(login1.StatusCode).IsEqualTo(HttpStatusCode.OK);
+		await Assert.That(login2.StatusCode).IsEqualTo(HttpStatusCode.OK);
 	}
 }

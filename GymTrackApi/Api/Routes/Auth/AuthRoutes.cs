@@ -20,6 +20,7 @@ internal static class AuthRoutes
 			.Map(new SendConfirmationEmail())
 			.Map(new ForgotPassword())
 			.Map(new ResetPassword())
+			.Map(new UpdatePassword())
 			.Map(new GetAntiforgeryToken());
 
 		return builder;

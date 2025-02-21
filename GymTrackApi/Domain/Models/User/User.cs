@@ -58,7 +58,9 @@ public class User : AggregateRoot
 
 	public bool TryConfirmEmail(EmailConfirmationCode emailConfirmationCode)
 	{
-		if (HasConfirmedEmail || EmailConfirmationCodes.Any(code => code.IsCodeValid(emailConfirmationCode)))
+		if (HasConfirmedEmail) return false;
+
+		if (EmailConfirmationCodes.Any(code => code.IsCodeValid(emailConfirmationCode)))
 		{
 			HasConfirmedEmail = true;
 			InvalidateEmailConfirmationCodes();
@@ -77,6 +79,7 @@ public class User : AggregateRoot
 	{
 		PasswordHash = passwordHash;
 		InvalidatePasswordResetCodes();
+		InvalidateRefreshTokens();
 	}
 
 	public void AddRefreshTokenAndCleanUp(RefreshTokenData refreshTokenData)

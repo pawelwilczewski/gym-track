@@ -38,6 +38,7 @@ internal sealed class UpdatePasswordHandler : IRequestHandler<UpdatePasswordComm
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
+			.Include(user => user.RefreshTokens) // for tokens invalidation
 			.FirstOrDefaultAsync(
 				user => user.Id == request.UserId,
 				cancellationToken)
@@ -46,8 +47,6 @@ internal sealed class UpdatePasswordHandler : IRequestHandler<UpdatePasswordComm
 		if (user is null || !passwordVerifier.Verify(request.OldPassword, user.PasswordHash)) return new Error();
 
 		user.UpdatePasswordHash(passwordHasher.Hash(request.NewPassword));
-
-		// TODO Pawel: consider raising a domain event when password is updated and invalidating refresh tokens then!
 		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
 		return new Success();
