@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -18,14 +17,12 @@ namespace Api.Tests.Functional;
 
 internal sealed class AuthenticationTests
 {
-	private static readonly string dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat.FullDateTimePattern;
-
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
 	public async Task RegisterAndLogin_ValidUser_ReturnsCorrectResponse(FunctionalTestWebAppFactory factory)
 	{
 		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
-		var client = await factory.CreateLoggedInUserClient(email);
+		await factory.CreateLoggedInUserClient(email);
 
 		// Verify user is properly created in DB
 		using var scope = factory.Services.CreateScope();
@@ -175,6 +172,83 @@ internal sealed class AuthenticationTests
 
 	[Test]
 	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ResetPassword_ManyRequests_OnlyLast3CodesValid(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		const string originalPassword = "OriginalPassword123!";
+		const string newPassword = "NewPassword123!";
+
+		// Register user
+		await client.PostAsJsonAsync("auth/register",
+			new RegisterRequest(email.Value, originalPassword));
+
+		var codes = new List<PasswordResetCode>();
+		for (var i = 0; i < 4; i++)
+		{
+			FakeUserEmailSenderCache.ClearPasswordResetCode(email);
+
+			await client.PostAsJsonAsync("auth/forgot-password",
+				new ForgotPasswordRequest(email.Value));
+
+			codes.Add(await FakeUserEmailSenderCache.GetPasswordResetCode(email).ConfigureAwait(false));
+		}
+
+		var resetClient = factory.CreateClient(); // Fresh unauthenticated client
+		var response = await resetClient.PostAsJsonAsync("auth/reset-password",
+			new ResetPasswordRequest(codes[0].Value, newPassword));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+
+		response = await resetClient.PostAsJsonAsync("auth/reset-password",
+			new ResetPasswordRequest(codes[1].Value, newPassword));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
+	public async Task ConfirmEmail_ManyRequests_OnlyLast3CodesValid(FunctionalTestWebAppFactory factory)
+	{
+		var client = factory.CreateClient();
+		var email = EmailAddress.From($"{Guid.NewGuid()}@user.com");
+		const string password = "OriginalPassword123!";
+
+		await client.PostAsJsonAsync("auth/register",
+			new RegisterRequest(email.Value, password));
+
+		var codes = new List<EmailConfirmationCode>
+		{
+			await FakeUserEmailSenderCache.GetEmailConfirmationCode(email).ConfigureAwait(false)
+		};
+
+		var response = await client.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+
+		var tokens = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+			JwtBearerDefaults.AuthenticationScheme,
+			tokens!.AccessToken);
+
+		for (var i = 0; i < 3; i++)
+		{
+			FakeUserEmailSenderCache.ClearEmailConfirmationCode(email);
+
+			response = await client.PostAsync("auth/resend-confirmation-email", null);
+			await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+
+			codes.Add(await FakeUserEmailSenderCache.GetEmailConfirmationCode(email).ConfigureAwait(false));
+		}
+
+		response = await client.PostAsJsonAsync("auth/confirm-email",
+			new ConfirmEmailRequest(codes[0].Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
+
+		response = await client.PostAsJsonAsync("auth/confirm-email",
+			new ConfirmEmailRequest(codes[1].Value));
+		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
+	}
+
+	[Test]
+	[ClassDataSource<FunctionalTestWebAppFactory>(Shared = SharedType.PerTestSession)]
 	public async Task ForgotPassword_GeneratesResetCode(FunctionalTestWebAppFactory factory)
 	{
 		var client = factory.CreateClient();
@@ -225,7 +299,6 @@ internal sealed class AuthenticationTests
 
 		// log in
 		response = await client.PostAsJsonAsync("auth/login", new LoginRequest(email.Value, password.Value));
-
 		await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
 		var tokens = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);

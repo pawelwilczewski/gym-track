@@ -32,6 +32,7 @@ internal sealed class ForgotPasswordHandler : IRequestHandler<ForgotPasswordComm
 		CancellationToken cancellationToken)
 	{
 		var user = await usersDataContext.Users
+			.Include(user => user.PasswordResetCodes)
 			.FirstOrDefaultAsync(user => user.Email == request.Email, cancellationToken)
 			.ConfigureAwait(false);
 

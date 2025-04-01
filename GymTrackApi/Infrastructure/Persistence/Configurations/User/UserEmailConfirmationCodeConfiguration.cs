@@ -10,6 +10,6 @@ internal sealed class UserEmailConfirmationCodeConfiguration : IEntityTypeConfig
 	{
 		builder
 			.ToTable("UserEmailConfirmationCodes", Schemas.AUTHENTICATION)
-			.HasKey(code => code.UserId);
+			.HasKey(code => code.EmailConfirmationCode);
 	}
 }

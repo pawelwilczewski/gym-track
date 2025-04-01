@@ -10,6 +10,6 @@ internal sealed class UserPasswordResetCodeConfiguration : IEntityTypeConfigurat
 	{
 		builder
 			.ToTable("UserPasswordResetCodes", Schemas.AUTHENTICATION)
-			.HasKey(code => code.UserId);
+			.HasKey(code => code.PasswordResetCode);
 	}
 }

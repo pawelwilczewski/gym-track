@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Routes.Auth;
 
-internal sealed class SendConfirmationEmail : IEndpoint
+internal sealed class ResendConfirmationEmail : IEndpoint
 {
 	public IEndpointRouteBuilder Map(IEndpointRouteBuilder builder)
 	{
-		builder.MapPost("/send-confirmation-email", async Task<NoContent> (
-				[FromBody] object _,
+		builder.MapPost("/resend-confirmation-email", async Task<NoContent> (
 				HttpContext context,
 				[FromServices] ISender sender,
 				CancellationToken cancellationToken) =>
 			{
-				var result = await sender
+				await sender
 					.Send(new SendConfirmationEmailCommand(context.User.GetUserId()), cancellationToken)
 					.ConfigureAwait(false);
 

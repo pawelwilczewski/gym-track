@@ -30,9 +30,13 @@ internal sealed class FakeUserEmailSenderCache : IUserEmailSender
 		TryGetValueWithinTimeout(email, (out EmailConfirmationCode code) =>
 			emailConfirmationCodes.TryGetValue(email, out code));
 
+	public static void ClearEmailConfirmationCode(EmailAddress email) => emailConfirmationCodes.Remove(email, out _);
+
 	public static Task<PasswordResetCode> GetPasswordResetCode(EmailAddress email) =>
 		TryGetValueWithinTimeout(email, (out PasswordResetCode code) =>
 			passwordResetCodes.TryGetValue(email, out code));
+
+	public static void ClearPasswordResetCode(EmailAddress email) => passwordResetCodes.Remove(email, out _);
 
 	private static async Task<TValue> TryGetValueWithinTimeout<TValue>(EmailAddress email, TryGetValue<TValue> tryGetValue)
 	{
