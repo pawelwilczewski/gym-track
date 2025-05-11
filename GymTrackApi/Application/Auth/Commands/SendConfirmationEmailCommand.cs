@@ -1,16 +1,15 @@
 using Application.Auth.Abstractions;
 using Application.Email;
 using Application.Persistence;
-using Domain.Common.Results;
 using Domain.Models.User;
+using Dunet;
+using Functional.Monads;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success, NotFound, UserAlreadyConfirmed>;
+using ResultType = Result<Success, SendConfirmationEmailError>;
 
 public sealed record class SendConfirmationEmailCommand(
 	UserId UserId) : IRequest<ResultType>;
@@ -34,24 +33,31 @@ internal sealed class SendConfirmationEmailHandler : IRequestHandler<SendConfirm
 
 	public async Task<ResultType> Handle(
 		SendConfirmationEmailCommand request,
-		CancellationToken cancellationToken)
-	{
-		var user = await usersDataContext.Users
-			.Include(user => user.EmailConfirmationCodes)
-			.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken)
-			.ConfigureAwait(false);
+		CancellationToken cancellationToken) =>
+		await Result<User?, SendConfirmationEmailError>.Success.FromAsync(usersDataContext.Users
+				.Include(user => user.EmailConfirmationCodes)
+				.FirstOrDefaultAsync(user => user.Id == request.UserId, cancellationToken)
+				.ConfigureAwait(false))
+			.BindAsync<User?, User, SendConfirmationEmailError>(user => user switch
+			{
+				null                           => new SendConfirmationEmailError.UserNotFound(),
+				_ when !user.HasConfirmedEmail => new SendConfirmationEmailError.UserAlreadyConfirmed(),
+				_                              => user
+			})
+			.MapAsync(async user =>
+			{
+				var confirmation = emailConfirmationCodeGenerator.Generate();
+				user.AddEmailConfirmationCode(confirmation);
+				await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+				await userEmailSender.SendEmailConfirmationLink(user, confirmation, cancellationToken).ConfigureAwait(false);
+				return new Success();
+			});
+}
 
-		if (user is null) return new NotFound();
-		if (user.HasConfirmedEmail) return new UserAlreadyConfirmed();
+[Union]
+public partial record class SendConfirmationEmailError
+{
+	public sealed partial record UserNotFound;
 
-		var confirmation = emailConfirmationCodeGenerator.Generate();
-		user.AddEmailConfirmationCode(confirmation);
-		await usersDataContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-		await userEmailSender
-			.SendEmailConfirmationLink(user, confirmation, cancellationToken)
-			.ConfigureAwait(false);
-
-		return new Success();
-	}
+	public sealed partial record UserAlreadyConfirmed;
 }
