@@ -2,17 +2,17 @@ using Application.ExerciseInfo.Step.Dtos;
 using Application.Files;
 using Application.Persistence;
 using Domain.Common;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.User;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.ExerciseInfo.Step.Commands;
 
-using ResultType = OneOf<Success<GetExerciseInfoStepResponse>, NotFound>;
+using ResultType = Result<Success<GetExerciseInfoStepResponse>, NotFound>;
 
 public sealed record class CreateExerciseInfoStepCommand(
 	ExerciseInfoId ExerciseInfoId,

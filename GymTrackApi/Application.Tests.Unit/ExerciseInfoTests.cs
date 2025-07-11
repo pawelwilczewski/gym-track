@@ -2,10 +2,10 @@
 using Application.ExerciseInfo.Dtos;
 using Application.ExerciseInfo.Queries;
 using Application.Tests.Unit.Mocks;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
-using OneOf.Types;
 
 namespace Application.Tests.Unit;
 
@@ -84,7 +84,7 @@ internal sealed class ExerciseInfoTests
 			new GetExerciseInfoQuery(exerciseInfo.Id, accessor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	[Test]
@@ -99,7 +99,7 @@ internal sealed class ExerciseInfoTests
 			new GetExerciseInfoQuery(ExerciseInfoId.From(Guid.NewGuid()), Users.User1.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(typeof(NotFound));
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor,
@@ -146,7 +146,7 @@ internal sealed class ExerciseInfoTests
 				editor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType)>
@@ -178,6 +178,6 @@ internal sealed class ExerciseInfoTests
 			new DeleteExerciseInfoCommand(exerciseInfo.Id, deleter.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 }

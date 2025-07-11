@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using Application.Email;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.User;
+using FuncNet;
 
 namespace Api.Tests.Functional;
 
@@ -14,16 +16,16 @@ internal sealed class FakeUserEmailSenderCache : IUserEmailSender
 	private static readonly ConcurrentDictionary<EmailAddress, EmailConfirmationCode> emailConfirmationCodes = [];
 	private static readonly ConcurrentDictionary<EmailAddress, PasswordResetCode> passwordResetCodes = [];
 
-	public Task SendEmailConfirmationLink(User user, EmailConfirmationCodeData data, CancellationToken cancellationToken)
+	public Task<Result<Success, EmailSendingError>> SendEmailConfirmationLink(User user, EmailConfirmationCodeData data, CancellationToken cancellationToken)
 	{
 		emailConfirmationCodes[user.Email] = data.Code;
-		return Task.CompletedTask;
+		return Task.FromResult(Result<Success, EmailSendingError>.FromSuccess(Success.Instance));
 	}
 
-	public Task SendPasswordResetLink(User user, PasswordResetCodeData data, CancellationToken cancellationToken)
+	public Task<Result<Success, EmailSendingError>> SendPasswordResetLink(User user, PasswordResetCodeData data, CancellationToken cancellationToken)
 	{
 		passwordResetCodes[user.Email] = data.Code;
-		return Task.CompletedTask;
+		return Task.FromResult(Result<Success, EmailSendingError>.FromSuccess(Success.Instance));
 	}
 
 	public static Task<EmailConfirmationCode> GetEmailConfirmationCode(EmailAddress email) =>

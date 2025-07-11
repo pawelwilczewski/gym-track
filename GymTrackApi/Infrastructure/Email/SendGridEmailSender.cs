@@ -1,5 +1,7 @@
 using Application.Email;
 using Application.Settings;
+using Domain.Common.Results;
+using FuncNet;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -18,7 +20,11 @@ internal sealed class SendGridEmailSender : IEmailSender
 		from = new EmailAddress(settings.Sender.Email, settings.Sender.Name);
 	}
 
-	public async Task SendEmail(Domain.Common.ValueObjects.EmailAddress address, string subject, string message, CancellationToken cancellationToken)
+	public async Task<Result<Success, EmailSendingError>> SendEmail(
+		Domain.Common.ValueObjects.EmailAddress address,
+		string subject,
+		string message,
+		CancellationToken cancellationToken)
 	{
 		var email = MailHelper.CreateSingleEmail(
 			from,
@@ -27,8 +33,15 @@ internal sealed class SendGridEmailSender : IEmailSender
 			message,
 			message);
 
-		if (email is null) throw new Exception("Couldn't create email to send.");
+		if (email is null) return new EmailSendingError("Couldn't create email to send.");
 
-		await client.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
+		var response = await client.SendEmailAsync(email, cancellationToken).ConfigureAwait(false);
+		if (!response.IsSuccessStatusCode)
+		{
+			var body = await response.Body.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+			return new EmailSendingError(body);
+		}
+
+		return Success.Instance;
 	}
 }

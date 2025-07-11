@@ -1,9 +1,9 @@
 using Application.ExerciseInfo.Dtos;
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf.Types;
 
 namespace Application.ExerciseInfo.Queries;
 

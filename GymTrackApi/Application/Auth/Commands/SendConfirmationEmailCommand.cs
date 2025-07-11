@@ -3,14 +3,13 @@ using Application.Email;
 using Application.Persistence;
 using Domain.Common.Results;
 using Domain.Models.User;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success, NotFound, UserAlreadyConfirmed>;
+using ResultType = Result<User, NotFound, UserAlreadyConfirmed, EmailSendingError, DatabaseError>;
 
 public sealed record class SendConfirmationEmailCommand(
 	UserId UserId) : IRequest<ResultType>;
@@ -52,6 +51,6 @@ internal sealed class SendConfirmationEmailHandler : IRequestHandler<SendConfirm
 			.SendEmailConfirmationLink(user, confirmation, cancellationToken)
 			.ConfigureAwait(false);
 
-		return new Success();
+		return user;
 	}
 }

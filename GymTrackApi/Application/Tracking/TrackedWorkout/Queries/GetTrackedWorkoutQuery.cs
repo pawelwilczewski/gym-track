@@ -1,15 +1,15 @@
 using Application.Persistence;
 using Application.Tracking.TrackedWorkout.Dtos;
+using Domain.Common.Results;
 using Domain.Models.Tracking;
 using Domain.Models.User;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Tracking.TrackedWorkout.Queries;
 
-using ResultType = OneOf<Success<GetTrackedWorkoutResponse>, NotFound>;
+using ResultType = Result<Success<GetTrackedWorkoutResponse>, NotFound>;
 
 public sealed record class GetTrackedWorkoutQuery(
 	TrackedWorkoutId TrackedWorkoutId,

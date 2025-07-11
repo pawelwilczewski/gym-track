@@ -1,9 +1,9 @@
 using Application.Persistence;
 using Application.Workout.Dtos;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.User;
 using MediatR;
-using OneOf.Types;
 
 namespace Application.Workout.Commands;
 

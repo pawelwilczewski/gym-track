@@ -1,5 +1,7 @@
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Models.User;
+using FuncNet;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence;
@@ -13,8 +15,18 @@ internal sealed class UsersDataContext : IUsersDataContext
 	public UsersDataContext(AppDbContext dbContext) =>
 		this.dbContext = dbContext;
 
-	public Task<int> SaveChangesAsync(CancellationToken cancellationToken) =>
-		dbContext.SaveChangesAsync(cancellationToken);
+	public async Task<Result<Success, DatabaseError>> SaveChangesAsync(CancellationToken cancellationToken)
+	{
+		try
+		{
+			await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+			return Success.Instance;
+		}
+		catch (Exception e)
+		{
+			return new DatabaseError(e.Message);
+		}
+	}
 
 	public ValueTask DisposeAsync() => dbContext.DisposeAsync();
 

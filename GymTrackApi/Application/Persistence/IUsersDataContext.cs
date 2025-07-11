@@ -1,4 +1,6 @@
+using Domain.Common.Results;
 using Domain.Models.User;
+using FuncNet;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Persistence;
@@ -6,5 +8,5 @@ namespace Application.Persistence;
 public interface IUsersDataContext : IDisposable, IAsyncDisposable
 {
 	DbSet<User> Users { get; }
-	Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+	Task<Result<Success, DatabaseError>> SaveChangesAsync(CancellationToken cancellationToken);
 }

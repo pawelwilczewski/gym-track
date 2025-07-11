@@ -1,15 +1,15 @@
 using Application.Auth.Abstractions;
 using Application.Auth.Dtos;
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success<LogInResponse>, Error>;
+using ResultType = Result<Success<LogInResponse>, Error>;
 
 public sealed record class LogInCommand(
 	EmailAddress Email,

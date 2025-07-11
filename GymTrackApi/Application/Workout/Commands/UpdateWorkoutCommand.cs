@@ -1,15 +1,15 @@
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.User;
 using Domain.Models.Workout;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Workout.Commands;
 
-using ResultType = OneOf<Success, NotFound>;
+using ResultType = Result<Success, NotFound>;
 
 public sealed record class UpdateWorkoutCommand(
 	WorkoutId WorkoutId,

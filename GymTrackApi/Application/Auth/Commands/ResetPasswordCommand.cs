@@ -1,14 +1,14 @@
 using Application.Auth.Abstractions;
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success, Error>;
+using ResultType = Result<Success, Error>;
 
 public sealed record class ResetPasswordCommand(
 	PasswordResetCode Code,

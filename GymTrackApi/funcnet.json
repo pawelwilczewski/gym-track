@@ -1,0 +1,14 @@
+{
+  "GenericsRegistrations": [
+    "Success,DatabaseError",
+    "Success,DatabaseError,NotFound,UserAlreadyConfirmed,EmailSendingError",
+    "Success,EmailSendingError",
+    "Success,EmailSendingError,NotFound,UserAlreadyConfirmed,DatabaseError",
+    "User,NotFound",
+    "User,NotFound,UserAlreadyConfirmed",
+    "User,NotFound,UserAlreadyConfirmed,DatabaseError",
+    "User,NotFound,UserAlreadyConfirmed,DatabaseError,EmailSendingError",
+    "User,NotFound,UserAlreadyConfirmed,EmailSendingError,DatabaseError",
+    "User,NotFound,UserAlreadyConfirmed,User,NotFound,UserAlreadyConfirmed,DatabaseError"
+  ]
+}

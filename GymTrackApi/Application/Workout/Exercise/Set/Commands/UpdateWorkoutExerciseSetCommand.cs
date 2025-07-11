@@ -4,14 +4,13 @@ using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.User;
 using Domain.Models.Workout;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Workout.Exercise.Set.Commands;
 
-using ResultType = OneOf<Success, NotFound, ValidationError>;
+using ResultType = Result<Success, NotFound, ValidationError>;
 
 public sealed record class UpdateWorkoutExerciseSetCommand(
 	WorkoutId WorkoutId,

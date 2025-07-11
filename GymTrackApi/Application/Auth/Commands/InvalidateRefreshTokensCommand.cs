@@ -1,13 +1,13 @@
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Models.User;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Auth.Commands;
 
-using ResultType = OneOf<Success, NotFound>;
+using ResultType = Result<Success, NotFound>;
 
 public sealed record class InvalidateRefreshTokensCommand(
 	UserId UserId) : IRequest<ResultType>;

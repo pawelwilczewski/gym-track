@@ -1,9 +1,9 @@
 using Application.Persistence;
 using Application.Tracking.TrackedWorkout.Dtos;
+using Domain.Common.Results;
 using Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf.Types;
 
 namespace Application.Tracking.TrackedWorkout.Queries;
 

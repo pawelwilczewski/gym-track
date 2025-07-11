@@ -3,10 +3,10 @@ using Application.ExerciseInfo.Step.DisplayOrder.Commands;
 using Application.ExerciseInfo.Step.Dtos;
 using Application.ExerciseInfo.Step.Queries;
 using Application.Tests.Unit.Mocks;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Infrastructure.Persistence;
-using OneOf.Types;
 
 namespace Application.Tests.Unit;
 
@@ -43,7 +43,7 @@ internal sealed class ExerciseInfoStepTests
 				user.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo accessor, ExerciseInfoStepIndex accessedIndex, Type responseType)>
@@ -83,7 +83,7 @@ internal sealed class ExerciseInfoStepTests
 			new GetExerciseInfoStepQuery(exerciseInfo.Id, accessedIndex, accessor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	[Test]
@@ -98,7 +98,7 @@ internal sealed class ExerciseInfoStepTests
 			new GetExerciseInfoStepQuery(ExerciseInfoId.From(Guid.NewGuid()), ExerciseInfoStepIndex.From(0), Users.User1.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(typeof(NotFound));
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor,
@@ -148,7 +148,7 @@ internal sealed class ExerciseInfoStepTests
 				editor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor,
@@ -191,7 +191,7 @@ internal sealed class ExerciseInfoStepTests
 				editor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter,
@@ -237,6 +237,6 @@ internal sealed class ExerciseInfoStepTests
 				deleter.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 }

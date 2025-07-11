@@ -1,16 +1,16 @@
 using Application.Files;
 using Application.Persistence;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.User;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.ExerciseInfo.Step.Commands;
 
-using ResultType = OneOf<Success, NotFound>;
+using ResultType = Result<Success, NotFound>;
 
 public sealed record class UpdateExerciseInfoStepCommand(
 	ExerciseInfoId ExerciseInfoId,

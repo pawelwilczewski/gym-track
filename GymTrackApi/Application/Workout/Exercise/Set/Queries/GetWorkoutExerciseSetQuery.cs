@@ -1,15 +1,15 @@
 using Application.Persistence;
 using Application.Workout.Exercise.Set.Dtos;
+using Domain.Common.Results;
 using Domain.Models.User;
 using Domain.Models.Workout;
+using FuncNet;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OneOf;
-using OneOf.Types;
 
 namespace Application.Workout.Exercise.Set.Queries;
 
-using ResultType = OneOf<Success<GetWorkoutExerciseSetResponse>, NotFound>;
+using ResultType = Result<Success<GetWorkoutExerciseSetResponse>, NotFound>;
 
 public sealed record class GetWorkoutExerciseSetQuery(
 	WorkoutId WorkoutId,

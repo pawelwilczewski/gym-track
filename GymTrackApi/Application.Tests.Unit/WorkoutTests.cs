@@ -2,10 +2,10 @@
 using Application.Workout.Commands;
 using Application.Workout.Dtos;
 using Application.Workout.Queries;
+using Domain.Common.Results;
 using Domain.Common.ValueObjects;
 using Domain.Models.Workout;
 using Infrastructure.Persistence;
-using OneOf.Types;
 
 namespace Application.Tests.Unit;
 
@@ -71,7 +71,7 @@ internal sealed class WorkoutTests
 				new GetWorkoutQuery(workout.Id, accessor.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IReadOnlyList<IUserInfo> workoutsOwners, IUserInfo accessor, int returnedCount)> GetWorkoutsData() =>
@@ -121,7 +121,7 @@ internal sealed class WorkoutTests
 				new GetWorkoutQuery(WorkoutId.From(new Guid()), Users.User1.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Value).IsTypeOf(typeof(NotFound));
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(typeof(NotFound));
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo editor, Name workoutName, Type responseType)> UpdateWorkoutData() =>
@@ -150,7 +150,7 @@ internal sealed class WorkoutTests
 				new UpdateWorkoutCommand(workout.Id, workoutName, editor.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo owner, IUserInfo deleter, Type responseType)> DeleteWorkoutData() =>
@@ -177,6 +177,6 @@ internal sealed class WorkoutTests
 				new DeleteWorkoutCommand(workout.Id, deleter.Id), CancellationToken.None)
 			.ConfigureAwait(false);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 }

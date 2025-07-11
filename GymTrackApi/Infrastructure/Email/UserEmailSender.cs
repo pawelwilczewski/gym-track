@@ -1,6 +1,8 @@
 using Application.Email;
 using Application.Settings;
+using Domain.Common.Results;
 using Domain.Models.User;
+using FuncNet;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Email;
@@ -16,7 +18,10 @@ internal sealed class UserEmailSender : IUserEmailSender
 		this.frontendSettings = frontendSettings.Value;
 	}
 
-	public Task SendEmailConfirmationLink(User user, EmailConfirmationCodeData data, CancellationToken cancellationToken)
+	public Task<Result<Success, EmailSendingError>> SendEmailConfirmationLink(
+		User user,
+		EmailConfirmationCodeData data,
+		CancellationToken cancellationToken)
 	{
 		var confirmationLink = frontendSettings.BuildEmailConfirmationUrl(data.Code.Value);
 		return emailSender.SendEmail(
@@ -26,7 +31,10 @@ internal sealed class UserEmailSender : IUserEmailSender
 			cancellationToken);
 	}
 
-	public Task SendPasswordResetLink(User user, PasswordResetCodeData data, CancellationToken cancellationToken)
+	public Task<Result<Success, EmailSendingError>> SendPasswordResetLink(
+		User user,
+		PasswordResetCodeData data,
+		CancellationToken cancellationToken)
 	{
 		var resetLink = frontendSettings.BuildPasswordResetUrl(data.Code.Value);
 		return emailSender.SendEmail(

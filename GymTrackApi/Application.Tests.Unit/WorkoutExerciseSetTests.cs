@@ -9,7 +9,6 @@ using Domain.Models;
 using Domain.Models.ExerciseInfo;
 using Domain.Models.Workout;
 using Infrastructure.Persistence;
-using OneOf.Types;
 
 namespace Application.Tests.Unit;
 
@@ -62,7 +61,7 @@ internal sealed class WorkoutExerciseSetTests
 				creator.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo accessor,
@@ -120,7 +119,7 @@ internal sealed class WorkoutExerciseSetTests
 				accessor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
@@ -181,7 +180,7 @@ internal sealed class WorkoutExerciseSetTests
 				editor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo editor,
@@ -238,7 +237,7 @@ internal sealed class WorkoutExerciseSetTests
 				editor.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 
 	public static IEnumerable<(IUserInfo workoutOwner, IUserInfo deleter,
@@ -293,6 +292,6 @@ internal sealed class WorkoutExerciseSetTests
 				deleter.Id),
 			CancellationToken.None);
 
-		await Assert.That(result.Value).IsTypeOf(responseType);
+		await Assert.That(result.GetValueOfResult()).IsTypeOf(responseType);
 	}
 }
